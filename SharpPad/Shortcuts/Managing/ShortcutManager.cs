@@ -21,11 +21,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SharpPad.CommandSystem;
-using SharpPad.Interactivity.Contexts;
 using SharpPad.Shortcuts.Events;
 using SharpPad.Shortcuts.Inputs;
 using SharpPad.Shortcuts.Usage;
-using SharpPad.Tasks;
 
 namespace SharpPad.Shortcuts.Managing {
     public delegate void ShortcutActivityEventHandler(ShortcutInputManager manager);

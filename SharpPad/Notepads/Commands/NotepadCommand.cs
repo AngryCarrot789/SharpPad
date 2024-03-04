@@ -20,7 +20,6 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Document;
 using SharpPad.CommandSystem;
 using SharpPad.Interactivity.Contexts;

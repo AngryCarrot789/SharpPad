@@ -19,13 +19,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using SharpPad.Interactivity.Contexts;
-using SharpPad.Logger;
-using SharpPad.Utils;
 
 namespace SharpPad.CommandSystem {
     public delegate void FocusChangedEventHandler(CommandManager manager, IContextData newFocus);

@@ -17,7 +17,6 @@
 // along with SharpPad. If not, see <https://www.gnu.org/licenses/>.
 //
 
-using System.Collections;
 using System.Collections.Generic;
 
 namespace SharpPad.Interactivity.Contexts {

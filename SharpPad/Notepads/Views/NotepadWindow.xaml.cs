@@ -17,7 +17,6 @@
 // along with SharpPad. If not, see <https://www.gnu.org/licenses/>.
 //
 
-using System.Diagnostics.Eventing.Reader;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;

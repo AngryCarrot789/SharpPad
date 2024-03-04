@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,7 +12,6 @@ using SharpPad.Services.Messages;
 using SharpPad.Shortcuts.Managing;
 using SharpPad.Shortcuts.WPF;
 using SharpPad.Utils;
-using SharpPad.Views;
 
 namespace SharpPad {
     /// <summary>
