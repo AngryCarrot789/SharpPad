@@ -1,0 +1,49 @@
+﻿<?xml version="1.0"?>
+
+<KeyMap Version="1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="Keymap.xsd">
+    <Group Name="Application">
+        <Group Name="Notepad">
+            <Shortcut Name="NewFile" CommandId="NewFile">
+                <KeyStroke Mods="CTRL" Key="N"/>
+            </Shortcut>
+            <Shortcut Name="OpenFile" CommandId="OpenFile">
+                <KeyStroke Mods="CTRL" Key="O"/>
+            </Shortcut>
+            <Shortcut Name="SaveFile" CommandId="SaveDocumentFile">
+                <KeyStroke Mods="CTRL" Key="S"/>
+            </Shortcut>
+            <Shortcut Name="SaveFileAs" CommandId="SaveDocumentFileAs">
+                <KeyStroke Mods="CTRL+SHIFT" Key="S"/>
+            </Shortcut>
+
+            <!-- TODO: implement history -->
+            <Shortcut Name="UndoShortcut" CommandId="UndoCommand">
+                <KeyStroke Mods="CTRL" Key="Z"/>
+            </Shortcut>
+            <Shortcut Name="RedoShortcut1" CommandId="RedoCommand">
+                <KeyStroke Mods="CTRL+SHIFT" Key="Z"/>
+            </Shortcut>
+            <Shortcut Name="RedoShortcut2" CommandId="RedoCommand">
+                <KeyStroke Mods="CTRL" Key="Y"/>
+            </Shortcut>
+
+            <Group Name="Document">
+                <Shortcut Name="CloseDocument" CommandId="CloseDocument">
+                    <KeyStroke Mods="CTRL" Key="W"/>
+                </Shortcut>
+                <Shortcut Name="SelectLine" CommandId="SelectLine">
+                    <KeyStroke Mods="CTRL+SHIFT" Key="A"/>
+                </Shortcut>
+            </Group>
+
+            <Group Name="DocumentTab">
+                <Shortcut Name="CloseDocument1" CommandId="CloseDocument">
+                    <KeyStroke Mods="CTRL" Key="W"/>
+                </Shortcut>
+                <Shortcut Name="CloseDocument2" CommandId="CloseDocument">
+                    <MouseStroke Button="Middle"/>
+                </Shortcut>
+            </Group>
+        </Group>
+    </Group>
+</KeyMap>

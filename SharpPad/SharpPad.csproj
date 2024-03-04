@@ -1,0 +1,541 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{DCFF60C3-0984-4579-B730-217FB8AAFF78}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>SharpPad</RootNamespace>
+    <AssemblyName>SharpPad</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ICSharpCode.AvalonEdit, Version=6.3.0.90, Culture=neutral, PublicKeyToken=9cc39be672370310">
+      <HintPath>..\packages\AvalonEdit.6.3.0.90\lib\net462\ICSharpCode.AvalonEdit.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="mscorlib" />
+    <Reference Include="PresentationFramework.Aero2" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="UIAutomationTypes" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Compile Include="ApplicationCore.cs" />
+    <Compile Include="CommandSystem\Usages\BasicButtonCommandUsage.cs" />
+    <Compile Include="CommandSystem\Usages\CommandSourceCommandUsage.cs" />
+    <Compile Include="Controls\Bindings\AccessorAutoEventPropertyBinder.cs" />
+    <Compile Include="Controls\Bindings\BaseBinder.cs" />
+    <Compile Include="Controls\Bindings\Binders.cs" />
+    <Compile Include="Controls\Bindings\GetSetAutoEventPropertyBinder.cs" />
+    <Compile Include="Controls\Bindings\IBinder.cs" />
+    <Compile Include="Controls\Bindings\UpdaterAutoEventPropertyBinder.cs" />
+    <Compile Include="Controls\Bindings\UpdaterPropertyBinder.cs" />
+    <Compile Include="Controls\Dragger\EditCompletedEventArgs.cs" />
+    <Compile Include="Controls\Dragger\EditCompletedEventHandler.cs" />
+    <Compile Include="Controls\Dragger\EditStartEventArgs.cs" />
+    <Compile Include="Controls\Dragger\EditStartEventHandler.cs" />
+    <Compile Include="Controls\Dragger\HorizontalIncrement.cs" />
+    <Compile Include="Controls\Dragger\IChangeMapper.cs" />
+    <Compile Include="Controls\Dragger\IValueFormatter.cs" />
+    <Compile Include="Controls\Dragger\IValuePreProcessor.cs" />
+    <Compile Include="Controls\Dragger\NumberDragger.cs" />
+    <Compile Include="Controls\Dragger\UnitToPercentFormatter.cs" />
+    <Compile Include="Controls\Dragger\ValueStringFormatter.cs" />
+    <Compile Include="Controls\Dragger\VerticalIncrement.cs" />
+    <Compile Include="Controls\TreeViews\Automation\Peers\MultiSelectTreeViewAutomationPeer.cs" />
+    <Compile Include="Controls\TreeViews\Automation\Peers\MultiSelectTreeViewItemAutomationPeer.cs" />
+    <Compile Include="Controls\TreeViews\Automation\Peers\MultiSelectTreeViewItemDataAutomationPeer.cs" />
+    <Compile Include="Controls\TreeViews\Controls\BorderSelectionLogic.cs" />
+    <Compile Include="Controls\TreeViews\Controls\EditTextBox.cs" />
+    <Compile Include="Controls\TreeViews\Controls\FocusHelper.cs" />
+    <Compile Include="Controls\TreeViews\Controls\ISelectionStrategy.cs" />
+    <Compile Include="Controls\TreeViews\Controls\ListUtils.cs" />
+    <Compile Include="Controls\TreeViews\Controls\MultiSelectTreeView.cs" />
+    <Compile Include="Controls\TreeViews\Controls\MultiSelectTreeViewItem.cs" />
+    <Compile Include="Controls\TreeViews\Controls\SelectionMultiple.cs" />
+    <Compile Include="DispatcherDelegate.cs" />
+    <Compile Include="IApplicationStartupProgress.cs" />
+    <Compile Include="IDispatcher.cs" />
+    <Compile Include="Interactivity\Contexts\ContextDataHelper.cs" />
+    <Compile Include="IoC.cs" />
+    <Compile Include="IServiceManager.cs" />
+    <Compile Include="Notepads\Commands\NotepadCommand.cs" />
+    <Compile Include="Notepads\Commands\CloseDocumentCommand.cs" />
+    <Compile Include="Notepads\Commands\SelectLineCommand.cs" />
+    <Compile Include="Notepads\Controls\NotepadEditorPanel.cs" />
+    <Compile Include="Notepads\Controls\NotepadTabControl.cs" />
+    <Compile Include="Notepads\Controls\NotepadTabItem.cs" />
+    <Compile Include="Notepads\Notepad.cs" />
+    <Compile Include="Notepads\NotepadDocument.cs" />
+    <Compile Include="RBC\BinaryUtils.cs" />
+    <Compile Include="RBC\Events\ReadFromRBEEventHandler.cs" />
+    <Compile Include="RBC\Events\WriteToRBEEventHandler.cs" />
+    <Compile Include="RBC\RBEArray.cs" />
+    <Compile Include="RBC\RBEBase.cs" />
+    <Compile Include="RBC\RBEDictionary.cs" />
+    <Compile Include="RBC\RBEGuid.cs" />
+    <Compile Include="RBC\RBEList.cs" />
+    <Compile Include="RBC\RBEPrimitive.cs" />
+    <Compile Include="RBC\RBEStruct.cs" />
+    <Compile Include="RBC\RBEType.cs" />
+    <Compile Include="RBC\RBEUtils.cs" />
+    <Compile Include="ServiceManager.cs" />
+    <Compile Include="Services\Files\IFilePickDialogService.cs" />
+    <Compile Include="Services\Messages\IMessageDialogService.cs" />
+    <Compile Include="Services\Messages\IUserInputDialogService.cs" />
+    <Compile Include="Services\WPF\Files\WPFFilePickDialogService.cs" />
+    <Compile Include="Services\WPF\Messages\MessageDialog.xaml.cs">
+      <DependentUpon>MessageDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Services\WPF\Messages\SingleInputDialog.xaml.cs">
+      <DependentUpon>SingleInputDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Services\WPF\Messages\WPFMessageDialogService.cs" />
+    <Compile Include="Services\WPF\Messages\WPFUserInputDialogService.cs" />
+    <Compile Include="Shortcuts\Attributes\ShortcutTargetAttribute.cs" />
+    <Compile Include="Shortcuts\Dialogs\IKeyboardDialogService.cs" />
+    <Compile Include="Shortcuts\Dialogs\IMouseDialogService.cs" />
+    <Compile Include="Shortcuts\Dialogs\IShortcutManagerDialogService.cs" />
+    <Compile Include="Shortcuts\Events\ShortcutActivatedEventHandler.cs" />
+    <Compile Include="Shortcuts\Events\ShortcutModifiedEventHandler.cs" />
+    <Compile Include="Shortcuts\IKeyboardShortcut.cs" />
+    <Compile Include="Shortcuts\IMouseShortcut.cs" />
+    <Compile Include="Shortcuts\Inputs\IInputStroke.cs" />
+    <Compile Include="Shortcuts\Inputs\InputStrokeSet.cs" />
+    <Compile Include="Shortcuts\Inputs\KeyStroke.cs" />
+    <Compile Include="Shortcuts\Inputs\MouseStroke.cs" />
+    <Compile Include="Shortcuts\IShortcut.cs" />
+    <Compile Include="Shortcuts\KeyboardShortcut.cs" />
+    <Compile Include="Shortcuts\Keymapping\IKeymapSerialiser.cs" />
+    <Compile Include="Shortcuts\Keymapping\Keymap.cs" />
+    <Compile Include="Shortcuts\Keymapping\XMLShortcutSerialiser.cs" />
+    <Compile Include="Shortcuts\Managing\GroupedInputState.cs" />
+    <Compile Include="Shortcuts\Managing\GroupedShortcut.cs" />
+    <Compile Include="Shortcuts\Managing\GroupEvaulationArgs.cs" />
+    <Compile Include="Shortcuts\Managing\IGroupedObject.cs" />
+    <Compile Include="Shortcuts\Managing\InputStateManager.cs" />
+    <Compile Include="Shortcuts\Managing\RepeatMode.cs" />
+    <Compile Include="Shortcuts\Managing\ShortcutCollectorArgs.cs" />
+    <Compile Include="Shortcuts\Managing\ShortcutGroup.cs" />
+    <Compile Include="Shortcuts\Managing\ShortcutInputManager.cs" />
+    <Compile Include="Shortcuts\Managing\ShortcutManager.cs" />
+    <Compile Include="Shortcuts\MouseKeyboardShortcut.cs" />
+    <Compile Include="Shortcuts\MouseShortcut.cs" />
+    <Compile Include="Shortcuts\ShortcutUtils.cs" />
+    <Compile Include="Shortcuts\Usage\IKeyboardShortcutUsage.cs" />
+    <Compile Include="Shortcuts\Usage\IMouseShortcutUsage.cs" />
+    <Compile Include="Shortcuts\Usage\IShortcutUsage.cs" />
+    <Compile Include="Shortcuts\Usage\KeyboardShortcutUsage.cs" />
+    <Compile Include="Shortcuts\Usage\MouseKeyboardShortcutUsage.cs" />
+    <Compile Include="Shortcuts\Usage\MouseShortcutUsage.cs" />
+    <Compile Include="Shortcuts\WPF\ActivationHandlerReference.cs" />
+    <Compile Include="Shortcuts\WPF\Converters\CommandIdToGestureConverter.cs" />
+    <Compile Include="Shortcuts\WPF\Converters\KeyStrokeStringConverter.cs" />
+    <Compile Include="Shortcuts\WPF\Converters\MouseStrokeStringConverter.cs" />
+    <Compile Include="Shortcuts\WPF\Converters\ShortcutIdToGestureConverter.cs" />
+    <Compile Include="Shortcuts\WPF\Converters\ShortcutIdToHeaderConverter.cs" />
+    <Compile Include="Shortcuts\WPF\Converters\ShortcutIdToToolTipConverter.cs" />
+    <Compile Include="Shortcuts\WPF\Converters\ShortcutPathToInputGestureTextConverter.cs" />
+    <Compile Include="Shortcuts\WPF\ShortcutActivateHandler.cs" />
+    <Compile Include="Shortcuts\WPF\ShortcutUtils.cs" />
+    <Compile Include="Shortcuts\WPF\UIInputManager.cs" />
+    <Compile Include="Shortcuts\WPF\WPFKeyMapSerialiser.cs" />
+    <Compile Include="Shortcuts\WPF\WPFShortcutInputManager.cs" />
+    <Compile Include="Shortcuts\WPF\WPFShortcutManager.cs" />
+    <Compile Include="Tasks\ActivityDialog.xaml.cs">
+      <DependentUpon>ActivityDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Tasks\ActivityTask.cs" />
+    <Compile Include="Tasks\CompletionRange.cs" />
+    <Compile Include="Tasks\DefaultProgressTracker.cs" />
+    <Compile Include="Tasks\EmptyActivityProgress.cs" />
+    <Compile Include="Tasks\IActivityProgress.cs" />
+    <Compile Include="Tasks\StandardActivityControl.cs" />
+    <Compile Include="Tasks\TaskManager.cs" />
+    <Compile Include="Themes\Attached\CornerRadiusHelper.cs" />
+    <Compile Include="Themes\Attached\MenuHelper.cs" />
+    <Compile Include="Themes\Attached\PasswordBoxHelper.cs" />
+    <Compile Include="Themes\Attached\TextBoxAutoSelect.cs" />
+    <Compile Include="Themes\Attached\TextHinting.cs" />
+    <Compile Include="Themes\ColourKeys.cs" />
+    <Compile Include="Themes\Controls.xaml.cs">
+      <DependentUpon>Controls.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Themes\Converters\ScrollViewerInnerBorderThicknessConverter.cs" />
+    <Compile Include="Themes\Converters\TreeViewLineConverter.cs" />
+    <Compile Include="Themes\Generator\ThemeGenerator.cs" />
+    <Compile Include="Themes\ThemeController.cs" />
+    <Compile Include="Themes\ThemeType.cs" />
+    <Compile Include="Utils\Accessing\ValueAccessor.cs" />
+    <Compile Include="Utils\Accessing\ValueAccessors.cs" />
+    <Compile Include="Utils\Arrays.cs" />
+    <Compile Include="Utils\AsyncLock.cs" />
+    <Compile Include="Utils\AudioUtils.cs" />
+    <Compile Include="Utils\Bits.cs" />
+    <Compile Include="Utils\BoolBox.cs" />
+    <Compile Include="Utils\CASLock.cs" />
+    <Compile Include="Utils\CastingList.cs" />
+    <Compile Include="Utils\Collections\AdvancedReadOnlyObservableCollection.cs" />
+    <Compile Include="Utils\Collections\DictionaryList.cs" />
+    <Compile Include="Utils\Collections\InheritanceDictionary.cs" />
+    <Compile Include="Utils\Collections\InheritanceMultiMap.cs" />
+    <Compile Include="Utils\Collections\ITypeEntry.cs" />
+    <Compile Include="Utils\Collections\ObservableList.cs" />
+    <Compile Include="Utils\Collections\OrderedList.cs" />
+    <Compile Include="Utils\Collections\PropertyMap.cs" />
+    <Compile Include="Utils\Collections\ReferenceDictionary.cs" />
+    <Compile Include="Utils\Collections\TypeMultiTable.cs" />
+    <Compile Include="Utils\Collections\WeakReferenceDictionary.cs" />
+    <Compile Include="Utils\CollectionUtils.cs" />
+    <Compile Include="Utils\Colour.cs" />
+    <Compile Include="Utils\Commands\AsyncRelayCommand.cs" />
+    <Compile Include="Utils\Commands\BaseAsyncRelayCommand.cs" />
+    <Compile Include="Utils\Commands\BaseRelayCommand.cs" />
+    <Compile Include="Utils\Commands\IAsyncRelayCommand.cs" />
+    <Compile Include="Utils\Commands\IRelayCommand.cs" />
+    <Compile Include="Utils\Commands\RelayCommand.cs" />
+    <Compile Include="Utils\CursorUtils.cs" />
+    <Compile Include="Utils\Destroying\Destroyer.cs" />
+    <Compile Include="Utils\Destroying\IDestroy.cs" />
+    <Compile Include="Utils\DispatcherCallback.cs" />
+    <Compile Include="Utils\DispatcherUtils.cs" />
+    <Compile Include="Utils\Disposable\DisposableRef.cs" />
+    <Compile Include="Utils\DoubleUtils.cs" />
+    <Compile Include="Utils\DynamicCodeConverter.cs" />
+    <Compile Include="Utils\ErrorList.cs" />
+    <Compile Include="Utils\EventArgsCache.cs" />
+    <Compile Include="Utils\EventUtils.cs" />
+    <Compile Include="Utils\ExceptionUtils.cs" />
+    <Compile Include="Utils\Expressions\BasicNumericExpression.cs" />
+    <Compile Include="Utils\Expressions\ComplexNumericExpression.cs" />
+    <Compile Include="Utils\FastStringBuf.cs" />
+    <Compile Include="Utils\FFmpegError.cs" />
+    <Compile Include="Utils\FileUtils.cs" />
+    <Compile Include="Utils\Filter.cs" />
+    <Compile Include="Utils\Filters.cs" />
+    <Compile Include="Utils\HandlerList.cs" />
+    <Compile Include="Utils\Helper.cs" />
+    <Compile Include="Utils\IDisplayName.cs" />
+    <Compile Include="Utils\InheritedProperty.cs" />
+    <Compile Include="Utils\IntRect.cs" />
+    <Compile Include="Utils\IRenameTarget.cs" />
+    <Compile Include="Utils\ItemCacheStack.cs" />
+    <Compile Include="Utils\KBUtils.cs" />
+    <Compile Include="Utils\KeyboardUtils.cs" />
+    <Compile Include="Utils\KeyUtils.cs" />
+    <Compile Include="Utils\Lang.cs" />
+    <Compile Include="Utils\LimitedRapidDispatchAction.cs" />
+    <Compile Include="Utils\Maths.cs" />
+    <Compile Include="Utils\NumberAverager.cs" />
+    <Compile Include="Utils\Numerics\SizeI.cs" />
+    <Compile Include="Utils\Numerics\Vector2i.cs" />
+    <Compile Include="Utils\Periodic.cs" />
+    <Compile Include="Utils\PrecisionTimer.cs" />
+    <Compile Include="Utils\RandomUtils.cs" />
+    <Compile Include="Utils\RapidDispatchAction.cs" />
+    <Compile Include="Utils\RapidDispatchActionEx.cs" />
+    <Compile Include="Utils\Rect2d.cs" />
+    <Compile Include="Utils\Rect2i.cs" />
+    <Compile Include="Utils\Reference.cs" />
+    <Compile Include="Utils\ReferenceEqualityComparer.cs" />
+    <Compile Include="Utils\ResourceDictionaryDataTemplateSelector.cs" />
+    <Compile Include="Utils\RoundingMode.cs" />
+    <Compile Include="Utils\ScrollerUtils.cs" />
+    <Compile Include="Utils\SelectionType.cs" />
+    <Compile Include="Utils\ShellIconSize.cs" />
+    <Compile Include="Utils\ShellUtils.cs" />
+    <Compile Include="Utils\SingletonEnumerator.cs" />
+    <Compile Include="Utils\SingletonList.cs" />
+    <Compile Include="Utils\StringJoiner.cs" />
+    <Compile Include="Utils\StringUtils.cs" />
+    <Compile Include="Utils\TextIncrement.cs" />
+    <Compile Include="Utils\TextPointerUtils.cs" />
+    <Compile Include="Utils\TextRange.cs" />
+    <Compile Include="Utils\TextUtils.cs" />
+    <Compile Include="Utils\ThreadTimer.cs" />
+    <Compile Include="Utils\Time.cs" />
+    <Compile Include="Utils\TypeUtils.cs" />
+    <Compile Include="Utils\UIUtils.cs" />
+    <Compile Include="Utils\Vec2i.cs" />
+    <Compile Include="Utils\Visuals\VisualAncestorChangedEventInterface.cs" />
+    <Compile Include="Utils\Visuals\VisualTreeUtils.cs" />
+    <Compile Include="Views\AppSplashScreen.xaml.cs">
+      <DependentUpon>AppSplashScreen.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Validators\DoubleRangeValidationRule.cs" />
+    <Compile Include="Views\Validators\IntRangeValidationRule.cs" />
+    <Compile Include="Views\Validators\NonEmptyStringValidationRule.cs" />
+    <Compile Include="Views\WinDarkTheme.cs" />
+    <Compile Include="Views\WindowEx.cs" />
+    <Page Include="AdvancedMenuService\ContextService\Controls\ContextStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\Dragger\NumberDraggerStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\TreeViews\Themes\EditTextBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\TreeViews\Themes\MultiSelectTreeView.Aero2.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\TreeViews\Themes\MultiSelectTreeViewItem.Aero2.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\GeneralControlStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Notepads\Controls\NotepadControls.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Notepads\Views\NotepadWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="AdvancedMenuService\ContextService\BaseContextEntry.cs" />
+    <Compile Include="AdvancedMenuService\ContextService\CommandContextEntry.cs" />
+    <Compile Include="AdvancedMenuService\ContextService\Controls\AdvancedContextCommandMenuItem.cs" />
+    <Compile Include="AdvancedMenuService\ContextService\Controls\AdvancedContextEventMenuItem.cs" />
+    <Compile Include="AdvancedMenuService\ContextService\Controls\AdvancedContextMenu.cs" />
+    <Compile Include="AdvancedMenuService\ContextService\Controls\AdvancedContextMenuItem.cs" />
+    <Compile Include="AdvancedMenuService\ContextService\Controls\IAdvancedMenu.cs" />
+    <Compile Include="AdvancedMenuService\ContextService\EventContextEntry.cs" />
+    <Compile Include="AdvancedMenuService\ContextService\GroupContextEntry.cs" />
+    <Compile Include="AdvancedMenuService\ContextService\IContextEntry.cs" />
+    <Compile Include="AdvancedMenuService\ContextService\IContextGenerator.cs" />
+    <Compile Include="AdvancedMenuService\ContextService\SeparatorEntry.cs" />
+    <Compile Include="AdvancedMenuService\Controls\AdvancedCommandMenuItem.cs" />
+    <Compile Include="AdvancedMenuService\Controls\ContextCapturingMenu.cs" />
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="AttachedProperties\AttachedInteractivity.cs" />
+    <Compile Include="AttachedProperties\GridLatchSplitter.cs" />
+    <Compile Include="AttachedProperties\HandleRequestBringIntoView.cs" />
+    <Compile Include="AttachedProperties\HorizontalScrolling.cs" />
+    <Compile Include="AttachedProperties\MultiSelectorHelper.cs" />
+    <Compile Include="AttachedProperties\ObservableSelectionHelper.cs" />
+    <Compile Include="AttachedProperties\ScrollBinder.cs" />
+    <Compile Include="AttachedProperties\TextBlockHelper.cs" />
+    <Compile Include="AttachedProperties\TextBoxHelper.cs" />
+    <Compile Include="AttachedProperties\ToggleButtonHelper.cs" />
+    <Compile Include="AttachedProperties\TopmostFocus.cs" />
+    <Compile Include="Behaviours\Behaviour.cs" />
+    <Compile Include="Behaviours\BehaviourBase.cs" />
+    <Compile Include="Behaviours\BehaviourCollection.cs" />
+    <Compile Include="Behaviours\IBehaviour.cs" />
+    <Compile Include="Behaviours\TestBlueBackgroundBehaviour.cs" />
+    <Compile Include="CommandSystem\Command.cs" />
+    <Compile Include="CommandSystem\CommandEventArgs.cs" />
+    <Compile Include="CommandSystem\CommandManager.cs" />
+    <Compile Include="CommandSystem\Executability.cs" />
+    <Compile Include="CommandSystem\ToggleBasedCommand.cs" />
+    <Compile Include="CommandSystem\Usages\CommandUsage.cs" />
+    <Compile Include="CommandSystem\Usages\CommandUsageManager.cs" />
+    <Compile Include="Converters\BoolConverter.cs" />
+    <Compile Include="Converters\BoolConverterAND.cs" />
+    <Compile Include="Converters\DbToVolumeConverter.cs" />
+    <Compile Include="Converters\EmptyStringToVisibilityConverter.cs" />
+    <Compile Include="Converters\EnumConverter.cs" />
+    <Compile Include="Converters\FloatToDoubleConverter.cs" />
+    <Compile Include="Converters\NullConverter.cs" />
+    <Compile Include="Converters\VolumeToDbConverter.cs" />
+    <Compile Include="Controls\CancellableThumb.cs" />
+    <Compile Include="Controls\GlyphGenerator.cs" />
+    <Compile Include="Controls\GridSlotAutoSizer.cs" />
+    <Compile Include="Controls\IUIConnection.cs" />
+    <Compile Include="Controls\SpacedStackPanel.cs" />
+    <Compile Include="Controls\SpacedUniformGrid.cs" />
+    <Compile Include="Notepads\Factories\ObjectFactory.cs" />
+    <Compile Include="Notepads\Factories\ReflectiveObjectFactory.cs" />
+    <Compile Include="Notepads\Serialisation\SerialisationRegistry.cs" />
+    <Compile Include="Notepads\Views\NotepadWindow.xaml.cs">
+      <DependentUpon>NotepadWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="History\ChildManagerHistoryAction.cs" />
+    <Compile Include="History\HistoryAction.cs" />
+    <Compile Include="History\HistoryManager.cs" />
+    <Compile Include="History\IHistoryAction.cs" />
+    <Compile Include="History\MergedHistoryAction.cs" />
+    <Compile Include="Interactivity\Contexts\ContextData.cs" />
+    <Compile Include="Interactivity\Contexts\DataKey.cs" />
+    <Compile Include="Interactivity\Contexts\DataKeys.cs" />
+    <Compile Include="Interactivity\Contexts\DataManager.cs" />
+    <Compile Include="Interactivity\Contexts\EmptyContext.cs" />
+    <Compile Include="Interactivity\Contexts\IContextData.cs" />
+    <Compile Include="Interactivity\DataObjectWrapper.cs" />
+    <Compile Include="Interactivity\DragDropRegistry.cs" />
+    <Compile Include="Interactivity\DropMetadata.cs" />
+    <Compile Include="Interactivity\DropUtils.cs" />
+    <Compile Include="Interactivity\EnumDropType.cs" />
+    <Compile Include="Interactivity\IDataObjekt.cs" />
+    <Compile Include="Interactivity\IFileDropHandler.cs" />
+    <Compile Include="Interactivity\NativeDropTypes.cs" />
+    <Compile Include="Logger\AppLogger.cs" />
+    <Compile Include="Logger\HeaderedLogEntry.cs" />
+    <Compile Include="Logger\LogEntry.cs" />
+    <Page Include="Services\WPF\Messages\MessageDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Services\WPF\Messages\SingleInputDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tasks\ActivityDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tasks\ActivityStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\ColourDictionaries\DarkGreyTheme.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\ColourDictionaries\DeepDark.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\ColourDictionaries\GreyTheme.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\ColourDictionaries\LightTheme.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\ColourDictionaries\RedBlackTheme.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\ColourDictionaries\SoftDark.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\ControlColours.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\ControlColoursSoftDarkBlue.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\Controls.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\AppSplashScreen.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Notifications\Notification.cs" />
+    <Compile Include="Notifications\NotificationManager.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="Keymap.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Resource Include="Controls\TreeViews\SOURCECODE.txt" />
+    <Resource Include="Resources\Fonts\Oxanium\Oxanium-Bold.ttf" />
+    <Resource Include="Resources\Fonts\Oxanium\Oxanium-ExtraBold.ttf" />
+    <Resource Include="Resources\Fonts\Oxanium\Oxanium-ExtraLight.ttf" />
+    <Resource Include="Resources\Fonts\Oxanium\Oxanium-Light.ttf" />
+    <Resource Include="Resources\Fonts\Oxanium\Oxanium-Medium.ttf" />
+    <Resource Include="Resources\Fonts\Oxanium\Oxanium-Regular.ttf" />
+    <Resource Include="Resources\Fonts\Oxanium\Oxanium-SemiBold.ttf" />
+    <Resource Include="Resources\Fonts\Oxanium\Oxanium-VariableFont_wght.ttf" />
+    <None Include="Shortcuts\ReadMe.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Keymap.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Fonts\Oxanium\OFL.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Notepads\Selections" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

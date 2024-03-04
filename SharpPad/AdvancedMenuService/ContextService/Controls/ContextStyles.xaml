@@ -1,0 +1,21 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                    xmlns:wpf="clr-namespace:SharpPad.AdvancedMenuService.Controls"
+                    xmlns:acs="clr-namespace:SharpPad.AdvancedMenuService.ContextService.Controls"
+                    mc:Ignorable="d">
+    <Style TargetType="{x:Type wpf:ContextCapturingMenu}" BasedOn="{StaticResource {x:Type Menu}}"/>
+    <Style TargetType="{x:Type wpf:AdvancedCommandMenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}"/>
+    <Style TargetType="{x:Type acs:AdvancedContextMenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}"/>
+    <Style TargetType="{x:Type acs:AdvancedContextCommandMenuItem}" BasedOn="{StaticResource {x:Type acs:AdvancedContextMenuItem}}"/>
+    <Style TargetType="{x:Type acs:AdvancedContextEventMenuItem}" BasedOn="{StaticResource {x:Type acs:AdvancedContextMenuItem}}"/>
+
+    <Style TargetType="{x:Type acs:AdvancedContextMenu}" BasedOn="{StaticResource {x:Type ContextMenu}}">
+        <Setter Property="UsesItemContainerTemplate" Value="False"/>
+        <!--
+        can't remember why I added this setter...
+        <Setter Property="ScrollViewer.IsDeferredScrollingEnabled" Value="True"/>
+        -->
+    </Style>
+</ResourceDictionary>
