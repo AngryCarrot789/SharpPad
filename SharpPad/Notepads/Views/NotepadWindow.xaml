@@ -87,7 +87,8 @@
                            Foreground="{DynamicResource ABrush.Foreground.Disabled}" FontSize="14"
                            VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 <controls:NotepadEditorPanel x:Name="PART_NotepadPanel" Background="Transparent"
-                                             VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+                                             VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                                             FontSize="14" FontFamily="Consolas"/>
             </Grid>
         </Border>
         <Border Grid.Row="2" Background="{DynamicResource ABrush.Tone5.Background.Static}" 
