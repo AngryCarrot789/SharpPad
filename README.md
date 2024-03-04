@@ -8,5 +8,4 @@ has more details about how they work if you want to read more
 ![](SharpPad_2024-03-04_16.08.19.png)
 
 # Licence
-All source files in FramePFX are under the GNU General Public License version 3.0 or later (GPL v3.0+). 
-FramePFX uses libraries that have other licences, such as MIT/LGPL licences.
+All source files in SharpPad are under the GNU General Public License version 3.0 or later (GPL v3.0+)
