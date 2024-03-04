@@ -16,22 +16,41 @@
                 <KeyStroke Mods="CTRL+SHIFT" Key="S"/>
             </Shortcut>
 
-            <!-- TODO: implement history -->
-            <Shortcut Name="UndoShortcut" CommandId="UndoCommand">
-                <KeyStroke Mods="CTRL" Key="Z"/>
-            </Shortcut>
-            <Shortcut Name="RedoShortcut1" CommandId="RedoCommand">
-                <KeyStroke Mods="CTRL+SHIFT" Key="Z"/>
-            </Shortcut>
-            <Shortcut Name="RedoShortcut2" CommandId="RedoCommand">
-                <KeyStroke Mods="CTRL" Key="Y"/>
-            </Shortcut>
-
             <Group Name="Document">
                 <Shortcut Name="CloseDocument" CommandId="CloseDocument">
                     <KeyStroke Mods="CTRL" Key="W"/>
                 </Shortcut>
-                <Shortcut Name="SelectLine" CommandId="SelectLine">
+                <Shortcut Name="CutShortcut" CommandId="CutInEditor">
+                    <KeyStroke Mods="CTRL" Key="X"/>
+                </Shortcut>
+                <Shortcut Name="CopyShortcut" CommandId="CopyInEditor">
+                    <KeyStroke Mods="CTRL" Key="C"/>
+                </Shortcut>
+                <Shortcut Name="CopyFilePathShortcut" CommandId="CopyFilePathInEditor">
+                    <KeyStroke Mods="CTRL+SHIFT" Key="C"/>
+                </Shortcut>
+                <Shortcut Name="PasteShortcut" CommandId="PasteInEditor">
+                    <KeyStroke Mods="CTRL" Key="V"/>
+                </Shortcut>
+                <Shortcut Name="DeleteShortcut" CommandId="DeleteTextOrLineInEditor">
+                    <KeyStroke Mods="CTRL+SHIFT" Key="D"/>
+                </Shortcut>
+                <Shortcut Name="DuplicateTextOrLineShortcut" CommandId="DuplicateTextOrLineInEditor">
+                    <KeyStroke Mods="CTRL" Key="D"/>
+                </Shortcut>
+                <Shortcut Name="UndoShortcut" CommandId="UndoInEditor">
+                    <KeyStroke Mods="CTRL" Key="Z"/>
+                </Shortcut>
+                <Shortcut Name="RedoShortcut1" CommandId="RedoInEditor">
+                    <KeyStroke Mods="CTRL+SHIFT" Key="Z"/>
+                </Shortcut>
+                <Shortcut Name="RedoShortcut2" CommandId="RedoInEditor">
+                    <KeyStroke Mods="CTRL" Key="Y"/>
+                </Shortcut>
+                <Shortcut Name="SelectAllShortcut" CommandId="SelectAllInEditor">
+                    <KeyStroke Mods="CTRL" Key="A"/>
+                </Shortcut>
+                <Shortcut Name="SelectLineShortcut" CommandId="SelectLineInEditor">
                     <KeyStroke Mods="CTRL+SHIFT" Key="A"/>
                 </Shortcut>
             </Group>

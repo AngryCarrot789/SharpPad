@@ -40,7 +40,7 @@ namespace SharpPad.Notepads.Commands {
 
             bool isActiveDocument = notepad.ActiveDocument == document;
             notepad.RemoveDocumentAt(index);
-            if (!isActiveDocument) {
+            if (isActiveDocument) {
                 if (index > 0) {
                     index--;
                 }

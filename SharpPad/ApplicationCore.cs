@@ -113,10 +113,33 @@ namespace SharpPad {
             manager.Register("OpenFile", new OpenFileCommand());
             manager.Register("SaveDocumentFile", new SaveDocumentCommand());
             manager.Register("SaveDocumentFileAs", new SaveDocumentAsCommand());
+            manager.Register("SaveAllDocumentFilesAs", new SaveAllDocumentsCommand());
             manager.Register("CloseDocument", new CloseDocumentCommand());
 
             // document/editor commands
-            manager.Register("SelectLine", new SelectLineCommand());
+            manager.Register("CutInEditor", new CutCommand());
+            manager.Register("CopyInEditor", new CopyCommand());
+            manager.Register("CopyFilePathInEditor", new CopyFilePathCommand());
+            manager.Register("PasteInEditor", new PasteCommand());
+            manager.Register("DeleteTextOrLineInEditor", new DeleteTextOrLineCommand());
+            manager.Register("DuplicateTextOrLineInEditor", new DuplicateTextOrLineCommand());
+            manager.Register("UndoInEditor", new UndoCommand());
+            manager.Register("RedoInEditor", new RedoCommand());
+            manager.Register("SelectAllInEditor", new SelectAllCommand());
+            manager.Register("SelectLineInEditor", new SelectLineCommand());
+
+            manager.Register("ToggleOverstrikeInEditor", new ToggleOverstrikeCommand());
+            manager.Register("RemoveLeadingWhitespaceInEditor", new RemoveLeadingWhitespaceCommand());
+            manager.Register("RemoveTrailingWhitespaceInEditor", new RemoveTrailingWhitespaceCommand());
+            manager.Register("ConvertToUppercaseInEditor", new ConvertToUppercaseCommand());
+            manager.Register("ConvertToLowercaseInEditor", new ConvertToLowercaseCommand());
+            manager.Register("ConvertToTitleCaseInEditor", new ConvertToTitleCaseCommand());
+            manager.Register("InvertCaseInEditor", new InvertCaseCommand());
+            manager.Register("ConvertTabsToSpacesInEditor", new ConvertTabsToSpacesCommand());
+            manager.Register("ConvertSpacesToTabsInEditor", new ConvertSpacesToTabsCommand());
+            manager.Register("ConvertLeadingTabsToSpacesInEditor", new ConvertLeadingTabsToSpacesCommand());
+            manager.Register("ConvertLeadingSpacesToTabsInEditor", new ConvertLeadingSpacesToTabsCommand());
+            manager.Register("IndentSelectionInEditor", new IndentSelectionCommand());
 
             AppLogger.Instance.PushHeader($"Registered {CommandManager.Instance.Count} commands", false);
             foreach (KeyValuePair<string, Command> pair in CommandManager.Instance.Commands) {

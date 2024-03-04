@@ -31,12 +31,39 @@
         <c:ContextCapturingMenu Grid.Row="0" BorderBrush="{DynamicResource PanelBorderBrush}" BorderThickness="0,0,0,1"
                                 Background="{Binding TitlebarBrush, RelativeSource={RelativeSource AncestorType={x:Type v:WindowEx}, Mode=FindAncestor}}">
             <MenuItem Header="File">
-                <c:AdvancedCommandMenuItem Header="New Project" CommandId="NewFile"/>
-                <c:AdvancedCommandMenuItem Header="Open Project..." CommandId="OpenFile"/>
-                <c:AdvancedCommandMenuItem Header="Save Project" CommandId="SaveDocumentFile"/>
-                <c:AdvancedCommandMenuItem Header="Save Project As..." CommandId="SaveDocumentFileAs"/>
+                <c:AdvancedCommandMenuItem Header="New File" CommandId="NewFile"/>
+                <c:AdvancedCommandMenuItem Header="Open File(s)..." CommandId="OpenFile"/>
+                <c:AdvancedCommandMenuItem Header="Save File" CommandId="SaveDocumentFile"/>
+                <c:AdvancedCommandMenuItem Header="Save File As..." CommandId="SaveDocumentFileAs"/>
+                <c:AdvancedCommandMenuItem Header="Save All" CommandId="SaveAllDocumentFilesAs"/>
                 <Separator/>
                 <c:AdvancedCommandMenuItem Header="Close File" CommandId="CloseDocument"/>
+            </MenuItem>
+            <MenuItem Header="Edit">
+                <c:AdvancedCommandMenuItem Header="Undo" CommandId="UndoInEditor"/>
+                <c:AdvancedCommandMenuItem Header="Redo" CommandId="RedoInEditor"/>
+                <Separator/>
+                <c:AdvancedCommandMenuItem Header="Cut" CommandId="CutInEditor"/>
+                <c:AdvancedCommandMenuItem Header="Copy" CommandId="CopyInEditor"/>
+                <c:AdvancedCommandMenuItem Header="Copy File Path" CommandId="CopyFilePathInEditor"/>
+                <c:AdvancedCommandMenuItem Header="Paste" CommandId="PasteInEditor"/>
+                <c:AdvancedCommandMenuItem Header="Delete" CommandId="DeleteTextOrLineInEditor"/>
+                <c:AdvancedCommandMenuItem Header="Delete Line" CommandId="DeleteLineInEditor"/>
+                <Separator/>
+                <c:AdvancedCommandMenuItem Header="Select All" CommandId="SelectAllInEditor"/>
+                <c:AdvancedCommandMenuItem Header="Select Line" CommandId="SelectLineInEditor"/>
+                <Separator/>
+                <c:AdvancedCommandMenuItem Header="Invert Case" CommandId="InvertCaseInEditor"/>
+                <c:AdvancedCommandMenuItem Header="Indent Selection" CommandId="IndentSelectionInEditor"/>
+                <c:AdvancedCommandMenuItem Header="Convert To Upper case" CommandId="ConvertToUppercaseInEditor"/>
+                <c:AdvancedCommandMenuItem Header="Convert To Lower case" CommandId="ConvertToLowercaseInEditor"/>
+                <c:AdvancedCommandMenuItem Header="Convert To Title Case" CommandId="ConvertToTitleCaseInEditor"/>
+                <c:AdvancedCommandMenuItem Header="Convert Tabs To Spaces" CommandId="ConvertTabsToSpacesInEditor"/>
+                <c:AdvancedCommandMenuItem Header="Convert Spaces To Tabs" CommandId="ConvertSpacesToTabsInEditor"/>
+                <c:AdvancedCommandMenuItem Header="Convert Leading Tabs To Spaces" CommandId="ConvertLeadingTabsToSpacesInEditor"/>
+                <c:AdvancedCommandMenuItem Header="Convert Leading Spaces To Tabs" CommandId="ConvertLeadingSpacesToTabsInEditor"/>
+                <c:AdvancedCommandMenuItem Header="Remove Leading Whitespace" CommandId="RemoveLeadingWhitespaceInEditor"/>
+                <c:AdvancedCommandMenuItem Header="Remove Trailing Whitespace" CommandId="RemoveTrailingWhitespaceInEditor"/>
             </MenuItem>
             <MenuItem Header="Theme">
                 <MenuItem Header="Deep Dark" Click="SetThemeClick" Uid="0"/>
@@ -55,11 +82,12 @@
                 </MenuItem>
         </c:ContextCapturingMenu>
         <Border Grid.Row="1">
-            <Grid>
-                <TextBlock Text="Press CTRL+N to create a new file" 
+            <Grid Background="Transparent">
+                <TextBlock Text="Press CTRL+N to create a new file, or drop files here" TextWrapping="Wrap"
                            Foreground="{DynamicResource ABrush.Foreground.Disabled}" FontSize="14"
                            VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                <controls:NotepadEditorPanel x:Name="PART_NotepadPanel" Background="Transparent"/>
+                <controls:NotepadEditorPanel x:Name="PART_NotepadPanel" Background="Transparent"
+                                             VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
             </Grid>
         </Border>
         <Border Grid.Row="2" Background="{DynamicResource ABrush.Tone5.Background.Static}" 

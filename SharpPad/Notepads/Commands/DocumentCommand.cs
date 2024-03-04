@@ -20,6 +20,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.Windows;
 using SharpPad.CommandSystem;
 using SharpPad.Interactivity.Contexts;
 using SharpPad.Utils;
@@ -49,14 +50,17 @@ namespace SharpPad.Notepads.Commands {
         }
 
         public override Task Execute(NotepadDocument document, CommandEventArgs e) {
+            SaveOrSaveAs(document);
+            return Task.CompletedTask;
+        }
+
+        public static void SaveOrSaveAs(NotepadDocument document) {
             if (string.IsNullOrWhiteSpace(document.FilePath)) {
                 SaveDocumentAsCommand.SaveDocumentAs(document);
             }
             else {
                 SaveDocumentAsCommand.SaveDocument(document, document.FilePath);
             }
-
-            return Task.CompletedTask;
         }
     }
 
@@ -90,6 +94,25 @@ namespace SharpPad.Notepads.Commands {
 
             document.IsModified = false;
             return true;
+        }
+    }
+
+    public class CopyFilePathCommand : DocumentCommand {
+        public override Executability CanExecute(NotepadDocument document, CommandEventArgs e) {
+            return !string.IsNullOrWhiteSpace(document.FilePath) ? Executability.Valid : Executability.ValidButCannotExecute;
+        }
+
+        public override Task Execute(NotepadDocument document, CommandEventArgs e) {
+            if (string.IsNullOrWhiteSpace(document.FilePath))
+                return Task.CompletedTask;
+            try {
+                Clipboard.SetText(document.FilePath);
+            }
+            catch (Exception ex) {
+                IoC.MessageService.ShowMessage("Clipboard unavailable", "Could not copy file path to clipboard", ex.GetToString());
+            }
+
+            return Task.CompletedTask;
         }
     }
 }

@@ -128,4 +128,18 @@ namespace SharpPad.Notepads.Commands {
             });
         }
     }
+
+    public class SaveAllDocumentsCommand : NotepadCommand {
+        public override Executability CanExecute(Notepad notepad, CommandEventArgs e) {
+            return Executability.Valid;
+        }
+
+        public override Task Execute(Notepad notepad, CommandEventArgs e) {
+            foreach (NotepadDocument document in notepad.Documents) {
+                SaveDocumentCommand.SaveOrSaveAs(document);
+            }
+
+            return Task.CompletedTask;
+        }
+    }
 }

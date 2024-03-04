@@ -4,11 +4,14 @@
                     xmlns:wpf="clr-namespace:SharpPad.Shortcuts.WPF"
                     xmlns:usages="clr-namespace:SharpPad.CommandSystem.Usages"
                     xmlns:ae="http://icsharpcode.net/sharpdevelop/avalonedit">
+    <SolidColorBrush x:Key="DropBrush" Color="OrangeRed" Opacity="0.3"/>
+
     <Style TargetType="{x:Type local:NotepadEditorPanel}">
+        <Setter Property="AllowDrop" Value="True"/>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate>
-                    <DockPanel>
+                <ControlTemplate TargetType="{x:Type local:NotepadEditorPanel}">
+                    <DockPanel Background="Transparent">
                         <local:NotepadTabControl DockPanel.Dock="Top" x:Name="PART_TabControl"/>
                         <Border BorderBrush="{DynamicResource PanelBorderBrush}" BorderThickness="0,1,0,0">
                             <ae:TextEditor x:Name="PART_TextEditor"
@@ -17,9 +20,17 @@
                                            BorderBrush="Transparent" BorderThickness="0"
                                            Foreground="{DynamicResource ABrush.Foreground.Static}"
                                            ShowLineNumbers="True">
+                                <ae:TextEditor.Options>
+                                    <ae:TextEditorOptions/>
+                                </ae:TextEditor.Options>
                             </ae:TextEditor>
                         </Border>
                     </DockPanel>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsDroppableTargetOver" Value="True">
+                            <Setter TargetName="PART_TabControl" Property="Background" Value="{StaticResource DropBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

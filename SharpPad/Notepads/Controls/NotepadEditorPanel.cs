@@ -20,8 +20,11 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 using ICSharpCode.AvalonEdit;
+using SharpPad.Interactivity;
 using SharpPad.Interactivity.Contexts;
+using SharpPad.Utils;
 
 namespace SharpPad.Notepads.Controls {
     /// <summary>
@@ -29,10 +32,16 @@ namespace SharpPad.Notepads.Controls {
     /// </summary>
     public class NotepadEditorPanel : Control {
         public static readonly DependencyProperty NotepadProperty = DependencyProperty.Register("Notepad", typeof(Notepad), typeof(NotepadEditorPanel), new PropertyMetadata(null, (d, e) => ((NotepadEditorPanel) d).OnNotepadChanged((Notepad) e.OldValue, (Notepad) e.NewValue)));
+        public static readonly DependencyProperty IsDroppableTargetOverProperty = DependencyProperty.Register("IsDroppableTargetOver", typeof(bool), typeof(NotepadEditorPanel), new PropertyMetadata(BoolBox.False));
 
         public Notepad Notepad {
             get => (Notepad) this.GetValue(NotepadProperty);
             set => this.SetValue(NotepadProperty, value);
+        }
+
+        public bool IsDroppableTargetOver {
+            get => (bool) this.GetValue(IsDroppableTargetOverProperty);
+            set => this.SetValue(IsDroppableTargetOverProperty, value.Box());
         }
 
         private NotepadTabControl PART_TabControl;
@@ -40,6 +49,7 @@ namespace SharpPad.Notepads.Controls {
         private NotepadDocument activeDocument;
 
         private readonly ContextData contextData;
+        private bool isProcessingAsyncDrop;
 
         public NotepadEditorPanel() {
             this.contextData = new ContextData();
@@ -82,18 +92,86 @@ namespace SharpPad.Notepads.Controls {
 
             if (document != null) {
                 this.activeDocument = document;
-                this.Visibility = Visibility.Visible;
+                this.SetVisibility(Visibility.Visible);
                 this.PART_TextEditor.IsEnabled = true;
                 this.PART_TextEditor.Document = document.Document;
                 this.activeDocument.AddEditor(this.PART_TextEditor);
             }
             else {
-                this.Visibility = Visibility.Collapsed;
+                this.SetVisibility(Visibility.Collapsed);
                 this.PART_TextEditor.Document = null;
                 this.PART_TextEditor.IsEnabled = false;
             }
 
             DataManager.SetContextData(this, this.contextData.Set(DataKeys.DocumentKey, document).Clone());
         }
+
+        private void SetVisibility(Visibility visibility) {
+            this.PART_TextEditor.Visibility = visibility;
+            this.PART_TabControl.Visibility = visibility;
+        }
+
+        #region Drag dropping
+
+        protected override void OnDragEnter(DragEventArgs e) {
+            this.OnDragOver(e);
+        }
+
+        protected override void OnDragOver(DragEventArgs e) {
+            e.Handled = true;
+            if (this.isProcessingAsyncDrop) {
+                e.Effects = DragDropEffects.None;
+                return;
+            }
+
+            EnumDropType inputEffects = DropUtils.GetDropAction((int) e.KeyStates, (EnumDropType) e.Effects);
+            if (inputEffects != EnumDropType.None && this.Notepad is Notepad notepad) {
+                EnumDropType outputEffects = NotepadDropRegistry.DropRegistry.CanDropNative(notepad, new DataObjectWrapper(e.Data), inputEffects);
+                if (outputEffects != EnumDropType.None) {
+                    this.OnAcceptDrop();
+                    e.Effects = (DragDropEffects) outputEffects;
+                }
+                else {
+                    this.IsDroppableTargetOver = false;
+                    e.Effects = DragDropEffects.None;
+                }
+            }
+        }
+
+        private void OnAcceptDrop() {
+            if (!this.IsDroppableTargetOver)
+                this.IsDroppableTargetOver = true;
+        }
+
+        protected override void OnDragLeave(DragEventArgs e) {
+            base.OnDragLeave(e);
+            this.Dispatcher.Invoke(() => {
+                this.ClearValue(IsDroppableTargetOverProperty);
+            }, DispatcherPriority.Loaded);
+        }
+
+        protected override async void OnDrop(DragEventArgs e) {
+            base.OnDrop(e);
+            e.Handled = true;
+            if (this.isProcessingAsyncDrop || !(this.Notepad is Notepad clip)) {
+                return;
+            }
+
+            EnumDropType effects = DropUtils.GetDropAction((int) e.KeyStates, (EnumDropType) e.Effects);
+            if (e.Effects == DragDropEffects.None) {
+                return;
+            }
+
+            try {
+                this.isProcessingAsyncDrop = true;
+                await NotepadDropRegistry.DropRegistry.OnDroppedNative(clip, new DataObjectWrapper(e.Data), effects);
+            }
+            finally {
+                this.isProcessingAsyncDrop = false;
+                this.IsDroppableTargetOver = false;
+            }
+        }
+
+        #endregion
     }
 }

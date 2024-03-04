@@ -117,6 +117,7 @@
     <Compile Include="Notepads\Controls\NotepadTabItem.cs" />
     <Compile Include="Notepads\Notepad.cs" />
     <Compile Include="Notepads\NotepadDocument.cs" />
+    <Compile Include="Notepads\NotepadDropRegistry.cs" />
     <Compile Include="RBC\BinaryUtils.cs" />
     <Compile Include="RBC\Events\ReadFromRBEEventHandler.cs" />
     <Compile Include="RBC\Events\WriteToRBEEventHandler.cs" />
