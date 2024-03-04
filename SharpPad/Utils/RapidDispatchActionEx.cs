@@ -127,7 +127,7 @@ namespace SharpPad.Utils {
                     // acquired, meaning we end up re-scheduling, which is fine though
                     case STATE_RUNNING:
                         this.state = STATE_RESCHEDULED;
-                        break;
+                        return true;
                     default:
                         return false;
                 }

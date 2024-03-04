@@ -29,7 +29,7 @@ namespace SharpPad.Notepads.Controls {
 
         public NotepadDocument Document { get; private set; }
 
-        private readonly IBinder<NotepadDocument> docNameBinder = new GetSetAutoEventPropertyBinder<NotepadDocument>(TextBlock.TextProperty, nameof(NotepadDocument.DocumentNameChanged), b => b.Model.DocumentName + (b.Model.IsModified ? "*" : ""), null);
+        private readonly IBinder<NotepadDocument> docNameBinder = new GetSetAutoEventPropertyBinder<NotepadDocument>(TextBlock.TextProperty, nameof(NotepadDocument.FilePathChanged), b => b.Model.DocumentName + (b.Model.IsModified ? "*" : ""), null);
 
         private TextBlock PART_DocNameTextBlock;
 

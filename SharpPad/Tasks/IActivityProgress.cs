@@ -46,9 +46,28 @@ namespace SharpPad.Tasks {
         /// </summary>
         string Text { get; set; }
 
+        /// <summary>
+        /// An event fired when the <see cref="IsIndeterminate"/> property changes.
+        /// This event is fired on the main thread, even if <see cref="IsIndeterminate"/> is changed on a task thread
+        /// </summary>
         event ActivityProgressEventHandler IsIndeterminateChanged;
+
+        /// <summary>
+        /// An event fired when the <see cref="TotalCompletion"/> property changes.
+        /// This event is fired on the main thread, even if <see cref="TotalCompletion"/> is changed on a task thread
+        /// </summary>
         event ActivityProgressEventHandler CompletionValueChanged;
+
+        /// <summary>
+        /// An event fired when the <see cref="HeaderText"/> property changes.
+        /// This event is fired on the main thread, even if <see cref="HeaderText"/> is changed on a task thread
+        /// </summary>
         event ActivityProgressEventHandler HeaderTextChanged;
+
+        /// <summary>
+        /// An event fired when the <see cref="Text"/> property changes.
+        /// This event is fired on the main thread, even if <see cref="Text"/> is changed on a task thread
+        /// </summary>
         event ActivityProgressEventHandler TextChanged;
 
         /// <summary>

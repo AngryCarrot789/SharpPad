@@ -95,15 +95,15 @@ namespace SharpPad.Notepads.Views {
         }
 
         private void OnPrimaryActivityTextChanged(IActivityProgress tracker) {
-            this.Dispatcher.Invoke(() => this.PART_TaskCaption.Text = tracker?.Text ?? "", DispatcherPriority.Loaded);
+            this.PART_TaskCaption.Text = tracker?.Text ?? "";
         }
 
         private void OnPrimaryActionCompletionValueChanged(IActivityProgress tracker) {
-            this.Dispatcher.Invoke(() => this.PART_ActiveBgProgress.Value = tracker?.TotalCompletion ?? 0.0, DispatcherPriority.Loaded);
+            this.PART_ActiveBgProgress.Value = tracker?.TotalCompletion ?? 0.0;
         }
 
         private void OnPrimaryActivityIndeterminateChanged(IActivityProgress tracker) {
-            this.Dispatcher.Invoke(() => this.PART_ActiveBgProgress.IsIndeterminate = tracker?.IsIndeterminate ?? false, DispatcherPriority.Loaded);
+            this.PART_ActiveBgProgress.IsIndeterminate = tracker?.IsIndeterminate ?? false;
         }
 
         protected override Task<bool> OnClosingAsync() {
@@ -133,11 +133,20 @@ namespace SharpPad.Notepads.Views {
         }
 
         private void OnActiveDocumentChanged(Notepad notepad, NotepadDocument oldDocument, NotepadDocument newDocument) {
-            if (oldDocument != null)
+            if (oldDocument != null) {
                 oldDocument.IsModifiedChanged -= this.OnActiveDocumentIsModifiedChanged;
-            if (newDocument != null)
+                oldDocument.FilePathChanged -= this.OnActiveDocumentFilePathChanged;
+            }
+
+            if (newDocument != null) {
                 newDocument.IsModifiedChanged += this.OnActiveDocumentIsModifiedChanged;
+            }
+
             this.Dispatcher.InvokeAsync(this.UpdateTitle, DispatcherPriority.Loaded);
+        }
+
+        private void OnActiveDocumentFilePathChanged(NotepadDocument document) {
+            throw new System.NotImplementedException();
         }
 
         private void OnActiveDocumentIsModifiedChanged(NotepadDocument document) {

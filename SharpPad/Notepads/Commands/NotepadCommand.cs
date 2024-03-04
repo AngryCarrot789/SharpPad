@@ -20,9 +20,10 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using ICSharpCode.AvalonEdit.Document;
+using System.Windows.Threading;
 using SharpPad.CommandSystem;
 using SharpPad.Interactivity.Contexts;
+using SharpPad.Tasks;
 using SharpPad.Utils;
 
 namespace SharpPad.Notepads.Commands {
@@ -58,6 +59,8 @@ namespace SharpPad.Notepads.Commands {
     }
 
     public class OpenFileCommand : NotepadCommand {
+        public override bool AllowMultipleExecutors => false;
+
         public override Executability CanExecute(Notepad notepad, CommandEventArgs e) {
             return Executability.Valid;
         }
@@ -68,28 +71,61 @@ namespace SharpPad.Notepads.Commands {
                 return Task.CompletedTask;
             }
 
-            NotepadDocument lastDocument = null;
-            foreach (string file in filePaths) {
-                NotepadDocument document = new NotepadDocument() {
-                    FilePath = file
-                };
-
-                TextDocument doc = document.Document;
-                try {
-                    doc.Text = File.ReadAllText(file);
-                }
-                catch (Exception ex) {
-                    IoC.MessageService.ShowMessage("Error", "Error reading file", ex.GetToString());
-                }
-
-                notepad.AddDocument(lastDocument = document);
-            }
-
-            if (lastDocument != null) {
-                notepad.ActiveDocument = lastDocument;
-            }
-
+            OpenFiles(notepad, filePaths);
             return Task.CompletedTask;
+        }
+
+        public static void OpenFile(Notepad notepad, string path) {
+            OpenFiles(notepad, new string[] {path});
+        }
+
+        public static void OpenFiles(Notepad notepad, string[] paths) {
+            TaskManager.Instance.RunTask(async () => {
+                IActivityProgress progress = TaskManager.Instance.CurrentTask.Progress;
+                progress.Text = "Reading files";
+
+                string[] textArray = new string[paths.Length];
+                double percentPerFile = 1.0 / paths.Length;
+                using (progress.PushCompletionRange(0.0, 0.5)) {
+                    for (int i = 0; i < paths.Length; i++) {
+                        textArray[i] = File.ReadAllText(paths[i]);
+                        progress.OnProgress(percentPerFile);
+                    }
+                }
+
+                progress.Text = "Creating tabs";
+                NotepadDocument lastDocument = null;
+                using (progress.PushCompletionRange(0.5, 1.0)) {
+                    for (int i = 0; i < paths.Length; i++) {
+                        string path = paths[i];
+                        string text = textArray[i];
+                        // Need dispatcher because TextDocument is not thread-safe and also tracks the owner thread
+                        await IoC.Dispatcher.InvokeAsync(() => {
+                            NotepadDocument document = new NotepadDocument() {
+                                FilePath = path
+                            };
+
+                            try {
+                                document.Document.Text = text;
+                            }
+                            catch (Exception ex) {
+                                IoC.MessageService.ShowMessage("Error", "Error reading file", ex.GetToString());
+                            }
+
+                            document.IsModified = false;
+                            notepad.AddDocument(lastDocument = document);
+                        }, DispatcherPriority.Loaded);
+
+                        progress.OnProgress(percentPerFile);
+                    }
+                }
+
+                if (lastDocument != null) {
+                    await IoC.Dispatcher.InvokeAsync(() => {
+                        notepad.ActiveDocument = lastDocument;
+                    });
+                }
+            });
         }
     }
 }

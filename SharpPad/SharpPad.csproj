@@ -108,9 +108,10 @@
     <Compile Include="Interactivity\Contexts\ContextDataHelper.cs" />
     <Compile Include="IoC.cs" />
     <Compile Include="IServiceManager.cs" />
+    <Compile Include="Notepads\Commands\DocumentCommand.cs" />
+    <Compile Include="Notepads\Commands\EditorCommand.cs" />
     <Compile Include="Notepads\Commands\NotepadCommand.cs" />
     <Compile Include="Notepads\Commands\CloseDocumentCommand.cs" />
-    <Compile Include="Notepads\Commands\SelectLineCommand.cs" />
     <Compile Include="Notepads\Controls\NotepadEditorPanel.cs" />
     <Compile Include="Notepads\Controls\NotepadTabControl.cs" />
     <Compile Include="Notepads\Controls\NotepadTabItem.cs" />

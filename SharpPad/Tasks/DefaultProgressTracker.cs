@@ -20,6 +20,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Windows.Threading;
 using SharpPad.Utils;
 
 namespace SharpPad.Tasks {
@@ -35,7 +36,7 @@ namespace SharpPad.Tasks {
                 if (this.isIndeterminate == value)
                     return;
                 this.isIndeterminate = value;
-                this.IsIndeterminateChanged?.Invoke(this);
+                this.updateIsIndeterminate.InvokeAsync();
             }
         }
 
@@ -45,7 +46,7 @@ namespace SharpPad.Tasks {
                 if (DoubleUtils.AreClose(this.completionValue, value))
                     return;
                 this.completionValue = value;
-                this.CompletionValueChanged?.Invoke(this);
+                this.updateCompletionValue.InvokeAsync();
             }
         }
 
@@ -55,7 +56,7 @@ namespace SharpPad.Tasks {
                 if (this.headerText == value)
                     return;
                 this.headerText = value;
-                this.HeaderTextChanged?.Invoke(this);
+                this.updateHeaderText.InvokeAsync();
             }
         }
 
@@ -65,7 +66,7 @@ namespace SharpPad.Tasks {
                 if (this.descriptionText == value)
                     return;
                 this.descriptionText = value;
-                this.TextChanged?.Invoke(this);
+                this.updateText.InvokeAsync();
             }
         }
 
@@ -77,8 +78,19 @@ namespace SharpPad.Tasks {
         private readonly Stack<CompletionRange> ranges = new Stack<CompletionRange>();
         private double totalMultiplier;
 
-        public DefaultProgressTracker() {
+        private readonly RapidDispatchActionEx updateIsIndeterminate;
+        private readonly RapidDispatchActionEx updateCompletionValue;
+        private readonly RapidDispatchActionEx updateHeaderText;
+        private readonly RapidDispatchActionEx updateText;
+        private readonly DispatcherPriority eventDispatchPriority;
+
+        public DefaultProgressTracker(DispatcherPriority eventDispatchPriority = DispatcherPriority.Loaded) {
             this.totalMultiplier = 1.0;
+            this.eventDispatchPriority = eventDispatchPriority;
+            this.updateIsIndeterminate = new RapidDispatchActionEx(() => this.IsIndeterminateChanged?.Invoke(this), eventDispatchPriority);
+            this.updateCompletionValue = new RapidDispatchActionEx(() => this.CompletionValueChanged?.Invoke(this), eventDispatchPriority);
+            this.updateHeaderText = new RapidDispatchActionEx(() => this.HeaderTextChanged?.Invoke(this), eventDispatchPriority);
+            this.updateText = new RapidDispatchActionEx(() => this.TextChanged?.Invoke(this), eventDispatchPriority);
         }
 
         public PopDispose PushCompletionRange(double min, double max) {

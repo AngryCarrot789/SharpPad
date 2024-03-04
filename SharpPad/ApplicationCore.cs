@@ -20,6 +20,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using SharpPad.CommandSystem;
 using SharpPad.Logger;
@@ -30,13 +31,13 @@ using SharpPad.Services.Messages;
 using SharpPad.Services.WPF.Files;
 using SharpPad.Services.WPF.Messages;
 using SharpPad.Tasks;
-using SharpPad.Utils;
 
 namespace SharpPad {
     /// <summary>
     /// An application instance for SharpPad
     /// </summary>
-    public class ApplicationCore {
+    public class
+        ApplicationCore {
         private readonly ServiceManager serviceManager;
 
         public IServiceManager Services => this.serviceManager;
@@ -76,36 +77,46 @@ namespace SharpPad {
         public void OnApplicationLoaded(Notepad notepad, string[] args) {
             this.Nodepad = notepad;
             if (args.Length > 0 && File.Exists(args[0])) {
-                // OpenProjectCommand.RunOpenProjectTask(editor, args[0]);
+                OpenFileCommand.OpenFile(notepad, args[0]);
             }
             else {
-                // Use to debug why something is causing a crash only in Release mode
-                // string path = ...;
-                // OpenProjectCommand.RunOpenProjectTask(editor, path);
                 this.LoadDefaultNotepad();
             }
+
+            TaskManager.Instance.RunTask(async () => {
+                IActivityProgress prog = TaskManager.Instance.CurrentTask.Progress;
+                prog.Text = "Dummy task";
+                const int seconds = 2;
+                const int interval = 100;
+                const int count = (int) (seconds / (interval / 1000d));
+                const double progPerStep = 1.0 / count;
+
+                for (int i = 0; i < count; i++) {
+                    await Task.Delay(interval);
+                    prog.OnProgress(progPerStep);
+                }
+            });
         }
 
         public void OnApplicationExiting() {
         }
 
         private void LoadDefaultNotepad() {
-            try {
-                this.Nodepad.AddDocument(new NotepadDocument() {DocumentName = "Doc 1"});
-                this.Nodepad.AddDocument(new NotepadDocument() {DocumentName = "Doc 2"});
-                this.Nodepad.AddDocument(new NotepadDocument() {DocumentName = "Doc 3"});
-            }
-            catch (Exception e) {
-                IoC.MessageService.ShowMessage("Error loading project", "Error loading default project...", e.GetToString());
-                throw;
-            }
+            this.Nodepad.AddDocument(new NotepadDocument() {DocumentName = "New Document 1"});
+            this.Nodepad.AddDocument(new NotepadDocument() {DocumentName = "New Document 2"});
+            this.Nodepad.AddDocument(new NotepadDocument() {DocumentName = "New Document 3"});
         }
 
         public void RegisterActions(CommandManager manager) {
-            manager.Register("CloseDocument", new CloseDocumentCommand());
-            manager.Register("SelectLine", new SelectLineCommand());
+            // general commands
             manager.Register("NewFile", new NewFileCommand());
             manager.Register("OpenFile", new OpenFileCommand());
+            manager.Register("SaveDocumentFile", new SaveDocumentCommand());
+            manager.Register("SaveDocumentFileAs", new SaveDocumentAsCommand());
+            manager.Register("CloseDocument", new CloseDocumentCommand());
+
+            // document/editor commands
+            manager.Register("SelectLine", new SelectLineCommand());
 
             AppLogger.Instance.PushHeader($"Registered {CommandManager.Instance.Count} commands", false);
             foreach (KeyValuePair<string, Command> pair in CommandManager.Instance.Commands) {
@@ -113,9 +124,6 @@ namespace SharpPad {
             }
 
             AppLogger.Instance.PopHeader();
-        }
-
-        public void Destroy() {
         }
     }
 }

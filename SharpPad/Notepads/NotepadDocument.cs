@@ -31,23 +31,26 @@ namespace SharpPad.Notepads {
     /// </summary>
     public class NotepadDocument {
         private readonly List<Notepad> owners;
-        private string documentName;
         private string filePath;
         private bool isModified;
         private readonly List<TextEditor> editors;
 
+        /// <summary>
+        /// Gets the text editors that are using this document
+        /// </summary>
         public IReadOnlyList<TextEditor> Editors => this.editors;
 
-        public string DocumentName {
-            get => this.documentName;
-            set {
-                if (this.documentName == value)
-                    return;
-                this.documentName = value;
-                this.DocumentNameChanged?.Invoke(this);
-            }
-        }
+        /// <summary>
+        /// Gets or sets the document display name. There is no event fired when this changes,
+        /// as it is assumed to only change either during initialisation or when <see cref="FilePath"/>
+        /// changes in which case you can listen to <see cref="FilePathChanged"/>
+        /// </summary>
+        public string DocumentName { get; set; }
 
+        /// <summary>
+        /// Gets or sets the file path of this document on the system. Can only
+        /// be set as a valid file path, otherwise exceptions will be thrown
+        /// </summary>
         public string FilePath {
             get => this.filePath;
             set {
@@ -59,6 +62,10 @@ namespace SharpPad.Notepads {
             }
         }
 
+        /// <summary>
+        /// Gets or sets the modified state of this document. When modified, it shows
+        /// an indicator to the user that they should save their changes to the disk
+        /// </summary>
         public bool IsModified {
             get => this.isModified;
             set {
@@ -69,16 +76,18 @@ namespace SharpPad.Notepads {
             }
         }
 
-
+        /// <summary>
+        /// Gets the AvalonEdit document that represents the contents of the text document.
+        /// This property does not change, it is initialised during the constructor
+        /// </summary>
         public TextDocument Document { get; }
 
-        public event DocumentEventHandler DocumentNameChanged;
         public event DocumentEventHandler FilePathChanged;
         public event DocumentEventHandler IsModifiedChanged;
 
         public NotepadDocument() {
             this.owners = new List<Notepad>();
-            this.documentName = "New Document";
+            this.DocumentName = "New Document";
             this.Document = new TextDocument();
             this.editors = new List<TextEditor>();
 
