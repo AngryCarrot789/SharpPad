@@ -17,11 +17,13 @@
 // along with SharpPad. If not, see <https://www.gnu.org/licenses/>.
 // 
 
-namespace SharpPad.Utils {
+namespace SharpPad.Utils
+{
     /// <summary>
     /// A state to represent a selection. Zero selected items, one selected item or many selected items
     /// </summary>
-    public enum SelectionType {
+    public enum SelectionType
+    {
         None,
         Single,
         Multi

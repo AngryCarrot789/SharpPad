@@ -19,13 +19,15 @@
 
 using System;
 
-namespace SharpPad.Tasks {
+namespace SharpPad.Tasks
+{
     public delegate void ActivityProgressEventHandler(IActivityProgress tracker);
 
     /// <summary>
     /// An interface for an object used to track progression
     /// </summary>
-    public interface IActivityProgress {
+    public interface IActivityProgress
+    {
         /// <summary>
         /// Gets or sets if this tracker's completions state is indeterminate
         /// </summary>
@@ -75,12 +77,12 @@ namespace SharpPad.Tasks {
         /// value that will be added to the parent range's completion value.
         /// <para>
         /// A completion range should be pushed when you're about to begin an 'operation phase', that is,
-        /// something that can have a completion percentage. The operation itself can push its own completion
-        /// ranges, but it is your job to push a range which represents how much actual work the operation
+        /// something that can have a completion percentage. That operation itself can push its own completion
+        /// ranges, but it is your job to push a range which represents how much actual work that operation
         /// does relative to the current operation
         /// </para>
         /// <para>
-        /// The reason for a min and max is so that you can identify possible mis-uses and bugs.
+        /// The reason for a min and max is mainly for clarity so that you can identify possible mis-uses and bugs.
         /// In a code block, the total amount of range pushed should equal 1.0. For example, you
         /// push 0.0->0.2, 0.2->0.7, 0.7->1.0, where the differences between max and min for those
         /// cases sum to 1.0. If they don't, then it probably means this method was used incorrectly
@@ -113,14 +115,17 @@ namespace SharpPad.Tasks {
     /// A struct used to automatically pop a completion range from a tracker, to make the code easier to
     /// #read. This can only pop once, then calling Dispose again does nothing
     /// </summary>
-    public struct PopDispose : IDisposable {
+    public struct PopDispose : IDisposable
+    {
         private IActivityProgress tracker;
 
-        public PopDispose(IActivityProgress tracker) {
+        public PopDispose(IActivityProgress tracker)
+        {
             this.tracker = tracker;
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             IActivityProgress t = this.tracker;
             this.tracker = null;
             t?.PopCompletionRange();

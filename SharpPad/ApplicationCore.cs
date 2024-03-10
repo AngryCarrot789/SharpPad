@@ -32,12 +32,14 @@ using SharpPad.Services.WPF.Files;
 using SharpPad.Services.WPF.Messages;
 using SharpPad.Tasks;
 
-namespace SharpPad {
+namespace SharpPad
+{
     /// <summary>
     /// An application instance for SharpPad
     /// </summary>
     public class
-        ApplicationCore {
+        ApplicationCore
+    {
         private readonly ServiceManager serviceManager;
 
         public IServiceManager Services => this.serviceManager;
@@ -65,7 +67,8 @@ namespace SharpPad {
 
         public IDispatcher Dispatcher { get; }
 
-        private ApplicationCore() {
+        private ApplicationCore()
+        {
             this.Dispatcher = new DispatcherDelegate(Application.Current.Dispatcher);
             this.serviceManager = new ServiceManager();
             this.serviceManager.Register<IMessageDialogService>(new WPFMessageDialogService());
@@ -74,16 +77,20 @@ namespace SharpPad {
             this.serviceManager.Register<TaskManager>(new TaskManager());
         }
 
-        public void OnApplicationLoaded(Notepad notepad, string[] args) {
+        public void OnApplicationLoaded(Notepad notepad, string[] args)
+        {
             this.Nodepad = notepad;
-            if (args.Length > 0 && File.Exists(args[0])) {
-                OpenFileCommand.OpenFile(notepad, args[0]);
+            if (args.Length > 0 && File.Exists(args[0]))
+            {
+                OpenFilesCommand.OpenFile(notepad, args[0]);
             }
-            else {
+            else
+            {
                 this.LoadDefaultNotepad();
             }
 
-            TaskManager.Instance.RunTask(async () => {
+            TaskManager.Instance.RunTask(async () =>
+            {
                 IActivityProgress prog = TaskManager.Instance.CurrentTask.Progress;
                 prog.Text = "Dummy task";
                 const int seconds = 2;
@@ -91,26 +98,28 @@ namespace SharpPad {
                 const int count = (int) (seconds / (interval / 1000d));
                 const double progPerStep = 1.0 / count;
 
-                for (int i = 0; i < count; i++) {
+                for (int i = 0; i < count; i++)
+                {
                     await Task.Delay(interval);
                     prog.OnProgress(progPerStep);
                 }
             });
         }
 
-        public void OnApplicationExiting() {
-        }
+        public void OnApplicationExiting() { }
 
-        private void LoadDefaultNotepad() {
+        private void LoadDefaultNotepad()
+        {
             this.Nodepad.AddDocument(new NotepadDocument() {DocumentName = "New Document 1"});
             this.Nodepad.AddDocument(new NotepadDocument() {DocumentName = "New Document 2"});
             this.Nodepad.AddDocument(new NotepadDocument() {DocumentName = "New Document 3"});
         }
 
-        public void RegisterActions(CommandManager manager) {
+        public void RegisterActions(CommandManager manager)
+        {
             // general commands
             manager.Register("NewFile", new NewFileCommand());
-            manager.Register("OpenFile", new OpenFileCommand());
+            manager.Register("OpenFile", new OpenFilesCommand());
             manager.Register("SaveDocumentFile", new SaveDocumentCommand());
             manager.Register("SaveDocumentFileAs", new SaveDocumentAsCommand());
             manager.Register("SaveAllDocumentFilesAs", new SaveAllDocumentsCommand());
@@ -142,7 +151,8 @@ namespace SharpPad {
             manager.Register("IndentSelectionInEditor", new IndentSelectionCommand());
 
             AppLogger.Instance.PushHeader($"Registered {CommandManager.Instance.Count} commands", false);
-            foreach (KeyValuePair<string, Command> pair in CommandManager.Instance.Commands) {
+            foreach (KeyValuePair<string, Command> pair in CommandManager.Instance.Commands)
+            {
                 AppLogger.Instance.WriteLine($"{pair.Key}: {pair.Value.GetType()}");
             }
 

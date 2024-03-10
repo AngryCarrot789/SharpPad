@@ -17,13 +17,15 @@
 // along with SharpPad. If not, see <https://www.gnu.org/licenses/>.
 //
 
-namespace SharpPad.Utils {
+namespace SharpPad.Utils
+{
     public delegate void DisplayNameChangedEventHandler(IDisplayName sender, string oldName, string newName);
 
     /// <summary>
     /// An interface for an object that displays a readable and renamable name/tag
     /// </summary>
-    public interface IDisplayName {
+    public interface IDisplayName
+    {
         /// <summary>
         /// Gets or sets the display name. Setting this fires an event
         /// </summary>

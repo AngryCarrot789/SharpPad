@@ -20,11 +20,14 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace SharpPad.Utils {
-    public static class ShellUtils {
+namespace SharpPad.Utils
+{
+    public static class ShellUtils
+    {
         #region Structs
 
-        private struct SHFILEINFO {
+        private struct SHFILEINFO
+        {
             public IntPtr hIcon; // Handle to the icon representing the file
             public int iIcon; // Index of the icon within the image list
             public uint dwAttributes; // Various attributes of the file
@@ -94,8 +97,10 @@ namespace SharpPad.Utils {
 
         #endregion
 
-        public static string GetFileTypeDescription(string fileNameOrExtension) {
-            if (SHGetFileInfo(fileNameOrExtension, FILE_ATTRIBUTE_NORMAL, out SHFILEINFO shfi, (uint) Marshal.SizeOf(typeof(SHFILEINFO)), SHGFI_USEFILEATTRIBUTES | SHGFI_TYPENAME) != IntPtr.Zero) {
+        public static string GetFileTypeDescription(string fileNameOrExtension)
+        {
+            if (SHGetFileInfo(fileNameOrExtension, FILE_ATTRIBUTE_NORMAL, out SHFILEINFO shfi, (uint) Marshal.SizeOf(typeof(SHFILEINFO)), SHGFI_USEFILEATTRIBUTES | SHGFI_TYPENAME) != IntPtr.Zero)
+            {
                 return shfi.szTypeName;
             }
 

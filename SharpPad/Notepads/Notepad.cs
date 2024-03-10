@@ -21,23 +21,29 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace SharpPad.Notepads {
+namespace SharpPad.Notepads
+{
     public delegate void NotepadEventHandler(Notepad notepad);
+
     public delegate void NotepadActiveDocumentChangedEventHandler(Notepad notepad, NotepadDocument oldDocument, NotepadDocument newDocument);
+
     public delegate void NotepadDocumentIndexEventHandler(Notepad notepad, NotepadDocument document, int oldIndex, int newIndex);
 
     /// <summary>
     /// The class for a single notepad window
     /// </summary>
-    public class Notepad {
+    public class Notepad
+    {
         private readonly List<NotepadDocument> documents;
         private NotepadDocument activeDocument;
 
         public ReadOnlyCollection<NotepadDocument> Documents { get; }
 
-        public NotepadDocument ActiveDocument {
+        public NotepadDocument ActiveDocument
+        {
             get => this.activeDocument;
-            set {
+            set
+            {
                 NotepadDocument doc = this.activeDocument;
                 if (doc == value)
                     return;
@@ -54,16 +60,19 @@ namespace SharpPad.Notepads {
         /// </para>
         /// </summary>
         public event NotepadDocumentIndexEventHandler DocumentIndexChanged;
+
         public event NotepadActiveDocumentChangedEventHandler ActiveDocumentChanged;
 
-        public Notepad() {
+        public Notepad()
+        {
             this.documents = new List<NotepadDocument>();
             this.Documents = this.documents.AsReadOnly();
         }
 
         public void AddDocument(NotepadDocument document) => this.InsertDocument(this.documents.Count, document);
 
-        public void InsertDocument(int index, NotepadDocument document) {
+        public void InsertDocument(int index, NotepadDocument document)
+        {
             if (document == null)
                 throw new ArgumentNullException(nameof(document));
             if (NotepadDocument.IsOwnedBy(document, this))
@@ -76,7 +85,8 @@ namespace SharpPad.Notepads {
                 this.ActiveDocument = document;
         }
 
-        public bool RemoveDocument(NotepadDocument document) {
+        public bool RemoveDocument(NotepadDocument document)
+        {
             if (document == null)
                 throw new ArgumentNullException(nameof(document));
             int index = this.documents.IndexOf(document);
@@ -86,7 +96,8 @@ namespace SharpPad.Notepads {
             return true;
         }
 
-        public void RemoveDocumentAt(int index) {
+        public void RemoveDocumentAt(int index)
+        {
             NotepadDocument document = this.documents[index];
             NotepadDocument.RemoveOwner(document, this);
             this.documents.RemoveAt(index);

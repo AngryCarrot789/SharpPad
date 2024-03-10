@@ -17,8 +17,10 @@
 // along with SharpPad. If not, see <https://www.gnu.org/licenses/>.
 // 
 
-namespace SharpPad.Shortcuts.Managing {
-    public enum RepeatMode {
+namespace SharpPad.Shortcuts.Managing
+{
+    public enum RepeatMode
+    {
         /// <summary>
         /// Repeated input strokes are ignored
         /// </summary>

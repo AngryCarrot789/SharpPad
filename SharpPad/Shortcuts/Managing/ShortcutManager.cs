@@ -19,28 +19,31 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using SharpPad.CommandSystem;
 using SharpPad.Shortcuts.Events;
 using SharpPad.Shortcuts.Inputs;
 using SharpPad.Shortcuts.Usage;
 
-namespace SharpPad.Shortcuts.Managing {
+namespace SharpPad.Shortcuts.Managing
+{
     public delegate void ShortcutActivityEventHandler(ShortcutInputManager manager);
 
     /// <summary>
     /// A class for storing and managing shortcuts
     /// </summary>
-    public abstract class ShortcutManager {
+    public abstract class ShortcutManager
+    {
         private List<GroupedShortcut> cachedAllShortcuts;
         private readonly Dictionary<string, LinkedList<GroupedShortcut>> cachedCmdToShortcut; // linked because there will only really be like 1 or 2 ever
         private readonly Dictionary<string, GroupedShortcut> cachedPathToShortcut;
         private readonly Dictionary<string, InputStateManager> stateGroups;
         private ShortcutGroup root;
 
-        public ShortcutGroup Root {
+        public ShortcutGroup Root
+        {
             get => this.root;
-            protected set {
+            protected set
+            {
                 ShortcutGroup old = this.root;
                 this.root = value;
                 this.OnRootChanged(old, value);
@@ -57,24 +60,28 @@ namespace SharpPad.Shortcuts.Managing {
         /// </summary>
         public static ShortcutManager Instance { get; set; }
 
-        protected ShortcutManager() {
+        protected ShortcutManager()
+        {
             this.cachedCmdToShortcut = new Dictionary<string, LinkedList<GroupedShortcut>>();
             this.cachedPathToShortcut = new Dictionary<string, GroupedShortcut>();
             this.stateGroups = new Dictionary<string, InputStateManager>();
             this.root = ShortcutGroup.CreateRoot(this);
         }
 
-        public ShortcutGroup FindGroupByPath(string path) {
+        public ShortcutGroup FindGroupByPath(string path)
+        {
             return this.Root.GetGroupByPath(path);
         }
 
-        public GroupedShortcut FindShortcutByPath(string path) {
+        public GroupedShortcut FindShortcutByPath(string path)
+        {
             this.EnsureCacheBuilt();
             return this.cachedPathToShortcut.TryGetValue(path, out GroupedShortcut x) ? x : null;
             // return this.Root.GetShortcutByPath(path);
         }
 
-        public GroupedShortcut FindFirstShortcutByCommandId(string cmdId) {
+        public GroupedShortcut FindFirstShortcutByCommandId(string cmdId)
+        {
             this.EnsureCacheBuilt();
             return this.cachedCmdToShortcut.TryGetValue(cmdId, out LinkedList<GroupedShortcut> list) && list.Count > 0 ? list.First.Value : null;
         }
@@ -82,7 +89,8 @@ namespace SharpPad.Shortcuts.Managing {
         /// <summary>
         /// Called when the root group changes
         /// </summary>
-        protected virtual void OnRootChanged(ShortcutGroup oldRoot, ShortcutGroup newRoot) {
+        protected virtual void OnRootChanged(ShortcutGroup oldRoot, ShortcutGroup newRoot)
+        {
             this.InvalidateShortcutCache();
         }
 
@@ -92,7 +100,8 @@ namespace SharpPad.Shortcuts.Managing {
         /// This should be called if a shortcut or shortcut group was modified (e.g. a new shortcut group and added or a shortcut was removed, shortcut changed)
         /// </para>
         /// </summary>
-        public virtual void InvalidateShortcutCache() {
+        public virtual void InvalidateShortcutCache()
+        {
             this.cachedAllShortcuts = null;
             this.stateGroups.Clear();
             this.cachedCmdToShortcut.Clear();
@@ -105,43 +114,55 @@ namespace SharpPad.Shortcuts.Managing {
         /// <returns>A new processor</returns>
         public abstract ShortcutInputManager NewProcessor();
 
-        public IEnumerable<GroupedShortcut> GetAllShortcuts() {
+        public IEnumerable<GroupedShortcut> GetAllShortcuts()
+        {
             this.EnsureCacheBuilt();
             return this.cachedAllShortcuts;
         }
 
-        public IEnumerable<GroupedShortcut> GetShortcutsByCommandId(string cmdId) {
+        public IEnumerable<GroupedShortcut> GetShortcutsByCommandId(string cmdId)
+        {
             this.EnsureCacheBuilt();
             return this.cachedCmdToShortcut.TryGetValue(cmdId, out LinkedList<GroupedShortcut> value) ? value : null;
         }
 
-        public static void GetAllShortcuts(ShortcutGroup rootGroup, ICollection<GroupedShortcut> accumulator) {
-            foreach (GroupedShortcut shortcut in rootGroup.Shortcuts) {
+        public static void GetAllShortcuts(ShortcutGroup rootGroup, ICollection<GroupedShortcut> accumulator)
+        {
+            foreach (GroupedShortcut shortcut in rootGroup.Shortcuts)
+            {
                 accumulator.Add(shortcut);
             }
 
-            foreach (ShortcutGroup innerGroup in rootGroup.Groups) {
+            foreach (ShortcutGroup innerGroup in rootGroup.Groups)
+            {
                 GetAllShortcuts(innerGroup, accumulator);
             }
         }
 
-        protected void EnsureCacheBuilt() {
-            if (this.cachedAllShortcuts == null) {
+        protected void EnsureCacheBuilt()
+        {
+            if (this.cachedAllShortcuts == null)
+            {
                 this.RebuildShortcutCache();
             }
         }
 
-        private void RebuildShortcutCache() {
+        private void RebuildShortcutCache()
+        {
             this.cachedAllShortcuts = new List<GroupedShortcut>(64);
             this.cachedCmdToShortcut.Clear();
             this.cachedPathToShortcut.Clear();
-            if (this.root != null) {
+            if (this.root != null)
+            {
                 GetAllShortcuts(this.root, this.cachedAllShortcuts);
             }
 
-            foreach (GroupedShortcut shortcut in this.cachedAllShortcuts) {
-                if (!string.IsNullOrWhiteSpace(shortcut.CommandId)) {
-                    if (!this.cachedCmdToShortcut.TryGetValue(shortcut.CommandId, out LinkedList<GroupedShortcut> list)) {
+            foreach (GroupedShortcut shortcut in this.cachedAllShortcuts)
+            {
+                if (!string.IsNullOrWhiteSpace(shortcut.CommandId))
+                {
+                    if (!this.cachedCmdToShortcut.TryGetValue(shortcut.CommandId, out LinkedList<GroupedShortcut> list))
+                    {
                         this.cachedCmdToShortcut[shortcut.CommandId] = list = new LinkedList<GroupedShortcut>();
                     }
 
@@ -149,7 +170,8 @@ namespace SharpPad.Shortcuts.Managing {
                 }
 
                 // path should only be null or non-empty
-                if (!string.IsNullOrWhiteSpace(shortcut.FullPath)) {
+                if (!string.IsNullOrWhiteSpace(shortcut.FullPath))
+                {
                     if (this.cachedPathToShortcut.ContainsKey(shortcut.FullPath))
                         throw new Exception("Duplicate shortcut path: " + shortcut.FullPath);
                     this.cachedPathToShortcut[shortcut.FullPath] = shortcut;
@@ -159,10 +181,13 @@ namespace SharpPad.Shortcuts.Managing {
             this.cachedAllShortcuts.TrimExcess();
         }
 
-        public IEnumerable<GroupedShortcut> FindShortcutsByPaths(IEnumerable<string> paths) {
-            foreach (string path in paths) {
+        public IEnumerable<GroupedShortcut> FindShortcutsByPaths(IEnumerable<string> paths)
+        {
+            foreach (string path in paths)
+            {
                 GroupedShortcut shortcut = this.FindShortcutByPath(path);
-                if (shortcut != null) {
+                if (shortcut != null)
+                {
                     yield return shortcut;
                 }
             }
@@ -179,7 +204,7 @@ namespace SharpPad.Shortcuts.Managing {
         /// <param name="inputManager">The processor that caused this activation</param>
         /// <param name="shortcut">The shortcut that was activated</param>
         /// <returns>The outcome of the shortcut activation used by the processor's input manager</returns>
-        public Task<bool> OnShortcutActivated(ShortcutInputManager inputManager, GroupedShortcut shortcut) => this.OnShortcutActivatedOverride(inputManager, shortcut);
+        public bool OnShortcutActivated(ShortcutInputManager inputManager, GroupedShortcut shortcut) => this.OnShortcutActivatedOverride(inputManager, shortcut);
 
         /// <summary>
         /// Further attempts to 'activate' a shortcut
@@ -187,25 +212,14 @@ namespace SharpPad.Shortcuts.Managing {
         /// <param name="inputManager">The processor that caused this activation</param>
         /// <param name="shortcut">The shortcut that was activated</param>
         /// <returns>The result of the shortcut activation used by the processor's input manager</returns>
-        protected virtual Task<bool> OnShortcutActivatedOverride(ShortcutInputManager inputManager, GroupedShortcut shortcut) {
-            // Fire command. This is the main way of activating shortcuts
-
-            // If the command doesn't exist or is currently executing,
+        protected virtual bool OnShortcutActivatedOverride(ShortcutInputManager inputManager, GroupedShortcut shortcut)
+        {
             Command command = CommandManager.Instance.GetCommandById(shortcut.CommandId);
-            if (command == null) {
-                return Task.FromResult(false);
-            }
+            if (command == null)
+                return false;
 
-            if (Command.IsExecuting(command)) {
-                IoC.MessageService.ShowMessage("Already running", "This command is already running");
-                return Task.FromResult(false);
-            }
-
-            // We don't await this, because we don't want to stall the shortcut input system just because a command is
-            // still running. The command can either use the built in feature to disable concurrent execution, or
-            // it can manage its own executing state (maybe via the contextual objects)
             CommandManager.Instance.Execute(shortcut.CommandId, command, inputManager.ProvideCurrentContextInternal());
-            return Task.FromResult(true);
+            return true;
         }
 
         /// <summary>
@@ -213,49 +227,43 @@ namespace SharpPad.Shortcuts.Managing {
         /// </summary>
         /// <param name="inputManager">The processor which caused the state to be activated</param>
         /// <param name="state">The state that was activated</param>
-        protected internal virtual void OnInputStateActivated(ShortcutInputManager inputManager, GroupedInputState state) {
-        }
+        protected internal virtual void OnInputStateActivated(ShortcutInputManager inputManager, GroupedInputState state) { }
 
         /// <summary>
         /// Called by the <see cref="ShortcutInputManager"/> when an input state is deactivated
         /// </summary>
         /// <param name="inputManager">The processor which caused the state to be deactivated</param>
         /// <param name="state">The state that was activated</param>
-        protected internal virtual void OnInputStateDeactivated(ShortcutInputManager inputManager, GroupedInputState state) {
-        }
+        protected internal virtual void OnInputStateDeactivated(ShortcutInputManager inputManager, GroupedInputState state) { }
 
         /// <summary>
         /// Gets or creates an <see cref="InputStateManager"/> for the given path
         /// </summary>
         /// <param name="id">The state manager's ID, which is shared across this <see cref="ShortcutManager"/> instance</param>
         /// <returns>An existing or new instance</returns>
-        public InputStateManager GetInputStateManager(string id) {
+        public InputStateManager GetInputStateManager(string id)
+        {
             if (!this.stateGroups.TryGetValue(id, out InputStateManager group))
                 this.stateGroups[id] = group = new InputStateManager(this, id);
             return group;
         }
 
-        public void OnShortcutModified(GroupedShortcut shortcut, IShortcut oldShortcut) {
+        public void OnShortcutModified(GroupedShortcut shortcut, IShortcut oldShortcut)
+        {
             this.InvalidateShortcutCache();
             this.ShortcutModified?.Invoke(shortcut, oldShortcut);
         }
 
-        protected internal virtual void OnSecondShortcutUsagesProgressed(ShortcutInputManager inputManager) {
-        }
+        protected internal virtual void OnSecondShortcutUsagesProgressed(ShortcutInputManager inputManager) { }
 
-        protected internal virtual void OnShortcutUsagesCreated(ShortcutInputManager inputManager) {
-        }
+        protected internal virtual void OnShortcutUsagesCreated(ShortcutInputManager inputManager) { }
 
-        protected internal virtual void OnCancelUsageForNoSuchNextMouseStroke(ShortcutInputManager inputManager, IShortcutUsage usage, GroupedShortcut shortcut, MouseStroke stroke) {
-        }
+        protected internal virtual void OnCancelUsageForNoSuchNextMouseStroke(ShortcutInputManager inputManager, IShortcutUsage usage, GroupedShortcut shortcut, MouseStroke stroke) { }
 
-        protected internal virtual void OnCancelUsageForNoSuchNextKeyStroke(ShortcutInputManager inputManager, IShortcutUsage usage, GroupedShortcut shortcut, KeyStroke stroke) {
-        }
+        protected internal virtual void OnCancelUsageForNoSuchNextKeyStroke(ShortcutInputManager inputManager, IShortcutUsage usage, GroupedShortcut shortcut, KeyStroke stroke) { }
 
-        protected internal virtual void OnNoSuchShortcutForMouseStroke(ShortcutInputManager inputManager, string group, MouseStroke stroke) {
-        }
+        protected internal virtual void OnNoSuchShortcutForMouseStroke(ShortcutInputManager inputManager, string group, MouseStroke stroke) { }
 
-        protected internal virtual void OnNoSuchShortcutForKeyStroke(ShortcutInputManager inputManager, string group, KeyStroke stroke) {
-        }
+        protected internal virtual void OnNoSuchShortcutForKeyStroke(ShortcutInputManager inputManager, string group, KeyStroke stroke) { }
     }
 }

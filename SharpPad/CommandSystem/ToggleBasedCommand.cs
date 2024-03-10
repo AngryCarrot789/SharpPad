@@ -17,11 +17,12 @@
 // along with SharpPad. If not, see <https://www.gnu.org/licenses/>.
 //
 
-using System.Threading.Tasks;
 using SharpPad.Interactivity.Contexts;
 
-namespace SharpPad.CommandSystem {
-    public abstract class ToggleBasedCommand : Command {
+namespace SharpPad.CommandSystem
+{
+    public abstract class ToggleBasedCommand : Command
+    {
         public static readonly DataKey<bool> IsToggledKey = DataKey<bool>.Create("Toggled");
 
         /// <summary>
@@ -29,20 +30,22 @@ namespace SharpPad.CommandSystem {
         /// </summary>
         /// <param name="e">The command event args, containing info about the current context</param>
         /// <returns>A nullable boolean that states the toggle state, or null if no toggle state is present</returns>
-        public virtual bool? GetIsToggled(CommandEventArgs e) {
+        public virtual bool? GetIsToggled(CommandEventArgs e)
+        {
             return IsToggledKey.TryGetContext(e.ContextData, out bool value) ? (bool?) value : null;
         }
 
-        protected override Task Execute(CommandEventArgs e) {
+        protected override void Execute(CommandEventArgs e)
+        {
             bool? result = this.GetIsToggled(e);
-            if (result.HasValue) {
+            if (result.HasValue)
+            {
                 this.OnToggled(e, result.Value);
             }
-            else {
+            else
+            {
                 this.ExecuteNoToggle(e);
             }
-
-            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -61,16 +64,19 @@ namespace SharpPad.CommandSystem {
         /// <returns>Whether the command was executed successfully</returns>
         protected abstract void ExecuteNoToggle(CommandEventArgs e);
 
-        public override Executability CanExecute(CommandEventArgs e) {
+        public override Executability CanExecute(CommandEventArgs e)
+        {
             bool? result = this.GetIsToggled(e);
             return result.HasValue ? this.CanExecute(e, result.Value) : this.CanExecuteNoToggle(e);
         }
 
-        protected virtual Executability CanExecute(CommandEventArgs e, bool isToggled) {
+        protected virtual Executability CanExecute(CommandEventArgs e, bool isToggled)
+        {
             return Executability.Valid;
         }
 
-        protected virtual Executability CanExecuteNoToggle(CommandEventArgs e) {
+        protected virtual Executability CanExecuteNoToggle(CommandEventArgs e)
+        {
             return this.CanExecute(e, false);
         }
     }

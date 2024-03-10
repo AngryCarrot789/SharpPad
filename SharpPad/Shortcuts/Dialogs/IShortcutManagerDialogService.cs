@@ -17,8 +17,10 @@
 // along with SharpPad. If not, see <https://www.gnu.org/licenses/>.
 // 
 
-namespace SharpPad.Shortcuts.Dialogs {
-    public interface IShortcutManagerDialogService {
+namespace SharpPad.Shortcuts.Dialogs
+{
+    public interface IShortcutManagerDialogService
+    {
         bool IsOpen { get; }
 
         void ShowEditorDialog();

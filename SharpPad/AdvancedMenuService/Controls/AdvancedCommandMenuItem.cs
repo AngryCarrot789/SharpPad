@@ -23,20 +23,23 @@ using SharpPad.CommandSystem;
 using SharpPad.Interactivity.Contexts;
 using SharpPad.Shortcuts.WPF.Converters;
 
-namespace SharpPad.AdvancedMenuService.Controls {
-    public class AdvancedCommandMenuItem : MenuItem {
+namespace SharpPad.AdvancedMenuService.Controls
+{
+    public class AdvancedCommandMenuItem : MenuItem
+    {
         public static readonly DependencyProperty CommandIdProperty = DependencyProperty.Register("CommandId", typeof(string), typeof(AdvancedCommandMenuItem), new PropertyMetadata(null));
 
-        public string CommandId {
+        public string CommandId
+        {
             get => (string) this.GetValue(CommandIdProperty);
             set => this.SetValue(CommandIdProperty, value);
         }
 
-        private bool canExecute;
-
-        protected bool CanExecute {
+        protected bool CanExecute
+        {
             get => this.canExecute;
-            set {
+            set
+            {
                 this.canExecute = value;
 
                 // Causes IsEnableCore to be fetched, which returns false if we are executing something or
@@ -48,14 +51,17 @@ namespace SharpPad.AdvancedMenuService.Controls {
         protected override bool IsEnabledCore => base.IsEnabledCore && this.CanExecute;
 
         private IContextData loadedContextData;
+        private bool canExecute;
 
-        public AdvancedCommandMenuItem() {
+        public AdvancedCommandMenuItem()
+        {
             this.Click += this.OnClick;
             this.Loaded += this.OnLoaded;
             this.Unloaded += this.OnUnloaded;
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs e) {
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
             this.loadedContextData = ContextCapturingMenu.GetCapturedContextData(this) ?? DataManager.GetFullContextData(this);
             string id = this.CommandId;
             if (string.IsNullOrWhiteSpace(id))
@@ -63,19 +69,24 @@ namespace SharpPad.AdvancedMenuService.Controls {
 
             Executability state = id != null ? CommandManager.Instance.CanExecute(id, this.loadedContextData) : Executability.Invalid;
             this.CanExecute = state == Executability.Valid;
-            if (this.CanExecute) {
-                if (CommandIdToGestureConverter.CommandIdToGesture(id, null, out string value)) {
+            if (this.CanExecute)
+            {
+                if (CommandIdToGestureConverter.CommandIdToGesture(id, null, out string value))
+                {
                     this.SetCurrentValue(InputGestureTextProperty, value);
                 }
             }
         }
 
-        private void OnUnloaded(object sender, RoutedEventArgs e) {
+        private void OnUnloaded(object sender, RoutedEventArgs e)
+        {
             this.loadedContextData = null;
         }
 
-        private void OnClick(object sender, RoutedEventArgs e) {
-            if (this.loadedContextData != null && this.CommandId is string commandId) {
+        private void OnClick(object sender, RoutedEventArgs e)
+        {
+            if (this.loadedContextData != null && this.CommandId is string commandId)
+            {
                 CommandManager.Instance.Execute(commandId, this.loadedContextData);
             }
         }

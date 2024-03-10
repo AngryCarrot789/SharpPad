@@ -20,11 +20,13 @@
 using System;
 using SharpPad.Interactivity.Contexts;
 
-namespace SharpPad.CommandSystem {
+namespace SharpPad.CommandSystem
+{
     /// <summary>
     /// Command event arguments for when a command is about to be executed
     /// </summary>
-    public class CommandEventArgs {
+    public class CommandEventArgs
+    {
         /// <summary>
         /// The command manager associated with this event
         /// </summary>
@@ -50,7 +52,8 @@ namespace SharpPad.CommandSystem {
         /// </summary>
         public bool IsUserInitiated { get; }
 
-        public CommandEventArgs(CommandManager manager, IContextData contextData, bool isUserInitiated) {
+        public CommandEventArgs(CommandManager manager, IContextData contextData, bool isUserInitiated)
+        {
             if (contextData == null)
                 throw new ArgumentNullException(nameof(contextData), "Data context cannot be null");
 

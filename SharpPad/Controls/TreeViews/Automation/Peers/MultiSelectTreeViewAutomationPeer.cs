@@ -25,22 +25,25 @@ using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using SharpPad.Controls.TreeViews.Controls;
 
-namespace SharpPad.Controls.TreeViews.Automation.Peers {
+namespace SharpPad.Controls.TreeViews.Automation.Peers
+{
     /// <summary>
     /// Powers UI-Automation for <see cref="MultiSelectTreeView"/> types
     /// </summary>
-    public class MultiSelectTreeViewAutomationPeer : ItemsControlAutomationPeer, ISelectionProvider {
+    public class MultiSelectTreeViewAutomationPeer : ItemsControlAutomationPeer, ISelectionProvider
+    {
         #region Constructor
 
-        public MultiSelectTreeViewAutomationPeer(MultiSelectTreeView owner) : base(owner) {
-        }
+        public MultiSelectTreeViewAutomationPeer(MultiSelectTreeView owner) : base(owner) { }
 
         #endregion Constructor
 
         #region Public methods
 
-        public override object GetPattern(PatternInterface patternInterface) {
-            if (patternInterface == PatternInterface.Selection) {
+        public override object GetPattern(PatternInterface patternInterface)
+        {
+            if (patternInterface == PatternInterface.Selection)
+            {
                 return this;
             }
 
@@ -64,7 +67,8 @@ namespace SharpPad.Controls.TreeViews.Automation.Peers {
 
         #region Explicit interface methods
 
-        IRawElementProviderSimple[] ISelectionProvider.GetSelection() {
+        IRawElementProviderSimple[] ISelectionProvider.GetSelection()
+        {
             IRawElementProviderSimple[] array = null;
 
             // MultiSelectTreeViewItem selectedContainer = ((MultiSelectTreeView) base.Owner).SelectedContainer;
@@ -93,14 +97,18 @@ namespace SharpPad.Controls.TreeViews.Automation.Peers {
 
         #region Public properties
 
-        public bool CanSelectMultiple {
-            get {
+        public bool CanSelectMultiple
+        {
+            get
+            {
                 return false;
             }
         }
 
-        public bool IsSelectionRequired {
-            get {
+        public bool IsSelectionRequired
+        {
+            get
+            {
                 return false;
             }
         }
@@ -121,15 +129,18 @@ namespace SharpPad.Controls.TreeViews.Automation.Peers {
         /// <returns>
         /// The new <see cref="T:System.Windows.Automation.Peers.ItemAutomationPeer"/> created.
         /// </returns>
-        protected override ItemAutomationPeer CreateItemAutomationPeer(object item) {
+        protected override ItemAutomationPeer CreateItemAutomationPeer(object item)
+        {
             return new MultiSelectTreeViewItemDataAutomationPeer(item, this);
         }
 
-        protected override AutomationControlType GetAutomationControlTypeCore() {
+        protected override AutomationControlType GetAutomationControlTypeCore()
+        {
             return AutomationControlType.Tree;
         }
 
-        protected override string GetClassNameCore() {
+        protected override string GetClassNameCore()
+        {
             return "MultiSelectTreeView";
         }
 

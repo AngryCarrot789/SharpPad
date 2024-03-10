@@ -23,13 +23,15 @@ using System.IO;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Document;
 
-namespace SharpPad.Notepads {
+namespace SharpPad.Notepads
+{
     public delegate void DocumentEventHandler(NotepadDocument document);
 
     /// <summary>
     /// A document that exists in one or more notepad views
     /// </summary>
-    public class NotepadDocument {
+    public class NotepadDocument
+    {
         private readonly List<Notepad> owners;
         private string filePath;
         private bool isModified;
@@ -51,9 +53,11 @@ namespace SharpPad.Notepads {
         /// Gets or sets the file path of this document on the system. Can only
         /// be set as a valid file path, otherwise exceptions will be thrown
         /// </summary>
-        public string FilePath {
+        public string FilePath
+        {
             get => this.filePath;
-            set {
+            set
+            {
                 if (this.filePath == value)
                     return;
                 this.filePath = Path.GetFullPath(value);
@@ -66,9 +70,11 @@ namespace SharpPad.Notepads {
         /// Gets or sets the modified state of this document. When modified, it shows
         /// an indicator to the user that they should save their changes to the disk
         /// </summary>
-        public bool IsModified {
+        public bool IsModified
+        {
             get => this.isModified;
-            set {
+            set
+            {
                 if (this.isModified == value)
                     return;
                 this.isModified = value;
@@ -85,7 +91,8 @@ namespace SharpPad.Notepads {
         public event DocumentEventHandler FilePathChanged;
         public event DocumentEventHandler IsModifiedChanged;
 
-        public NotepadDocument() {
+        public NotepadDocument()
+        {
             this.owners = new List<Notepad>();
             this.DocumentName = "New Document";
             this.Document = new TextDocument();
@@ -94,33 +101,39 @@ namespace SharpPad.Notepads {
             this.Document.Changed += this.OnDocumentContentChanged;
         }
 
-        private void OnDocumentContentChanged(object sender, DocumentChangeEventArgs e) {
+        private void OnDocumentContentChanged(object sender, DocumentChangeEventArgs e)
+        {
             this.IsModified = true;
         }
 
-        public void AddEditor(TextEditor editor) {
+        public void AddEditor(TextEditor editor)
+        {
             if (this.editors.Contains(editor))
                 throw new InvalidOperationException("Editor already added");
             this.editors.Add(editor);
         }
 
-        public void RemoveEditor(TextEditor editor) {
+        public void RemoveEditor(TextEditor editor)
+        {
             if (!this.editors.Remove(editor))
                 throw new InvalidOperationException("Editor already removed");
         }
 
-        internal static void AddOwner(NotepadDocument document, Notepad notepad) {
+        internal static void AddOwner(NotepadDocument document, Notepad notepad)
+        {
             if (document.owners.Contains(notepad))
                 throw new InvalidOperationException("Document already owned by the notepad");
             document.owners.Add(notepad);
         }
 
-        internal static void RemoveOwner(NotepadDocument document, Notepad notepad) {
+        internal static void RemoveOwner(NotepadDocument document, Notepad notepad)
+        {
             if (!document.owners.Remove(notepad))
                 throw new InvalidOperationException("Document was not owned by the notepad");
         }
 
-        public static bool IsOwnedBy(NotepadDocument document, Notepad notepad) {
+        public static bool IsOwnedBy(NotepadDocument document, Notepad notepad)
+        {
             return document.owners.Contains(notepad);
         }
     }

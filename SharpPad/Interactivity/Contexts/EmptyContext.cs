@@ -18,31 +18,36 @@
 //
 
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace SharpPad.Interactivity.Contexts {
+namespace SharpPad.Interactivity.Contexts
+{
     /// <summary>
     /// An implementation of <see cref="IContextData"/> that is completely empty
     /// </summary>
-    public sealed class EmptyContext : IContextData {
+    public sealed class EmptyContext : IContextData
+    {
+        public static readonly IReadOnlyDictionary<string, object> EmptyDictionary = new ReadOnlyDictionary<string, object>(new Dictionary<string, object>());
+
         /// <summary>
         /// Returns a singleton instance of this empty context
         /// </summary>
         public static IContextData Instance { get; } = new EmptyContext();
 
-        public EmptyContext() {
-        }
+        IReadOnlyDictionary<string, object> IContextData.Entries => EmptyDictionary;
 
-        public IEnumerable<KeyValuePair<string, object>> Entries => Enumerable.Empty<KeyValuePair<string, object>>();
+        public EmptyContext() { }
 
-        public bool TryGetContext(string key, out object value) {
+        bool IContextData.TryGetContext(string key, out object value)
+        {
             value = default;
             return false;
         }
 
-        public bool ContainsKey(DataKey key) => false;
-        public bool ContainsKey(string key) => false;
+        bool IContextData.ContainsKey(DataKey key) => false;
+        bool IContextData.ContainsKey(string key) => false;
 
-        public IContextData Clone() => new EmptyContext();
+        IContextData IContextData.Clone() => new EmptyContext();
     }
 }

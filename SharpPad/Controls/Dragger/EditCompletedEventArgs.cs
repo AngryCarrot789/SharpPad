@@ -19,11 +19,14 @@
 
 using System.Windows;
 
-namespace SharpPad.Controls.Dragger {
-    public class EditCompletedEventArgs : RoutedEventArgs {
+namespace SharpPad.Controls.Dragger
+{
+    public class EditCompletedEventArgs : RoutedEventArgs
+    {
         public bool IsCancelled { get; }
 
-        public EditCompletedEventArgs(bool cancelled) : base(NumberDragger.EditCompletedEvent) {
+        public EditCompletedEventArgs(bool cancelled) : base(NumberDragger.EditCompletedEvent)
+        {
             this.IsCancelled = cancelled;
         }
     }

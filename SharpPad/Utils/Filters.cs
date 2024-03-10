@@ -17,8 +17,10 @@
 // along with SharpPad. If not, see <https://www.gnu.org/licenses/>.
 // 
 
-namespace SharpPad.Utils {
-    public static class Filters {
+namespace SharpPad.Utils
+{
+    public static class Filters
+    {
         public static readonly string TextTypesAndAll =
             Filter.Of().
                    AddFilter("Text File", "txt").

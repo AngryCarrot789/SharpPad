@@ -19,17 +19,19 @@
 
 using System.Collections.Generic;
 
-namespace SharpPad.AdvancedMenuService.ContextService {
+namespace SharpPad.AdvancedMenuService.ContextService
+{
     /// <summary>
     /// An entry that simply acts as a grouping element (to group a collection of child entries)
     /// </summary>
-    public class GroupContextEntry : BaseContextEntry {
-        public GroupContextEntry(string header, string description, IEnumerable<IContextEntry> children = null) : base(children) {
+    public class GroupContextEntry : BaseContextEntry
+    {
+        public GroupContextEntry(string header, string description, IEnumerable<IContextEntry> children = null) : base(children)
+        {
             this.Header = header;
             this.Description = description;
         }
 
-        public GroupContextEntry(string header, IEnumerable<IContextEntry> children = null) : this(header, null, children) {
-        }
+        public GroupContextEntry(string header, IEnumerable<IContextEntry> children = null) : this(header, null, children) { }
     }
 }

@@ -25,18 +25,21 @@ using SharpPad.CommandSystem;
 using SharpPad.Interactivity.Contexts;
 using SharpPad.Utils;
 
-namespace SharpPad.Notepads.Commands {
-    public abstract class DocumentCommand : Command {
-        public override Executability CanExecute(CommandEventArgs e) {
+namespace SharpPad.Notepads.Commands
+{
+    public abstract class DocumentCommand : Command
+    {
+        public override Executability CanExecute(CommandEventArgs e)
+        {
             if (!DataKeys.DocumentKey.TryGetContext(e.ContextData, out NotepadDocument document))
                 return Executability.Invalid;
             return this.CanExecute(document, e);
         }
 
-        protected override Task Execute(CommandEventArgs e) {
-            if (!DataKeys.DocumentKey.TryGetContext(e.ContextData, out NotepadDocument document))
-                return Task.CompletedTask;
-            return this.Execute(document, e);
+        protected override void Execute(CommandEventArgs e)
+        {
+            if (DataKeys.DocumentKey.TryGetContext(e.ContextData, out NotepadDocument document))
+                this.Execute(document, e);
         }
 
         public abstract Executability CanExecute(NotepadDocument document, CommandEventArgs e);
@@ -44,37 +47,47 @@ namespace SharpPad.Notepads.Commands {
         public abstract Task Execute(NotepadDocument document, CommandEventArgs e);
     }
 
-    public class SaveDocumentCommand : DocumentCommand {
-        public override Executability CanExecute(NotepadDocument document, CommandEventArgs e) {
+    public class SaveDocumentCommand : DocumentCommand
+    {
+        public override Executability CanExecute(NotepadDocument document, CommandEventArgs e)
+        {
             return Executability.Valid;
         }
 
-        public override Task Execute(NotepadDocument document, CommandEventArgs e) {
+        public override Task Execute(NotepadDocument document, CommandEventArgs e)
+        {
             SaveOrSaveAs(document);
             return Task.CompletedTask;
         }
 
-        public static void SaveOrSaveAs(NotepadDocument document) {
-            if (string.IsNullOrWhiteSpace(document.FilePath)) {
+        public static void SaveOrSaveAs(NotepadDocument document)
+        {
+            if (string.IsNullOrWhiteSpace(document.FilePath))
+            {
                 SaveDocumentAsCommand.SaveDocumentAs(document);
             }
-            else {
+            else
+            {
                 SaveDocumentAsCommand.SaveDocument(document, document.FilePath);
             }
         }
     }
 
-    public class SaveDocumentAsCommand : DocumentCommand {
-        public override Executability CanExecute(NotepadDocument document, CommandEventArgs e) {
+    public class SaveDocumentAsCommand : DocumentCommand
+    {
+        public override Executability CanExecute(NotepadDocument document, CommandEventArgs e)
+        {
             return Executability.Valid;
         }
 
-        public override Task Execute(NotepadDocument document, CommandEventArgs e) {
+        public override Task Execute(NotepadDocument document, CommandEventArgs e)
+        {
             SaveDocumentAs(document);
             return Task.CompletedTask;
         }
 
-        public static bool? SaveDocumentAs(NotepadDocument document) {
+        public static bool? SaveDocumentAs(NotepadDocument document)
+        {
             string filePath = IoC.FilePickService.SaveFile("Select a location to save the file", Filters.TextTypesAndAll);
             if (filePath == null)
                 return null;
@@ -82,12 +95,15 @@ namespace SharpPad.Notepads.Commands {
             return SaveDocument(document, filePath);
         }
 
-        public static bool SaveDocument(NotepadDocument document, string filePath) {
+        public static bool SaveDocument(NotepadDocument document, string filePath)
+        {
             string text = document.Document.Text;
-            try {
+            try
+            {
                 File.WriteAllText(filePath, text);
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 IoC.MessageService.ShowMessage("Error", "Error while saving file", e.GetToString());
                 return false;
             }
@@ -97,18 +113,23 @@ namespace SharpPad.Notepads.Commands {
         }
     }
 
-    public class CopyFilePathCommand : DocumentCommand {
-        public override Executability CanExecute(NotepadDocument document, CommandEventArgs e) {
+    public class CopyFilePathCommand : DocumentCommand
+    {
+        public override Executability CanExecute(NotepadDocument document, CommandEventArgs e)
+        {
             return !string.IsNullOrWhiteSpace(document.FilePath) ? Executability.Valid : Executability.ValidButCannotExecute;
         }
 
-        public override Task Execute(NotepadDocument document, CommandEventArgs e) {
+        public override Task Execute(NotepadDocument document, CommandEventArgs e)
+        {
             if (string.IsNullOrWhiteSpace(document.FilePath))
                 return Task.CompletedTask;
-            try {
+            try
+            {
                 Clipboard.SetText(document.FilePath);
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 IoC.MessageService.ShowMessage("Clipboard unavailable", "Could not copy file path to clipboard", ex.GetToString());
             }
 

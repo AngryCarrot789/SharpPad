@@ -20,17 +20,19 @@
 using System;
 using SharpPad.Interactivity.Contexts;
 
-namespace SharpPad.AdvancedMenuService.ContextService {
+namespace SharpPad.AdvancedMenuService.ContextService
+{
     /// <summary>
     /// The class for action-based context entries. The header, tooltip, etc, are automatically fetched
     /// </summary>
-    public class EventContextEntry : BaseContextEntry {
+    public class EventContextEntry : BaseContextEntry
+    {
         public Action<IContextData> Action { get; set; }
 
-        public EventContextEntry(string header, string description = null) : base(header, description) {
-        }
+        public EventContextEntry(string header, string description = null) : base(header, description) { }
 
-        public EventContextEntry(Action<IContextData> action, string header, string description = null) : base(header, description) {
+        public EventContextEntry(Action<IContextData> action, string header, string description = null) : base(header, description)
+        {
             this.Action = action;
         }
     }

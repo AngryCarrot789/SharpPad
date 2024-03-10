@@ -22,24 +22,27 @@ using System.Windows.Controls;
 using SharpPad.Interactivity.Contexts;
 using SharpPad.Utils;
 
-namespace SharpPad.Notepads.Controls {
-    public class NotepadTabControl : TabControl {
+namespace SharpPad.Notepads.Controls
+{
+    public class NotepadTabControl : TabControl
+    {
         public static readonly DependencyProperty NotepadProperty = DependencyProperty.Register("Notepad", typeof(Notepad), typeof(NotepadTabControl), new PropertyMetadata(null, (d, e) => ((NotepadTabControl) d).OnNotepadChanged((Notepad) e.OldValue, (Notepad) e.NewValue)));
 
-        public Notepad Notepad {
+        public Notepad Notepad
+        {
             get => (Notepad) this.GetValue(NotepadProperty);
             set => this.SetValue(NotepadProperty, value);
         }
 
         private bool isUpdatingSelection;
 
-        public NotepadTabControl() {
+        public NotepadTabControl() { }
 
-        }
-
-        protected override void OnSelectionChanged(SelectionChangedEventArgs e) {
+        protected override void OnSelectionChanged(SelectionChangedEventArgs e)
+        {
             base.OnSelectionChanged(e);
-            if (!(this.Notepad is Notepad notepad)) {
+            if (!(this.Notepad is Notepad notepad))
+            {
                 return;
             }
 
@@ -49,45 +52,55 @@ namespace SharpPad.Notepads.Controls {
             this.isUpdatingSelection = false;
         }
 
-        static NotepadTabControl() {
+        static NotepadTabControl()
+        {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(NotepadTabControl), new FrameworkPropertyMetadata(typeof(NotepadTabControl)));
         }
 
-        private void OnNotepadChanged(Notepad oldNotepad, Notepad newNotepad) {
-            if (oldNotepad != null) {
+        private void OnNotepadChanged(Notepad oldNotepad, Notepad newNotepad)
+        {
+            if (oldNotepad != null)
+            {
                 oldNotepad.DocumentIndexChanged -= this.OnDocumentIndexChanged;
                 oldNotepad.ActiveDocumentChanged -= this.OnActiveDocumentChanged;
             }
 
-            if (newNotepad != null) {
+            if (newNotepad != null)
+            {
                 newNotepad.DocumentIndexChanged += this.OnDocumentIndexChanged;
                 newNotepad.ActiveDocumentChanged += this.OnActiveDocumentChanged;
                 DataManager.SetContextData(this, new ContextData().Set(DataKeys.NotepadKey, newNotepad));
             }
-            else {
+            else
+            {
                 DataManager.ClearContextData(this);
             }
         }
 
-        private void OnDocumentIndexChanged(Notepad notepad, NotepadDocument document, int oldIndex, int newIndex) {
-            if (oldIndex == -1) {
+        private void OnDocumentIndexChanged(Notepad notepad, NotepadDocument document, int oldIndex, int newIndex)
+        {
+            if (oldIndex == -1)
+            {
                 NotepadTabItem item = new NotepadTabItem();
                 item.OnConnecting(this, document);
                 this.Items.Insert(newIndex, item);
                 item.OnConnected();
             }
-            else if (newIndex == -1) {
+            else if (newIndex == -1)
+            {
                 NotepadTabItem item = (NotepadTabItem) this.Items[oldIndex];
                 item.OnDisconnecting();
                 this.Items.RemoveAt(oldIndex);
                 item.OnDisconnected();
             }
-            else {
+            else
+            {
                 CollectionUtils.MoveItem(this.Items, oldIndex, newIndex);
             }
         }
 
-        private void OnActiveDocumentChanged(Notepad notepad, NotepadDocument olddocument, NotepadDocument newdocument) {
+        private void OnActiveDocumentChanged(Notepad notepad, NotepadDocument olddocument, NotepadDocument newdocument)
+        {
             this.SelectedIndex = newdocument == null ? -1 : notepad.Documents.IndexOf(newdocument);
         }
     }

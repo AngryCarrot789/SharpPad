@@ -1,16 +1,20 @@
 using System;
 using System.Threading.Tasks;
 
-namespace SharpPad.Utils.Commands {
+namespace SharpPad.Utils.Commands
+{
     /// <summary>
     /// A simple async relay command, which does not take any parameters
     /// </summary>
-    public class AsyncRelayCommand : BaseAsyncRelayCommand {
+    public class AsyncRelayCommand : BaseAsyncRelayCommand
+    {
         private readonly Func<Task> execute;
         private readonly Func<bool> canExecute;
 
-        public AsyncRelayCommand(Func<Task> execute, Func<bool> canExecute = null) {
-            if (execute == null) {
+        public AsyncRelayCommand(Func<Task> execute, Func<bool> canExecute = null)
+        {
+            if (execute == null)
+            {
                 throw new ArgumentNullException(nameof(execute), "Execute callback cannot be null");
             }
 
@@ -18,11 +22,13 @@ namespace SharpPad.Utils.Commands {
             this.canExecute = canExecute;
         }
 
-        protected override bool CanExecuteCore(object parameter) {
+        protected override bool CanExecuteCore(object parameter)
+        {
             return this.canExecute == null || this.canExecute();
         }
 
-        protected override Task ExecuteCoreAsync(object parameter) {
+        protected override Task ExecuteCoreAsync(object parameter)
+        {
             return this.execute();
         }
     }
@@ -31,7 +37,8 @@ namespace SharpPad.Utils.Commands {
     /// A simple async relay command, which may take a parameter
     /// </summary>
     /// <typeparam name="T">The type of parameter</typeparam>
-    public class AsyncRelayCommand<T> : BaseAsyncRelayCommand {
+    public class AsyncRelayCommand<T> : BaseAsyncRelayCommand
+    {
         private readonly Func<T, Task> execute;
         private readonly Func<T, bool> canExecute;
 
@@ -40,8 +47,10 @@ namespace SharpPad.Utils.Commands {
         /// </summary>
         public bool ConvertParameter { get; set; }
 
-        public AsyncRelayCommand(Func<T, Task> execute, Func<T, bool> canExecute = null, bool convertParameter = true) {
-            if (execute == null) {
+        public AsyncRelayCommand(Func<T, Task> execute, Func<T, bool> canExecute = null, bool convertParameter = true)
+        {
+            if (execute == null)
+            {
                 throw new ArgumentNullException(nameof(execute), "Execute callback cannot be null");
             }
 
@@ -50,8 +59,10 @@ namespace SharpPad.Utils.Commands {
             this.ConvertParameter = convertParameter;
         }
 
-        protected override bool CanExecuteCore(object parameter) {
-            if (this.ConvertParameter) {
+        protected override bool CanExecuteCore(object parameter)
+        {
+            if (this.ConvertParameter)
+            {
                 parameter = GetConvertedParameter<T>(parameter);
             }
 
@@ -60,19 +71,24 @@ namespace SharpPad.Utils.Commands {
                    parameter is T t && this.canExecute(t);
         }
 
-        protected override Task ExecuteCoreAsync(object parameter) {
-            if (this.ConvertParameter) {
+        protected override Task ExecuteCoreAsync(object parameter)
+        {
+            if (this.ConvertParameter)
+            {
                 parameter = GetConvertedParameter<T>(parameter);
             }
 
             T param;
-            if (parameter == null) {
+            if (parameter == null)
+            {
                 param = default;
             }
-            else if (parameter is T) {
+            else if (parameter is T)
+            {
                 param = (T) parameter;
             }
-            else {
+            else
+            {
                 return Task.CompletedTask;
             }
 

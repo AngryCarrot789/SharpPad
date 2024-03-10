@@ -25,20 +25,23 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using SharpPad.Interactivity.Contexts;
 
-namespace SharpPad.CommandSystem.Usages {
+namespace SharpPad.CommandSystem.Usages
+{
     /// <summary>
     /// A command usage for a <see cref="ICommandSource"/> control and that uses an <see cref="ICommand"/> to execute the underlying command
     /// </summary>
-    public class CommandSourceCommandUsage : CommandUsage {
-        private CommandImpl commandImpl;
+    public class CommandSourceCommandUsage : CommandUsage
+    {
+        private CoreCommandICommand command;
 
-        public ICommand Command => this.commandImpl ?? (this.commandImpl = new CommandImpl(this));
+        public ICommand Command => this.command ?? (this.command = new CoreCommandICommand(this));
 
-        public CommandSourceCommandUsage(string commandId) : base(commandId) {
-        }
+        public CommandSourceCommandUsage(string commandId) : base(commandId) { }
 
-        private static void SetCommand(DependencyObject control, ICommand cmd) {
-            switch (control) {
+        private static void SetCommand(DependencyObject control, ICommand cmd)
+        {
+            switch (control)
+            {
                 case ButtonBase btnBase:
                     btnBase.Command = cmd;
                     break;
@@ -52,7 +55,8 @@ namespace SharpPad.CommandSystem.Usages {
             }
         }
 
-        protected override void OnConnected() {
+        protected override void OnConnected()
+        {
             base.OnConnected();
             if (!(this.Control is ICommandSource))
                 throw new InvalidOperationException("Cannot connect to non-ICommandSource");
@@ -60,50 +64,41 @@ namespace SharpPad.CommandSystem.Usages {
             SetCommand(this.Control, this.Command);
         }
 
-        protected override void OnDisconnected() {
+        protected override void OnDisconnected()
+        {
             base.OnDisconnected();
             SetCommand(this.Control, null);
         }
 
-        protected override void UpdateCanExecute() {
-            this.commandImpl?.RaiseCanExecuteChanged();
-        }
+        protected override void UpdateCanExecute() => this.command?.RaiseCanExecuteChanged();
 
-        private class CommandImpl : ICommand {
+        private class CoreCommandICommand : ICommand
+        {
             private readonly CommandSourceCommandUsage usage;
-            private bool isExecuting;
 
             public event EventHandler CanExecuteChanged;
 
-            public CommandImpl(CommandSourceCommandUsage usage) {
+            public CoreCommandICommand(CommandSourceCommandUsage usage)
+            {
                 this.usage = usage;
             }
 
-            public bool CanExecute(object parameter) {
-                if (this.isExecuting) {
-                    return false;
-                }
-
+            public bool CanExecute(object parameter)
+            {
                 IContextData ctx = this.usage.GetContextData();
                 if (ctx == null)
                     return false;
-                Executability state = CommandManager.Instance.CanExecute(this.usage.CommandId, ctx);
-                return state == Executability.Valid;
+
+                return CommandManager.Instance.CanExecute(this.usage.CommandId, ctx) == Executability.Valid;
             }
 
-            public async void Execute(object parameter) {
-                if (!this.isExecuting) {
-                    this.isExecuting = true;
-                    try {
-                        await CommandManager.Instance.TryExecute(this.usage.CommandId, () => this.usage.GetContextData() ?? EmptyContext.Instance);
-                    }
-                    finally {
-                        this.isExecuting = false;
-                    }
-                }
+            public void Execute(object parameter)
+            {
+                CommandManager.Instance.TryExecute(this.usage.CommandId, () => this.usage.GetContextData() ?? EmptyContext.Instance);
             }
 
-            public void RaiseCanExecuteChanged() {
+            public void RaiseCanExecuteChanged()
+            {
                 this.CanExecuteChanged?.Invoke(this, EventArgs.Empty);
             }
         }

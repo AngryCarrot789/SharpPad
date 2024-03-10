@@ -21,36 +21,40 @@ using System.Threading.Tasks;
 using SharpPad.CommandSystem;
 using SharpPad.Interactivity.Contexts;
 
-namespace SharpPad.Notepads.Commands {
-    public class CloseDocumentCommand : Command {
-        public override Executability CanExecute(CommandEventArgs e) {
+namespace SharpPad.Notepads.Commands
+{
+    public class CloseDocumentCommand : Command
+    {
+        public override Executability CanExecute(CommandEventArgs e)
+        {
             return e.ContextData.ContainsAll(DataKeys.NotepadKey, DataKeys.DocumentKey) ? Executability.Valid : Executability.Invalid;
         }
 
-        protected override Task Execute(CommandEventArgs e) {
+        protected override void Execute(CommandEventArgs e)
+        {
             if (!DataKeys.NotepadKey.TryGetContext(e.ContextData, out Notepad notepad))
-                return Task.CompletedTask;
+                return;
             if (!DataKeys.DocumentKey.TryGetContext(e.ContextData, out NotepadDocument document))
-                return Task.CompletedTask;
+                return;
 
             int index = notepad.Documents.IndexOf(document);
-            if (index == -1) {
-                return Task.CompletedTask;
-            }
+            if (index == -1)
+                return;
 
             bool isActiveDocument = notepad.ActiveDocument == document;
             notepad.RemoveDocumentAt(index);
-            if (isActiveDocument) {
-                if (index > 0) {
+            if (isActiveDocument)
+            {
+                if (index > 0)
+                {
                     index--;
                 }
 
-                if (index < notepad.Documents.Count) {
+                if (index < notepad.Documents.Count)
+                {
                     notepad.ActiveDocument = notepad.Documents[index];
                 }
             }
-
-            return Task.CompletedTask;
         }
     }
 }

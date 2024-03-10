@@ -20,8 +20,10 @@
 using System.IO;
 using SharpPad.Shortcuts.Managing;
 
-namespace SharpPad.Shortcuts.Keymapping {
-    public interface IKeymapSerialiser {
+namespace SharpPad.Shortcuts.Keymapping
+{
+    public interface IKeymapSerialiser
+    {
         Keymap Deserialise(ShortcutManager manager, Stream stream);
         void Serialise(Keymap keymap, Stream stream);
     }

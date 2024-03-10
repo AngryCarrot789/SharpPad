@@ -17,10 +17,11 @@
 // along with SharpPad. If not, see <https://www.gnu.org/licenses/>.
 //
 
-namespace SharpPad.Notifications {
+namespace SharpPad.Notifications
+{
     /// <summary>
     /// A class which manages all notifications
     /// </summary>
-    public class NotificationManager {
-    }
+    public class NotificationManager
+    { }
 }

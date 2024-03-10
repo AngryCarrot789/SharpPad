@@ -23,25 +23,31 @@ using SharpPad.Interactivity;
 using SharpPad.Interactivity.Contexts;
 using SharpPad.Notepads.Commands;
 
-namespace SharpPad.Notepads {
-    public static class NotepadDropRegistry {
+namespace SharpPad.Notepads
+{
+    public static class NotepadDropRegistry
+    {
         public static DragDropRegistry<Notepad> DropRegistry { get; }
 
-        static NotepadDropRegistry() {
+        static NotepadDropRegistry()
+        {
             DropRegistry = new DragDropRegistry<Notepad>();
             DropRegistry.RegisterNative<Notepad>(NativeDropTypes.FileDrop, CanDropFile, OnDropFile);
         }
 
-        private static EnumDropType CanDropFile(Notepad notepad, IDataObjekt data, EnumDropType dropType, IContextData ctx) {
+        private static EnumDropType CanDropFile(Notepad notepad, IDataObjekt data, EnumDropType dropType, IContextData ctx)
+        {
             return data.GetDataPresent(DataFormats.FileDrop) ? EnumDropType.Copy : EnumDropType.None;
         }
 
-        private static Task OnDropFile(Notepad notepad, IDataObjekt data, EnumDropType dropType, IContextData ctx) {
-            if (!(data.GetData(NativeDropTypes.FileDrop) is string[] files)) {
+        private static Task OnDropFile(Notepad notepad, IDataObjekt data, EnumDropType dropType, IContextData ctx)
+        {
+            if (!(data.GetData(NativeDropTypes.FileDrop) is string[] files))
+            {
                 return Task.CompletedTask;
             }
 
-            OpenFileCommand.OpenFiles(notepad, files);
+            OpenFilesCommand.OpenFiles(notepad, files);
             return Task.CompletedTask;
         }
     }

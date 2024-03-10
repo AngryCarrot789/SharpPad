@@ -19,8 +19,10 @@
 
 using SharpPad.Shortcuts.Inputs;
 
-namespace SharpPad.Shortcuts.Dialogs {
-    public interface IKeyboardDialogService {
+namespace SharpPad.Shortcuts.Dialogs
+{
+    public interface IKeyboardDialogService
+    {
         KeyStroke? ShowGetKeyStrokeDialog();
     }
 }

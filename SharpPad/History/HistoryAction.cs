@@ -19,17 +19,19 @@
 
 using System;
 
-namespace SharpPad.History {
+namespace SharpPad.History
+{
     /// <summary>
     /// An order-safe implementation of <see cref="IHistoryAction"/>, that throws an exception if undo or redo were called in the wrong orders
     /// </summary>
-    public abstract class HistoryAction : IHistoryAction {
+    public abstract class HistoryAction : IHistoryAction
+    {
         private int state; // 0 = default, 1 = last was undo, 2 = last was redo
 
-        protected HistoryAction() {
-        }
+        protected HistoryAction() { }
 
-        public bool Undo() {
+        public bool Undo()
+        {
             if (this.state == 1)
                 throw new InvalidOperationException("Undo cannot be called sequentially more than once. Redo must be called before calling Undo again");
             if (!this.OnUndo())
@@ -38,7 +40,8 @@ namespace SharpPad.History {
             return true;
         }
 
-        public bool Redo() {
+        public bool Redo()
+        {
             if (this.state == 0)
                 throw new InvalidOperationException("Undo has not been called yet, therefore, redo cannot be called");
             if (this.state == 2)

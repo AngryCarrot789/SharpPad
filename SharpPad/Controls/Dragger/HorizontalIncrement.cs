@@ -17,8 +17,10 @@
 // along with SharpPad. If not, see <https://www.gnu.org/licenses/>.
 // 
 
-namespace SharpPad.Controls.Dragger {
-    public enum HorizontalIncrement {
+namespace SharpPad.Controls.Dragger
+{
+    public enum HorizontalIncrement
+    {
         /// <summary>
         /// Decrement the value when dragged left, increment when dragged right (default)
         /// </summary>

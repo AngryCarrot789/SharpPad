@@ -19,9 +19,10 @@
 
 using System.Windows;
 
-namespace SharpPad.Controls.Dragger {
-    public class EditStartEventArgs : RoutedEventArgs {
-        public EditStartEventArgs() : base(NumberDragger.EditStartedEvent) {
-        }
+namespace SharpPad.Controls.Dragger
+{
+    public class EditStartEventArgs : RoutedEventArgs
+    {
+        public EditStartEventArgs() : base(NumberDragger.EditStartedEvent) { }
     }
 }

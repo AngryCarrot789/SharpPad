@@ -19,49 +19,59 @@
 
 using System.Collections.Generic;
 
-namespace SharpPad.Interactivity.Contexts {
-    public static class ContextDataHelper {
-        public static bool ContainsAll(this IContextData data, params DataKey[] keys) {
+namespace SharpPad.Interactivity.Contexts
+{
+    public static class ContextDataHelper
+    {
+        public static bool ContainsAll(this IContextData data, params DataKey[] keys)
+        {
             foreach (DataKey key in keys)
                 if (!data.ContainsKey(key))
                     return false;
             return true;
         }
 
-        public static bool ContainsAll(this IContextData data, IEnumerable<DataKey> keys) {
+        public static bool ContainsAll(this IContextData data, IEnumerable<DataKey> keys)
+        {
             foreach (DataKey key in keys)
                 if (!data.ContainsKey(key))
                     return false;
             return true;
         }
 
-        public static bool ContainsAll(this IContextData data, DataKey keyA, DataKey keyB) {
+        public static bool ContainsAll(this IContextData data, DataKey keyA, DataKey keyB)
+        {
             return data.ContainsKey(keyA) && data.ContainsKey(keyB);
         }
 
-        public static bool ContainsAll(this IContextData data, DataKey keyA, DataKey keyB, DataKey keyC) {
+        public static bool ContainsAll(this IContextData data, DataKey keyA, DataKey keyB, DataKey keyC)
+        {
             return data.ContainsKey(keyA) && data.ContainsKey(keyB) && data.ContainsKey(keyC);
         }
 
-        public static bool ContainsAll(this IContextData data, params string[] keys) {
+        public static bool ContainsAll(this IContextData data, params string[] keys)
+        {
             foreach (string key in keys)
                 if (!data.ContainsKey(key))
                     return false;
             return true;
         }
 
-        public static bool ContainsAll(this IContextData data, IEnumerable<string> keys) {
+        public static bool ContainsAll(this IContextData data, IEnumerable<string> keys)
+        {
             foreach (string key in keys)
                 if (!data.ContainsKey(key))
                     return false;
             return true;
         }
 
-        public static bool ContainsAll(this IContextData data, string keyA, string keyB) {
+        public static bool ContainsAll(this IContextData data, string keyA, string keyB)
+        {
             return data.ContainsKey(keyA) && data.ContainsKey(keyB);
         }
 
-        public static bool ContainsAll(this IContextData data, string keyA, string keyB, string keyC) {
+        public static bool ContainsAll(this IContextData data, string keyA, string keyB, string keyC)
+        {
             return data.ContainsKey(keyA) && data.ContainsKey(keyB) && data.ContainsKey(keyC);
         }
     }

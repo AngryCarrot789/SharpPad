@@ -19,8 +19,10 @@
 
 using System.Windows;
 
-namespace SharpPad.Behaviours {
-    public interface IBehaviour {
+namespace SharpPad.Behaviours
+{
+    public interface IBehaviour
+    {
         /// <summary>
         /// Gets the element attached to this behaviour. When non-null, we are attached. When null, we are detached.
         /// </summary>

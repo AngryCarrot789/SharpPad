@@ -79,7 +79,7 @@
                     </bh:BehaviourCollection.Behaviours>
                 </MenuItem>
                 <MenuItem Header="Light Theme" Click="SetThemeClick" Uid="5"/>
-                </MenuItem>
+            </MenuItem>
         </c:ContextCapturingMenu>
         <Border Grid.Row="1">
             <Grid Background="Transparent">
@@ -87,12 +87,11 @@
                            Foreground="{DynamicResource ABrush.Foreground.Disabled}" FontSize="14"
                            VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 <controls:NotepadEditorPanel x:Name="PART_NotepadPanel" Background="Transparent"
-                                             VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
-                                             FontSize="14" FontFamily="Consolas"/>
+                                             VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
             </Grid>
         </Border>
-        <Border Grid.Row="2" Background="{DynamicResource ABrush.Tone5.Background.Static}" 
-                BorderThickness="0,1,0,0" BorderBrush="{DynamicResource PanelBorderBrush}" 
+        <Border Grid.Row="2" Background="{DynamicResource ABrush.Tone5.Background.Static}"
+                BorderThickness="0,1,0,0" BorderBrush="{DynamicResource PanelBorderBrush}"
                 Padding="3,0">
             <DockPanel>
                 <DockPanel x:Name="PART_ActiveBackgroundTaskGrid" DockPanel.Dock="Right">
@@ -104,7 +103,7 @@
                                  Minimum="0" Maximum="1" Value="0"/>
                 </DockPanel>
                 <TextBlock x:Name="ActivityTextBlock"
-                           Padding="4,0" VerticalAlignment="Center" FontFamily="Segoe UI" 
+                           Padding="4,0" VerticalAlignment="Center" FontFamily="Segoe UI"
                            TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
                            ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Text}"/>
             </DockPanel>

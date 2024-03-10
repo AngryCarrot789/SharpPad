@@ -19,9 +19,11 @@
 
 using System;
 
-namespace SharpPad.Interactivity {
+namespace SharpPad.Interactivity
+{
     [Flags]
-    public enum EnumDropType {
+    public enum EnumDropType
+    {
         /// <summary>
         /// No drop (default state)
         /// </summary>

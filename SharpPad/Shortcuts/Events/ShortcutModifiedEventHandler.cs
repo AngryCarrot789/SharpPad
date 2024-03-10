@@ -17,6 +17,7 @@
 // along with SharpPad. If not, see <https://www.gnu.org/licenses/>.
 //
 
-namespace SharpPad.Shortcuts.Events {
+namespace SharpPad.Shortcuts.Events
+{
     public delegate void ShortcutModifiedEventHandler<in T>(T sender, IShortcut oldValue);
 }

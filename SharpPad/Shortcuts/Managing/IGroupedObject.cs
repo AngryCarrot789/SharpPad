@@ -17,11 +17,13 @@
 // along with SharpPad. If not, see <https://www.gnu.org/licenses/>.
 //
 
-namespace SharpPad.Shortcuts.Managing {
+namespace SharpPad.Shortcuts.Managing
+{
     /// <summary>
     /// An interface implemented by <see cref="ShortcutGroup"/>, <see cref="GroupedShortcut"/> and <see cref="GroupedInputState"/>
     /// </summary>
-    public interface IGroupedObject {
+    public interface IGroupedObject
+    {
         /// <summary>
         /// Gets the manager that this object belongs to. This typically is equal to <see cref="ShortcutManager.Instance"/>
         /// </summary>

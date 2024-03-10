@@ -17,8 +17,10 @@
 // along with SharpPad. If not, see <https://www.gnu.org/licenses/>.
 // 
 
-namespace SharpPad.Controls.Dragger {
-    public enum VerticalIncrement {
+namespace SharpPad.Controls.Dragger
+{
+    public enum VerticalIncrement
+    {
         /// <summary>
         /// Decrement the value when dragged up, and increment when dragged down (default)
         /// </summary>

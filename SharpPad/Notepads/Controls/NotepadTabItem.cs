@@ -23,8 +23,10 @@ using System.Windows.Controls;
 using SharpPad.Controls.Bindings;
 using SharpPad.Interactivity.Contexts;
 
-namespace SharpPad.Notepads.Controls {
-    public class NotepadTabItem : TabItem {
+namespace SharpPad.Notepads.Controls
+{
+    public class NotepadTabItem : TabItem, INotepadTabUI
+    {
         public NotepadTabControl TabControl { get; private set; }
 
         public NotepadDocument Document { get; private set; }
@@ -32,43 +34,53 @@ namespace SharpPad.Notepads.Controls {
         private readonly IBinder<NotepadDocument> docNameBinder = new GetSetAutoEventPropertyBinder<NotepadDocument>(TextBlock.TextProperty, nameof(NotepadDocument.FilePathChanged), b => b.Model.DocumentName + (b.Model.IsModified ? "*" : ""), null);
 
         private TextBlock PART_DocNameTextBlock;
+        private readonly ContextData contextData;
 
-        public NotepadTabItem() {
+        public NotepadTabItem()
+        {
+            this.contextData = new ContextData().Set(DataKeys.UINotepadTabKey, this);
         }
 
-        static NotepadTabItem() {
+        static NotepadTabItem()
+        {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(NotepadTabItem), new FrameworkPropertyMetadata(typeof(NotepadTabItem)));
         }
 
-        public override void OnApplyTemplate() {
+        public override void OnApplyTemplate()
+        {
             base.OnApplyTemplate();
             this.PART_DocNameTextBlock = this.GetTemplateChild(nameof(this.PART_DocNameTextBlock)) as TextBlock ?? throw new Exception("Missing " + nameof(this.PART_DocNameTextBlock));
             this.docNameBinder.AttachControl(this.PART_DocNameTextBlock);
         }
 
-        public void OnConnecting(NotepadTabControl owner, NotepadDocument model) {
+        public void OnConnecting(NotepadTabControl owner, NotepadDocument model)
+        {
             this.TabControl = owner;
             this.Document = model;
         }
 
-        public void OnConnected() {
-            DataManager.SetContextData(this, new ContextData().Set(DataKeys.DocumentKey, this.Document));
+        public void OnConnected()
+        {
+            DataManager.SetContextData(this, this.contextData.Set(DataKeys.DocumentKey, this.Document).Clone());
             this.docNameBinder.AttachModel(this.Document);
             this.Document.IsModifiedChanged += this.OnIsModifiedChanged;
         }
 
-        public void OnDisconnecting() {
-            DataManager.ClearContextData(this);
+        public void OnDisconnecting()
+        {
+            DataManager.SetContextData(this, this.contextData.Set(DataKeys.DocumentKey, null).Clone());
             this.docNameBinder.DetachModel();
             this.Document.IsModifiedChanged -= this.OnIsModifiedChanged;
         }
 
-        public void OnDisconnected() {
+        public void OnDisconnected()
+        {
             this.TabControl = null;
             this.Document = null;
         }
 
-        private void OnIsModifiedChanged(NotepadDocument document) {
+        private void OnIsModifiedChanged(NotepadDocument document)
+        {
             this.docNameBinder.OnModelValueChanged();
         }
     }

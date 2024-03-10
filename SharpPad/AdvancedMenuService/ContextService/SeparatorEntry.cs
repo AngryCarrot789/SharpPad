@@ -17,11 +17,13 @@
 // along with SharpPad. If not, see <https://www.gnu.org/licenses/>.
 //
 
-namespace SharpPad.AdvancedMenuService.ContextService {
+namespace SharpPad.AdvancedMenuService.ContextService
+{
     /// <summary>
     /// A separator element between menu items
     /// </summary>
-    public class SeparatorEntry : IContextEntry {
+    public class SeparatorEntry : IContextEntry
+    {
         public static SeparatorEntry NewInstance => new SeparatorEntry();
     }
 }

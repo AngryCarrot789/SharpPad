@@ -22,11 +22,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 
-namespace SharpPad {
+namespace SharpPad
+{
     /// <summary>
     /// Provides a way of queueing work on a thread, synchronously (blocking waiting for completion) or asynchronously (task representing the completion)
     /// </summary>
-    public interface IDispatcher {
+    public interface IDispatcher
+    {
         /// <summary>
         /// Whether or not the caller is on the application thread or not. When true, using any of the dispatcher functions is typically unnecessary
         /// </summary>
@@ -91,5 +93,10 @@ namespace SharpPad {
         /// <typeparam name="TResult">The return value for the function</typeparam>
         /// <returns>A task that can be awaited, which is completed once the function returns on the UI thread</returns>
         Task<T> InvokeAsync<T>(Func<T> function, DispatcherPriority priority = DispatcherPriority.Normal, CancellationToken token = default);
+
+        /// <summary>
+        /// Ensures that this dispatcher is associated with the current thread
+        /// </summary>
+        void VerifyAccess();
     }
 }

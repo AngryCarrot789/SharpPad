@@ -26,15 +26,19 @@ using SharpPad.Interactivity.Contexts;
 using SharpPad.Shortcuts.WPF.Converters;
 using SharpPad.Utils;
 
-namespace SharpPad.AdvancedMenuService.ContextService.Controls {
-    public class AdvancedContextCommandMenuItem : AdvancedContextMenuItem {
+namespace SharpPad.AdvancedMenuService.ContextService.Controls
+{
+    public class AdvancedContextCommandMenuItem : AdvancedContextMenuItem
+    {
         public bool IsExecuting { get; private set; }
 
         private bool canExecute;
 
-        protected bool CanExecute {
+        protected bool CanExecute
+        {
             get => this.canExecute;
-            set {
+            set
+            {
                 this.canExecute = value;
 
                 // Causes IsEnableCore to be fetched, which returns false if we are executing something or
@@ -47,53 +51,64 @@ namespace SharpPad.AdvancedMenuService.ContextService.Controls {
 
         protected override bool IsEnabledCore => base.IsEnabledCore && this.CanExecute;
 
-        public AdvancedContextCommandMenuItem() {
+        public AdvancedContextCommandMenuItem()
+        {
             this.Loaded += this.OnLoaded;
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs e) {
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
             this.UpdateCanExecuteVisual();
             CommandContextEntry entry = this.Entry;
-            if (entry == null) {
+            if (entry == null)
+            {
                 return;
             }
 
             Command cmd = CommandManager.Instance.GetCommandById(entry.CommandId);
-            if (cmd != null) {
-                if (CommandIdToGestureConverter.CommandIdToGesture(entry.CommandId, null, out string value)) {
+            if (cmd != null)
+            {
+                if (CommandIdToGestureConverter.CommandIdToGesture(entry.CommandId, null, out string value))
+                {
                     this.SetCurrentValue(InputGestureTextProperty, value);
                 }
             }
         }
 
-        public void UpdateCanExecuteVisual() {
+        public void UpdateCanExecuteVisual()
+        {
             this.UpdateCanExecuteVisual(this.Menu?.ContextOnMenuOpen);
         }
 
-        public void UpdateCanExecuteVisual(IContextData ctx) {
-            if (!this.IsLoaded) {
+        public void UpdateCanExecuteVisual(IContextData ctx)
+        {
+            if (!this.IsLoaded)
                 return;
-            }
 
-            if (this.IsExecuting) {
+            if (this.IsExecuting)
+            {
                 this.CanExecute = false;
             }
-            else {
+            else
+            {
                 string cmdId = this.Entry.CommandId;
                 Executability state = !string.IsNullOrWhiteSpace(cmdId) ? CommandManager.Instance.CanExecute(cmdId, ctx, true) : Executability.Invalid;
                 this.CanExecute = state == Executability.Valid;
             }
         }
 
-        protected override void OnClick() {
-            if (this.IsExecuting) {
+        protected override void OnClick()
+        {
+            if (this.IsExecuting)
+            {
                 this.CanExecute = false;
                 return;
             }
 
             this.IsExecuting = true;
             string id = this.Entry.CommandId;
-            if (string.IsNullOrWhiteSpace(id)) {
+            if (string.IsNullOrWhiteSpace(id))
+            {
                 base.OnClick();
                 this.IsExecuting = false;
                 this.UpdateCanExecuteVisual();
@@ -106,20 +121,26 @@ namespace SharpPad.AdvancedMenuService.ContextService.Controls {
             this.DispatchCommand(id);
         }
 
-        private void DispatchCommand(string cmdId) {
+        private void DispatchCommand(string cmdId)
+        {
             IContextData context = this.Menu?.ContextOnMenuOpen;
-            if (context != null) {
+            if (context != null)
+            {
                 this.Dispatcher.BeginInvoke((Action) (() => this.ExecuteCommand(cmdId, context)), DispatcherPriority.Render);
             }
         }
 
-        private void ExecuteCommand(string cmdId, IContextData context) {
-            try {
+        private void ExecuteCommand(string cmdId, IContextData context)
+        {
+            try
+            {
                 if (!string.IsNullOrWhiteSpace(cmdId) && context != null)
                     CommandManager.Instance.Execute(cmdId, context);
             }
-            catch (Exception e) {
-                if (!Debugger.IsAttached) {
+            catch (Exception e)
+            {
+                if (!Debugger.IsAttached)
+                {
                     IoC.MessageService.ShowMessage(
                         "Error",
                         "An unexpected error occurred while processing command. " +
@@ -127,7 +148,8 @@ namespace SharpPad.AdvancedMenuService.ContextService.Controls {
                         e.GetToString());
                 }
             }
-            finally {
+            finally
+            {
                 this.IsExecuting = false;
                 this.UpdateCanExecuteVisual();
             }

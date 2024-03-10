@@ -73,6 +73,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ApplicationCore.cs" />
+    <Compile Include="CommandSystem\AsyncCommand.cs" />
     <Compile Include="CommandSystem\Usages\BasicButtonCommandUsage.cs" />
     <Compile Include="CommandSystem\Usages\CommandSourceCommandUsage.cs" />
     <Compile Include="Controls\Bindings\AccessorAutoEventPropertyBinder.cs" />
@@ -115,6 +116,7 @@
     <Compile Include="Notepads\Commands\EditorCommand.cs" />
     <Compile Include="Notepads\Commands\NotepadCommand.cs" />
     <Compile Include="Notepads\Commands\CloseDocumentCommand.cs" />
+    <Compile Include="Notepads\Controls\INotepadTabUI.cs" />
     <Compile Include="Notepads\Controls\NotepadEditorPanel.cs" />
     <Compile Include="Notepads\Controls\NotepadTabControl.cs" />
     <Compile Include="Notepads\Controls\NotepadTabItem.cs" />
@@ -259,6 +261,7 @@
     <Compile Include="Utils\ErrorList.cs" />
     <Compile Include="Utils\EventArgsCache.cs" />
     <Compile Include="Utils\EventUtils.cs" />
+    <Compile Include="Utils\ExceptionEventHandler.cs" />
     <Compile Include="Utils\ExceptionUtils.cs" />
     <Compile Include="Utils\Expressions\BasicNumericExpression.cs" />
     <Compile Include="Utils\Expressions\ComplexNumericExpression.cs" />
@@ -286,8 +289,9 @@
     <Compile Include="Utils\Periodic.cs" />
     <Compile Include="Utils\PrecisionTimer.cs" />
     <Compile Include="Utils\RandomUtils.cs" />
-    <Compile Include="Utils\RapidDispatchAction.cs" />
-    <Compile Include="Utils\RapidDispatchActionEx.cs" />
+    <Compile Include="Utils\RDA\IRapidDispatchAction.cs" />
+    <Compile Include="Utils\RDA\RapidDispatchAction.cs" />
+    <Compile Include="Utils\RDA\RapidDispatchActionEx.cs" />
     <Compile Include="Utils\Rect2d.cs" />
     <Compile Include="Utils\Rect2i.cs" />
     <Compile Include="Utils\Reference.cs" />
@@ -310,6 +314,7 @@
     <Compile Include="Utils\Time.cs" />
     <Compile Include="Utils\TypeUtils.cs" />
     <Compile Include="Utils\UIUtils.cs" />
+    <Compile Include="Utils\Validate.cs" />
     <Compile Include="Utils\Vec2i.cs" />
     <Compile Include="Utils\Visuals\VisualAncestorChangedEventInterface.cs" />
     <Compile Include="Utils\Visuals\VisualTreeUtils.cs" />

@@ -19,11 +19,13 @@
 
 using System;
 
-namespace SharpPad.Shortcuts.Inputs {
+namespace SharpPad.Shortcuts.Inputs
+{
     /// <summary>
     /// An interface defining behaviour for input strokes
     /// </summary>
-    public interface IInputStroke : IEquatable<IInputStroke> {
+    public interface IInputStroke : IEquatable<IInputStroke>
+    {
         /// <summary>
         /// This input stroke is keyboard-based
         /// </summary>

@@ -17,8 +17,10 @@
 // along with SharpPad. If not, see <https://www.gnu.org/licenses/>.
 //
 
-namespace SharpPad.History {
-    public interface IHistoryAction {
+namespace SharpPad.History
+{
+    public interface IHistoryAction
+    {
         /// <summary>
         /// Undoes this action
         /// </summary>

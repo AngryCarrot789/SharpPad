@@ -28,14 +28,17 @@ using SharpPad.Tasks;
 using SharpPad.Themes;
 using SharpPad.Views;
 
-namespace SharpPad.Notepads.Views {
+namespace SharpPad.Notepads.Views
+{
     /// <summary>
     /// Interaction logic for EditorWindow.xaml
     /// </summary>
-    public partial class NotepadWindow : WindowEx {
+    public partial class NotepadWindow : WindowEx
+    {
         public static readonly DependencyProperty NotepadProperty = DependencyProperty.Register("Notepad", typeof(Notepad), typeof(NotepadWindow), new PropertyMetadata(null, (o, e) => ((NotepadWindow) o).OnNotepadChanged((Notepad) e.OldValue, (Notepad) e.NewValue)));
 
-        public Notepad Notepad {
+        public Notepad Notepad
+        {
             get => (Notepad) this.GetValue(NotepadProperty);
             set => this.SetValue(NotepadProperty, value);
         }
@@ -43,7 +46,8 @@ namespace SharpPad.Notepads.Views {
         private readonly ContextData contextData;
         private ActivityTask primaryActivity;
 
-        public NotepadWindow() {
+        public NotepadWindow()
+        {
             DataManager.SetContextData(this, this.contextData = new ContextData().Set(DataKeys.HostWindowKey, this).Clone());
             this.InitializeComponent();
             this.Loaded += this.EditorWindow_Loaded;
@@ -53,23 +57,29 @@ namespace SharpPad.Notepads.Views {
             taskManager.TaskCompleted += this.OnTaskCompleted;
         }
 
-        private void OnTaskStarted(TaskManager taskmanager, ActivityTask task, int index) {
-            if (this.primaryActivity == null || this.primaryActivity.IsCompleted) {
+        private void OnTaskStarted(TaskManager taskmanager, ActivityTask task, int index)
+        {
+            if (this.primaryActivity == null || this.primaryActivity.IsCompleted)
+            {
                 this.SetActivityTask(task);
             }
         }
 
-        private void OnTaskCompleted(TaskManager taskmanager, ActivityTask task, int index) {
-            if (task == this.primaryActivity) {
+        private void OnTaskCompleted(TaskManager taskmanager, ActivityTask task, int index)
+        {
+            if (task == this.primaryActivity)
+            {
                 // try to access next task
                 task = taskmanager.ActiveTasks.Count > 0 ? taskmanager.ActiveTasks[0] : null;
                 this.SetActivityTask(task);
             }
         }
 
-        private void SetActivityTask(ActivityTask task) {
+        private void SetActivityTask(ActivityTask task)
+        {
             IActivityProgress prog = null;
-            if (this.primaryActivity != null) {
+            if (this.primaryActivity != null)
+            {
                 prog = this.primaryActivity.Progress;
                 prog.TextChanged -= this.OnPrimaryActivityTextChanged;
                 prog.CompletionValueChanged -= this.OnPrimaryActionCompletionValueChanged;
@@ -78,14 +88,16 @@ namespace SharpPad.Notepads.Views {
             }
 
             this.primaryActivity = task;
-            if (task != null) {
+            if (task != null)
+            {
                 prog = task.Progress;
                 prog.TextChanged += this.OnPrimaryActivityTextChanged;
                 prog.CompletionValueChanged += this.OnPrimaryActionCompletionValueChanged;
                 prog.IsIndeterminateChanged += this.OnPrimaryActivityIndeterminateChanged;
                 this.PART_ActiveBackgroundTaskGrid.Visibility = Visibility.Visible;
             }
-            else {
+            else
+            {
                 this.PART_ActiveBackgroundTaskGrid.Visibility = Visibility.Collapsed;
             }
 
@@ -94,35 +106,43 @@ namespace SharpPad.Notepads.Views {
             this.OnPrimaryActivityIndeterminateChanged(prog);
         }
 
-        private void OnPrimaryActivityTextChanged(IActivityProgress tracker) {
+        private void OnPrimaryActivityTextChanged(IActivityProgress tracker)
+        {
             this.PART_TaskCaption.Text = tracker?.Text ?? "";
         }
 
-        private void OnPrimaryActionCompletionValueChanged(IActivityProgress tracker) {
+        private void OnPrimaryActionCompletionValueChanged(IActivityProgress tracker)
+        {
             this.PART_ActiveBgProgress.Value = tracker?.TotalCompletion ?? 0.0;
         }
 
-        private void OnPrimaryActivityIndeterminateChanged(IActivityProgress tracker) {
+        private void OnPrimaryActivityIndeterminateChanged(IActivityProgress tracker)
+        {
             this.PART_ActiveBgProgress.IsIndeterminate = tracker?.IsIndeterminate ?? false;
         }
 
-        protected override Task<bool> OnClosingAsync() {
+        protected override Task<bool> OnClosingAsync()
+        {
             this.Notepad = null;
             return Task.FromResult(true);
         }
 
-        private void EditorWindow_Loaded(object sender, RoutedEventArgs e) {
+        private void EditorWindow_Loaded(object sender, RoutedEventArgs e)
+        {
             this.PART_ActiveBackgroundTaskGrid.Visibility = Visibility.Collapsed;
         }
 
-        protected override void OnKeyDown(KeyEventArgs e) {
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
             base.OnKeyDown(e);
-            if (e.Key == Key.LeftAlt) {
+            if (e.Key == Key.LeftAlt)
+            {
                 e.Handled = true;
             }
         }
 
-        private void OnNotepadChanged(Notepad oldNotepad, Notepad newNotepad) {
+        private void OnNotepadChanged(Notepad oldNotepad, Notepad newNotepad)
+        {
             this.PART_NotepadPanel.Notepad = newNotepad;
             DataManager.SetContextData(this, this.contextData.Set(DataKeys.NotepadKey, newNotepad).Clone());
             this.UpdateTitle();
@@ -132,31 +152,38 @@ namespace SharpPad.Notepads.Views {
                 newNotepad.ActiveDocumentChanged += this.OnActiveDocumentChanged;
         }
 
-        private void OnActiveDocumentChanged(Notepad notepad, NotepadDocument oldDocument, NotepadDocument newDocument) {
-            if (oldDocument != null) {
+        private void OnActiveDocumentChanged(Notepad notepad, NotepadDocument oldDocument, NotepadDocument newDocument)
+        {
+            if (oldDocument != null)
+            {
                 oldDocument.IsModifiedChanged -= this.OnActiveDocumentIsModifiedChanged;
                 oldDocument.FilePathChanged -= this.OnActiveDocumentFilePathChanged;
             }
 
-            if (newDocument != null) {
+            if (newDocument != null)
+            {
                 newDocument.IsModifiedChanged += this.OnActiveDocumentIsModifiedChanged;
             }
 
             this.Dispatcher.InvokeAsync(this.UpdateTitle, DispatcherPriority.Loaded);
         }
 
-        private void OnActiveDocumentFilePathChanged(NotepadDocument document) {
+        private void OnActiveDocumentFilePathChanged(NotepadDocument document)
+        {
             throw new System.NotImplementedException();
         }
 
-        private void OnActiveDocumentIsModifiedChanged(NotepadDocument document) {
+        private void OnActiveDocumentIsModifiedChanged(NotepadDocument document)
+        {
             this.Dispatcher.InvokeAsync(this.UpdateTitle, DispatcherPriority.Loaded);
         }
 
-        private void UpdateTitle() {
+        private void UpdateTitle()
+        {
             const string title = "SharpPad v1.0";
 
-            if (this.Notepad?.ActiveDocument is NotepadDocument document) {
+            if (this.Notepad?.ActiveDocument is NotepadDocument document)
+            {
                 StringBuilder sb = new StringBuilder(title);
                 bool hasName = !string.IsNullOrWhiteSpace(document.DocumentName);
                 bool hasPath = !string.IsNullOrWhiteSpace(document.FilePath);
@@ -168,14 +195,17 @@ namespace SharpPad.Notepads.Views {
                     sb.Append('*');
                 this.Title = sb.ToString();
             }
-            else {
+            else
+            {
                 this.Title = title;
             }
         }
 
-        private void SetThemeClick(object sender, RoutedEventArgs e) {
+        private void SetThemeClick(object sender, RoutedEventArgs e)
+        {
             ThemeType type;
-            switch (((MenuItem) sender).Uid) {
+            switch (((MenuItem) sender).Uid)
+            {
                 case "0":
                     type = ThemeType.DeepDark;
                     break;

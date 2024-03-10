@@ -25,11 +25,13 @@ using System.Windows.Input;
 using SharpPad.Utils;
 using SharpPad.Views;
 
-namespace SharpPad.Services.WPF.Messages {
+namespace SharpPad.Services.WPF.Messages
+{
     /// <summary>
     /// Interaction logic for SingleInputDialog.xaml
     /// </summary>
-    public partial class SingleInputDialog : WindowEx {
+    public partial class SingleInputDialog : WindowEx
+    {
         public static readonly DependencyProperty MessageProperty = DependencyProperty.Register("Message", typeof(string), typeof(SingleInputDialog), new PropertyMetadata(null, OnMessageChanged));
         public static readonly DependencyProperty InputValueProperty = DependencyProperty.Register("InputValue", typeof(string), typeof(SingleInputDialog), new PropertyMetadata(null, OnTextInputChanged));
         public static readonly DependencyProperty IsEmptyStringAllowedProperty = DependencyProperty.Register("IsEmptyStringAllowed", typeof(bool), typeof(SingleInputDialog), new PropertyMetadata(BoolBox.False, OnIsEmptyStringAllowedChanged));
@@ -37,22 +39,26 @@ namespace SharpPad.Services.WPF.Messages {
         public static readonly DependencyProperty IsValueValidProperty = IsValueValidPropertyKey.DependencyProperty;
         public static readonly DependencyProperty ValidatorProperty = DependencyProperty.Register("Validator", typeof(Predicate<string>), typeof(SingleInputDialog), new PropertyMetadata(null, OnValidatorChanged));
 
-        public string Message {
+        public string Message
+        {
             get => (string) this.GetValue(MessageProperty);
             set => this.SetValue(MessageProperty, value);
         }
 
-        public string InputValue {
+        public string InputValue
+        {
             get => (string) this.GetValue(InputValueProperty);
             set => this.SetValue(InputValueProperty, value);
         }
 
-        public bool IsEmptyStringAllowed {
+        public bool IsEmptyStringAllowed
+        {
             get => (bool) this.GetValue(IsEmptyStringAllowedProperty);
             set => this.SetValue(IsEmptyStringAllowedProperty, value.Box());
         }
 
-        public bool IsValueValid {
+        public bool IsValueValid
+        {
             get => (bool) this.GetValue(IsValueValidProperty);
             private set => this.SetValue(IsValueValidPropertyKey, value.Box());
         }
@@ -60,7 +66,8 @@ namespace SharpPad.Services.WPF.Messages {
         /// <summary>
         /// A predicate that validates the text input value
         /// </summary>
-        public Predicate<string> Validator {
+        public Predicate<string> Validator
+        {
             get => (Predicate<string>) this.GetValue(ValidatorProperty);
             set => this.SetValue(ValidatorProperty, value);
         }
@@ -68,29 +75,36 @@ namespace SharpPad.Services.WPF.Messages {
         private bool isProcessingInputValueChanged;
         private bool? explicitDialogResult;
 
-        public SingleInputDialog() {
+        public SingleInputDialog()
+        {
             this.InitializeComponent();
             this.CalculateOwnerAndSetCentered();
             this.PART_TextInputBox.TextChanged += this.OnTextInputBoxValueChanged;
             this.Loaded += this.OnLoaded;
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs e) {
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
             this.PART_TextInputBox.Focus();
             this.PART_TextInputBox.SelectAll();
         }
 
-        protected override void OnPreviewKeyDown(KeyEventArgs e) {
+        protected override void OnPreviewKeyDown(KeyEventArgs e)
+        {
             base.OnPreviewKeyDown(e);
-            if (e.Key == Key.Escape || e.Key == Key.Enter) {
-                if (e.Key == Key.Enter) {
-                    if (!this.IsValueValid) {
+            if (e.Key == Key.Escape || e.Key == Key.Enter)
+            {
+                if (e.Key == Key.Enter)
+                {
+                    if (!this.IsValueValid)
+                    {
                         return;
                     }
 
                     this.explicitDialogResult = true;
                 }
-                else {
+                else
+                {
                     this.explicitDialogResult = false;
                 }
 
@@ -99,32 +113,41 @@ namespace SharpPad.Services.WPF.Messages {
             }
         }
 
-        public bool ShowDialogAndGetResult(out string message) {
+        public bool ShowDialogAndGetResult(out string message)
+        {
             this.ShowDialog();
-            if (this.explicitDialogResult.HasValue) {
-                if (this.explicitDialogResult.Value && this.IsValueValid) { // check is valid again just in case
+            if (this.explicitDialogResult.HasValue)
+            {
+                if (this.explicitDialogResult.Value && this.IsValueValid)
+                {
+                    // check is valid again just in case
                     message = this.InputValue;
                     return true;
                 }
-                else {
+                else
+                {
                     message = null;
                     return false;
                 }
             }
-            else {
+            else
+            {
                 message = null;
                 return false;
             }
         }
 
-        private void OnTextInputBoxValueChanged(object sender, TextChangedEventArgs e) {
+        private void OnTextInputBoxValueChanged(object sender, TextChangedEventArgs e)
+        {
             if (this.isProcessingInputValueChanged)
                 return;
             this.InputValue = this.PART_TextInputBox.Text;
         }
 
-        private void OnClickOK(object sender, RoutedEventArgs e) {
-            if (!this.IsValueValid) {
+        private void OnClickOK(object sender, RoutedEventArgs e)
+        {
+            if (!this.IsValueValid)
+            {
                 return;
             }
 
@@ -132,47 +155,59 @@ namespace SharpPad.Services.WPF.Messages {
             this.Close();
         }
 
-        private void OnClickCancel(object sender, RoutedEventArgs e) {
+        private void OnClickCancel(object sender, RoutedEventArgs e)
+        {
             this.explicitDialogResult = false;
             this.Close();
         }
 
-        protected override Task<bool> OnClosingAsync() {
-            if (!this.explicitDialogResult.HasValue) {
+        protected override Task<bool> OnClosingAsync()
+        {
+            if (!this.explicitDialogResult.HasValue)
+            {
                 this.explicitDialogResult = false;
             }
 
             return base.OnClosingAsync();
         }
 
-        private void UpdateTextBoxAndValidState() {
+        private void UpdateTextBoxAndValidState()
+        {
             this.isProcessingInputValueChanged = true;
-            try {
+            try
+            {
                 string text = this.InputValue;
                 this.PART_TextInputBox.Text = text;
-                if (string.IsNullOrEmpty(text)) {
+                if (string.IsNullOrEmpty(text))
+                {
                     this.IsValueValid = this.IsEmptyStringAllowed;
                 }
-                else if (this.Validator != null) {
+                else if (this.Validator != null)
+                {
                     this.IsValueValid = this.Validator(text);
                 }
-                else {
+                else
+                {
                     this.IsValueValid = true;
                 }
             }
-            finally {
+            finally
+            {
                 this.isProcessingInputValueChanged = false;
             }
         }
 
-        private static void OnMessageChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+        private static void OnMessageChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
             SingleInputDialog dialog = (SingleInputDialog) d;
-            if (e.NewValue is string text && !string.IsNullOrWhiteSpace(text)) {
+            if (e.NewValue is string text && !string.IsNullOrWhiteSpace(text))
+            {
                 dialog.PART_MessageTextBlock.Text = text;
                 if (dialog.PART_MessageTextBlock.Visibility != Visibility.Visible)
                     dialog.PART_MessageTextBlock.Visibility = Visibility.Visible;
             }
-            else {
+            else
+            {
                 if (dialog.PART_MessageTextBlock.Visibility != Visibility.Collapsed)
                     dialog.PART_MessageTextBlock.Visibility = Visibility.Collapsed;
                 dialog.PART_MessageTextBlock.Text = null;
@@ -185,12 +220,15 @@ namespace SharpPad.Services.WPF.Messages {
 
         private static void OnIsEmptyStringAllowedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((SingleInputDialog) d).UpdateTextBoxAndValidState();
 
-        private static void OnIsValueValidChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+        private static void OnIsValueValidChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
             SingleInputDialog dialog = (SingleInputDialog) d;
-            if ((bool) e.NewValue) {
+            if ((bool) e.NewValue)
+            {
                 dialog.PART_ButtonOK.IsEnabled = true;
             }
-            else {
+            else
+            {
                 dialog.PART_ButtonOK.IsEnabled = false;
             }
         }

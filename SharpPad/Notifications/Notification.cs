@@ -17,10 +17,11 @@
 // along with SharpPad. If not, see <https://www.gnu.org/licenses/>.
 //
 
-namespace SharpPad.Notifications {
+namespace SharpPad.Notifications
+{
     /// <summary>
     /// The base class for all balloon notifications
     /// </summary>
-    public abstract class Notification {
-    }
+    public abstract class Notification
+    { }
 }

@@ -20,74 +20,91 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.Windows.Media.Converters;
 using System.Windows.Threading;
 using SharpPad.CommandSystem;
 using SharpPad.Interactivity.Contexts;
 using SharpPad.Tasks;
 using SharpPad.Utils;
 
-namespace SharpPad.Notepads.Commands {
-    public abstract class NotepadCommand : Command {
-        public override Executability CanExecute(CommandEventArgs e) {
+namespace SharpPad.Notepads.Commands
+{
+    public abstract class NotepadCommand : Command
+    {
+        public override Executability CanExecute(CommandEventArgs e)
+        {
             if (!DataKeys.NotepadKey.TryGetContext(e.ContextData, out Notepad notepad))
                 return Executability.Invalid;
             return this.CanExecute(notepad, e);
         }
 
-        protected override Task Execute(CommandEventArgs e) {
-            if (!DataKeys.NotepadKey.TryGetContext(e.ContextData, out Notepad notepad))
-                return Task.CompletedTask;
-            return this.Execute(notepad, e);
+        protected override void Execute(CommandEventArgs e)
+        {
+            if (DataKeys.NotepadKey.TryGetContext(e.ContextData, out Notepad notepad))
+                this.Execute(notepad, e);
         }
 
         public abstract Executability CanExecute(Notepad notepad, CommandEventArgs e);
 
-        public abstract Task Execute(Notepad notepad, CommandEventArgs e);
+        public abstract void Execute(Notepad notepad, CommandEventArgs e);
     }
 
-    public class NewFileCommand : NotepadCommand {
-        public override Executability CanExecute(Notepad notepad, CommandEventArgs e) {
+    public class NewFileCommand : NotepadCommand
+    {
+        public override Executability CanExecute(Notepad notepad, CommandEventArgs e)
+        {
             return Executability.Valid;
         }
 
-        public override Task Execute(Notepad notepad, CommandEventArgs e) {
-            notepad.AddDocument(new NotepadDocument() {
+        public override void Execute(Notepad notepad, CommandEventArgs e)
+        {
+            notepad.AddDocument(new NotepadDocument()
+            {
                 DocumentName = "New Document " + (notepad.Documents.Count + 1)
             });
-            return Task.CompletedTask;
         }
     }
 
-    public class OpenFileCommand : NotepadCommand {
-        public override bool AllowMultipleExecutors => false;
+    public class OpenFilesCommand : NotepadCommand
+    {
+        // lazy
+        private readonly WeakReference<ActivityTask> currentTask = new WeakReference<ActivityTask>(null);
 
-        public override Executability CanExecute(Notepad notepad, CommandEventArgs e) {
+        public override Executability CanExecute(Notepad notepad, CommandEventArgs e)
+        {
+            if (this.currentTask.TryGetTarget(out var task) && task.IsRunning)
+                return Executability.ValidButCannotExecute;
             return Executability.Valid;
         }
 
-        public override Task Execute(Notepad notepad, CommandEventArgs e) {
-            string[] filePaths = IoC.FilePickService.OpenMultipleFiles("Select files to open", Filters.TextTypesAndAll);
-            if (filePaths == null) {
-                return Task.CompletedTask;
+        public override void Execute(Notepad notepad, CommandEventArgs e)
+        {
+            if (this.currentTask.TryGetTarget(out ActivityTask activityTask) && activityTask.IsRunning)
+            {
+                IoC.MessageService.ShowMessage("Processing", "Already opening files. Please wait until the last operation has completed");
+                return;
             }
 
-            OpenFiles(notepad, filePaths);
-            return Task.CompletedTask;
+            string[] filePaths = IoC.FilePickService.OpenMultipleFiles("Select files to open", Filters.TextTypesAndAll);
+            if (filePaths != null)
+                this.currentTask.SetTarget(OpenFiles(notepad, filePaths));
         }
 
-        public static void OpenFile(Notepad notepad, string path) {
-            OpenFiles(notepad, new string[] {path});
-        }
+        public static ActivityTask OpenFile(Notepad notepad, string path) => OpenFiles(notepad, new string[] {path});
 
-        public static void OpenFiles(Notepad notepad, string[] paths) {
-            TaskManager.Instance.RunTask(async () => {
+        public static ActivityTask OpenFiles(Notepad notepad, string[] paths)
+        {
+            return TaskManager.Instance.RunTask(async () =>
+            {
                 IActivityProgress progress = TaskManager.Instance.CurrentTask.Progress;
                 progress.Text = "Reading files";
 
                 string[] textArray = new string[paths.Length];
                 double percentPerFile = 1.0 / paths.Length;
-                using (progress.PushCompletionRange(0.0, 0.5)) {
-                    for (int i = 0; i < paths.Length; i++) {
+                using (progress.PushCompletionRange(0.0, 0.5))
+                {
+                    for (int i = 0; i < paths.Length; i++)
+                    {
                         textArray[i] = File.ReadAllText(paths[i]);
                         progress.OnProgress(percentPerFile);
                     }
@@ -95,20 +112,26 @@ namespace SharpPad.Notepads.Commands {
 
                 progress.Text = "Creating tabs";
                 NotepadDocument lastDocument = null;
-                using (progress.PushCompletionRange(0.5, 1.0)) {
-                    for (int i = 0; i < paths.Length; i++) {
+                using (progress.PushCompletionRange(0.5, 1.0))
+                {
+                    for (int i = 0; i < paths.Length; i++)
+                    {
                         string path = paths[i];
                         string text = textArray[i];
                         // Need dispatcher because TextDocument is not thread-safe and also tracks the owner thread
-                        await IoC.Dispatcher.InvokeAsync(() => {
-                            NotepadDocument document = new NotepadDocument() {
+                        await IoC.Dispatcher.InvokeAsync(() =>
+                        {
+                            NotepadDocument document = new NotepadDocument()
+                            {
                                 FilePath = path
                             };
 
-                            try {
+                            try
+                            {
                                 document.Document.Text = text;
                             }
-                            catch (Exception ex) {
+                            catch (Exception ex)
+                            {
                                 IoC.MessageService.ShowMessage("Error", "Error reading file", ex.GetToString());
                             }
 
@@ -120,8 +143,10 @@ namespace SharpPad.Notepads.Commands {
                     }
                 }
 
-                if (lastDocument != null) {
-                    await IoC.Dispatcher.InvokeAsync(() => {
+                if (lastDocument != null)
+                {
+                    await IoC.Dispatcher.InvokeAsync(() =>
+                    {
                         notepad.ActiveDocument = lastDocument;
                     });
                 }
@@ -129,17 +154,17 @@ namespace SharpPad.Notepads.Commands {
         }
     }
 
-    public class SaveAllDocumentsCommand : NotepadCommand {
-        public override Executability CanExecute(Notepad notepad, CommandEventArgs e) {
+    public class SaveAllDocumentsCommand : NotepadCommand
+    {
+        public override Executability CanExecute(Notepad notepad, CommandEventArgs e)
+        {
             return Executability.Valid;
         }
 
-        public override Task Execute(Notepad notepad, CommandEventArgs e) {
-            foreach (NotepadDocument document in notepad.Documents) {
+        public override void Execute(Notepad notepad, CommandEventArgs e)
+        {
+            foreach (NotepadDocument document in notepad.Documents)
                 SaveDocumentCommand.SaveOrSaveAs(document);
-            }
-
-            return Task.CompletedTask;
         }
     }
 }
