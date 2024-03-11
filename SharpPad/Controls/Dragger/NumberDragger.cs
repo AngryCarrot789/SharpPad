@@ -702,7 +702,6 @@ namespace SharpPad.Controls.Dragger
                 return;
             }
 
-            bool wrap = false;
             Point mpos = e.GetPosition(this);
             if (!this.IsDragging)
             {

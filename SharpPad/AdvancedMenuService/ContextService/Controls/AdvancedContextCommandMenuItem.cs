@@ -58,7 +58,7 @@ namespace SharpPad.AdvancedMenuService.ContextService.Controls
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            this.UpdateCanExecuteVisual();
+            this.UpdateCanExecute();
             CommandContextEntry entry = this.Entry;
             if (entry == null)
             {
@@ -75,12 +75,7 @@ namespace SharpPad.AdvancedMenuService.ContextService.Controls
             }
         }
 
-        public void UpdateCanExecuteVisual()
-        {
-            this.UpdateCanExecuteVisual(this.Menu?.ContextOnMenuOpen);
-        }
-
-        public void UpdateCanExecuteVisual(IContextData ctx)
+        public override void UpdateCanExecute()
         {
             if (!this.IsLoaded)
                 return;
@@ -91,9 +86,11 @@ namespace SharpPad.AdvancedMenuService.ContextService.Controls
             }
             else
             {
+                IContextData ctx = this.Container?.Context;
                 string cmdId = this.Entry.CommandId;
-                Executability state = !string.IsNullOrWhiteSpace(cmdId) ? CommandManager.Instance.CanExecute(cmdId, ctx, true) : Executability.Invalid;
+                Executability state = !string.IsNullOrWhiteSpace(cmdId) && ctx != null ? CommandManager.Instance.CanExecute(cmdId, ctx, true) : Executability.Invalid;
                 this.CanExecute = state == Executability.Valid;
+                this.Visibility = state == Executability.Invalid ? Visibility.Collapsed : Visibility.Visible;
             }
         }
 
@@ -111,7 +108,7 @@ namespace SharpPad.AdvancedMenuService.ContextService.Controls
             {
                 base.OnClick();
                 this.IsExecuting = false;
-                this.UpdateCanExecuteVisual();
+                this.UpdateCanExecute();
                 return;
             }
 
@@ -123,11 +120,9 @@ namespace SharpPad.AdvancedMenuService.ContextService.Controls
 
         private void DispatchCommand(string cmdId)
         {
-            IContextData context = this.Menu?.ContextOnMenuOpen;
+            IContextData context = this.Container?.Context;
             if (context != null)
-            {
                 this.Dispatcher.BeginInvoke((Action) (() => this.ExecuteCommand(cmdId, context)), DispatcherPriority.Render);
-            }
         }
 
         private void ExecuteCommand(string cmdId, IContextData context)
@@ -151,7 +146,7 @@ namespace SharpPad.AdvancedMenuService.ContextService.Controls
             finally
             {
                 this.IsExecuting = false;
-                this.UpdateCanExecuteVisual();
+                this.UpdateCanExecute();
             }
         }
     }

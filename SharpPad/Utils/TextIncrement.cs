@@ -94,7 +94,7 @@ namespace SharpPad.Utils
             else
             {
                 left = input.Substring(0, indexA - 1);
-                bracketed = input.JSubstring(indexA + 1, indexB);
+                bracketed = input.JavaSubstring(indexA + 1, indexB);
             }
 
             return true;

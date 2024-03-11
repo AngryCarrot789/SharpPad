@@ -19,7 +19,6 @@
 
 using System;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Threading;
 
 namespace SharpPad.Utils.RDA
@@ -39,10 +38,7 @@ namespace SharpPad.Utils.RDA
         private readonly object stateLock; // A guard when reading/writing the state
 
         private readonly Action doExecuteCallback;
-        private readonly Dispatcher dispatcher; // the dispatcher that owns this RDA
-
-        // just for debugging really
-        private volatile DispatcherOperation lastOperation;
+        private readonly IDispatcher dispatcher; // the dispatcher that owns this RDA
 
         /// <summary>
         /// Gets the dispatcher priority used for scheduling
@@ -60,7 +56,7 @@ namespace SharpPad.Utils.RDA
         /// <param name="callback">The callback action</param>
         /// <param name="priority">The dispatcher priority</param>
         /// <param name="debugId">A debugging ID</param>
-        protected RapidDispatchActionExBase(Dispatcher dispatcher, DispatcherPriority priority, string debugId)
+        protected RapidDispatchActionExBase(IDispatcher dispatcher, DispatcherPriority priority, string debugId)
         {
             this.dispatcher = dispatcher;
             this.debugId = debugId;
@@ -120,7 +116,7 @@ namespace SharpPad.Utils.RDA
                 this.ScheduleExecute();
         }
 
-        private void ScheduleExecute() => this.lastOperation = this.dispatcher.InvokeAsync(this.doExecuteCallback, this.Priority);
+        private void ScheduleExecute() => this.dispatcher.InvokeAsync(this.doExecuteCallback, this.Priority);
 
         protected bool BeginInvoke(Action actionInLock = null)
         {
@@ -162,24 +158,24 @@ namespace SharpPad.Utils.RDA
     /// example, the execute callback updates a progress bar when asynchronous progress is made on another thread
     /// </para>
     /// </summary>
-    public sealed class RapidDispatchActionEx : RapidDispatchActionExBase, IRapidDispatchAction
+    public sealed class RapidDispatchActionEx : RapidDispatchActionExBase, IDispatchAction
     {
         private readonly Func<Task> callback;
 
-        private RapidDispatchActionEx(Dispatcher dispatcher, Func<Task> callback, DispatcherPriority priority, string debugId) : base(dispatcher, priority, debugId)
+        private RapidDispatchActionEx(IDispatcher dispatcher, Func<Task> callback, DispatcherPriority priority, string debugId) : base(dispatcher, priority, debugId)
         {
             this.callback = callback;
         }
 
         public static RapidDispatchActionEx ForSync(Action callback, DispatcherPriority priority = DispatcherPriority.Normal, string debugId = null)
         {
-            return ForSync(callback, Application.Current.Dispatcher, priority, debugId);
+            return ForSync(callback, IoC.Dispatcher, priority, debugId);
         }
 
         /// <summary>
         /// Creates an instance of <see cref="RapidDispatchActionEx"/> that runs a non-async callback
         /// </summary>
-        public static RapidDispatchActionEx ForSync(Action callback, Dispatcher dispatcher, DispatcherPriority priority = DispatcherPriority.Normal, string debugId = null)
+        public static RapidDispatchActionEx ForSync(Action callback, IDispatcher dispatcher, DispatcherPriority priority = DispatcherPriority.Normal, string debugId = null)
         {
             Validate.NotNull(callback, nameof(callback));
             Validate.NotNull(dispatcher, nameof(dispatcher));
@@ -196,13 +192,13 @@ namespace SharpPad.Utils.RDA
         /// </summary>
         public static RapidDispatchActionEx ForAsync(Func<Task> callback, DispatcherPriority priority = DispatcherPriority.Normal, string debugId = null)
         {
-            return ForAsync(callback, Application.Current.Dispatcher, priority, debugId);
+            return ForAsync(callback, IoC.Dispatcher, priority, debugId);
         }
 
         /// <summary>
         /// Creates an instance of <see cref="RapidDispatchActionEx"/> that runs an async callback
         /// </summary>
-        public static RapidDispatchActionEx ForAsync(Func<Task> callback, Dispatcher dispatcher, DispatcherPriority priority = DispatcherPriority.Normal, string debugId = null)
+        public static RapidDispatchActionEx ForAsync(Func<Task> callback, IDispatcher dispatcher, DispatcherPriority priority = DispatcherPriority.Normal, string debugId = null)
         {
             Validate.NotNull(callback, nameof(callback));
             Validate.NotNull(dispatcher, nameof(dispatcher));
@@ -223,13 +219,13 @@ namespace SharpPad.Utils.RDA
     /// A parameterised version of <see cref="RapidDispatchActionEx"/> that passes a custom parameter to the callback method
     /// </summary>
     /// <typeparam name="T">The type of parameter</typeparam>
-    public sealed class RapidDispatchActionEx<T> : RapidDispatchActionExBase, IRapidDispatchAction<T>
+    public sealed class RapidDispatchActionEx<T> : RapidDispatchActionExBase, IDispatchAction<T>
     {
         private readonly Func<T, Task> callback;
         private readonly object paramLock;
         private T parameter;
 
-        private RapidDispatchActionEx(Dispatcher dispatcher, Func<T, Task> callback, DispatcherPriority priority, string debugId) : base(dispatcher, priority, debugId)
+        private RapidDispatchActionEx(IDispatcher dispatcher, Func<T, Task> callback, DispatcherPriority priority, string debugId) : base(dispatcher, priority, debugId)
         {
             this.callback = callback;
             this.paramLock = new object();
@@ -237,13 +233,13 @@ namespace SharpPad.Utils.RDA
 
         public static RapidDispatchActionEx<T> ForSync(Action<T> callback, DispatcherPriority priority = DispatcherPriority.Normal, string debugId = null)
         {
-            return ForSync(callback, Application.Current.Dispatcher, priority, debugId);
+            return ForSync(callback, IoC.Dispatcher, priority, debugId);
         }
 
         /// <summary>
         /// Creates an instance of <see cref="RapidDispatchActionEx"/> that runs a non-async callback
         /// </summary>
-        public static RapidDispatchActionEx<T> ForSync(Action<T> callback, Dispatcher dispatcher, DispatcherPriority priority = DispatcherPriority.Normal, string debugId = null)
+        public static RapidDispatchActionEx<T> ForSync(Action<T> callback, IDispatcher dispatcher, DispatcherPriority priority = DispatcherPriority.Normal, string debugId = null)
         {
             Validate.NotNull(callback, nameof(callback));
             Validate.NotNull(dispatcher, nameof(dispatcher));
@@ -260,13 +256,13 @@ namespace SharpPad.Utils.RDA
         /// </summary>
         public static RapidDispatchActionEx<T> ForAsync(Func<T, Task> callback, DispatcherPriority priority = DispatcherPriority.Normal, string debugId = null)
         {
-            return ForAsync(callback, Application.Current.Dispatcher, priority, debugId);
+            return ForAsync(callback, IoC.Dispatcher, priority, debugId);
         }
 
         /// <summary>
         /// Creates an instance of <see cref="RapidDispatchActionEx"/> that runs an async callback
         /// </summary>
-        public static RapidDispatchActionEx<T> ForAsync(Func<T, Task> callback, Dispatcher dispatcher, DispatcherPriority priority = DispatcherPriority.Normal, string debugId = null)
+        public static RapidDispatchActionEx<T> ForAsync(Func<T, Task> callback, IDispatcher dispatcher, DispatcherPriority priority = DispatcherPriority.Normal, string debugId = null)
         {
             Validate.NotNull(callback, nameof(callback));
             Validate.NotNull(dispatcher, nameof(dispatcher));

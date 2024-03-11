@@ -51,10 +51,7 @@ namespace SharpPad.Shortcuts.Managing
         }
 
         // The input state that was active before another input state was activated
-        private GroupedInputState activeInput;
         private GroupedInputState lastActiveInput;
-        private long activationTime;
-        private bool isActivationStrokePressed;
 
         // e.g. clicking a toggle button
         public Task OnInputStateTriggeredExternal(ShortcutInputManager inputManager, GroupedInputState state, bool activate)

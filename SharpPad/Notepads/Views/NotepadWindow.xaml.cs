@@ -17,15 +17,18 @@
 // along with SharpPad. If not, see <https://www.gnu.org/licenses/>.
 //
 
+using System;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
+using ICSharpCode.AvalonEdit.Editing;
 using SharpPad.Interactivity.Contexts;
 using SharpPad.Tasks;
 using SharpPad.Themes;
+using SharpPad.Utils.RDA;
 using SharpPad.Views;
 
 namespace SharpPad.Notepads.Views
@@ -46,10 +49,19 @@ namespace SharpPad.Notepads.Views
         private readonly ContextData contextData;
         private ActivityTask primaryActivity;
 
+        // used to delay the caret text update, just in case an intensive document update happens;
+        // we don't wanna update the caret text when it's just gonna be overwritten a few milliseconds later
+        private readonly RateLimitedDispatchAction updateCaretTextRDA;
+
         public NotepadWindow()
         {
             DataManager.SetContextData(this, this.contextData = new ContextData().Set(DataKeys.HostWindowKey, this).Clone());
             this.InitializeComponent();
+            this.updateCaretTextRDA = RateLimitedDispatchAction.ForDispatcherSync(() =>
+            {
+                Caret caret = this.PART_NotepadPanel.Editor?.TextArea?.Caret;
+                this.PART_CaretText.Text = $"{caret?.Line ?? 1}:{caret?.Column ?? 1}";
+            }, TimeSpan.FromSeconds(0.2));
             this.Loaded += this.EditorWindow_Loaded;
 
             TaskManager taskManager = IoC.TaskManager;
@@ -130,7 +142,11 @@ namespace SharpPad.Notepads.Views
         private void EditorWindow_Loaded(object sender, RoutedEventArgs e)
         {
             this.PART_ActiveBackgroundTaskGrid.Visibility = Visibility.Collapsed;
+            this.PART_NotepadPanel.Editor.TextArea.Caret.PositionChanged += this.OnCaretChanged;
+            this.updateCaretTextRDA.InvokeAsync();
         }
+
+        private void OnCaretChanged(object sender, EventArgs e) => this.updateCaretTextRDA.InvokeAsync();
 
         protected override void OnKeyDown(KeyEventArgs e)
         {
@@ -163,15 +179,13 @@ namespace SharpPad.Notepads.Views
             if (newDocument != null)
             {
                 newDocument.IsModifiedChanged += this.OnActiveDocumentIsModifiedChanged;
+                newDocument.FilePathChanged += this.OnActiveDocumentFilePathChanged;
             }
 
             this.Dispatcher.InvokeAsync(this.UpdateTitle, DispatcherPriority.Loaded);
         }
 
-        private void OnActiveDocumentFilePathChanged(NotepadDocument document)
-        {
-            throw new System.NotImplementedException();
-        }
+        private void OnActiveDocumentFilePathChanged(NotepadDocument document) => this.UpdateTitle();
 
         private void OnActiveDocumentIsModifiedChanged(NotepadDocument document)
         {

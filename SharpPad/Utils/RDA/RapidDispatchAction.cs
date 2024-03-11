@@ -85,7 +85,7 @@ namespace SharpPad.Utils.RDA
     /// For multi-threaded use, see <see cref="RapidDispatchActionEx"/>
     /// </para>
     /// </summary>
-    public class RapidDispatchAction : RapidDispatchActionBase, IRapidDispatchAction
+    public class RapidDispatchAction : RapidDispatchActionBase, IDispatchAction
     {
         private readonly Action callback;
 
@@ -111,7 +111,7 @@ namespace SharpPad.Utils.RDA
     /// A parameterised version of <see cref="RapidDispatchAction"/> that passes a custom parameter to the callback method
     /// </summary>
     /// <typeparam name="T">The type of parameter</typeparam>
-    public class RapidDispatchAction<T> : RapidDispatchActionBase, IRapidDispatchAction<T>
+    public class RapidDispatchAction<T> : RapidDispatchActionBase, IDispatchAction<T>
     {
         private readonly Action<T> callback;
         private T parameter;

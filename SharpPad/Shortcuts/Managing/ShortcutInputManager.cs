@@ -20,7 +20,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using SharpPad.Interactivity.Contexts;
 using SharpPad.Shortcuts.Inputs;
 using SharpPad.Shortcuts.Usage;

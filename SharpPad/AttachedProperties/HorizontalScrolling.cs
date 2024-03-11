@@ -23,9 +23,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Media.Converters;
 using SharpPad.Utils;
 using SharpPad.Utils.Visuals;
 

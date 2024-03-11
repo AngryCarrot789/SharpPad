@@ -32,55 +32,40 @@ namespace SharpPad
 
         public bool IsOnOwnerThread => this.dispatcher.CheckAccess();
 
-        public bool IsSuspended
-        {
-            get => (int) DisableProcessingCountField.GetValue(this.dispatcher) > 0;
-        }
+        public bool IsSuspended => (int) DisableProcessingCountField.GetValue(this.dispatcher) > 0;
 
-        public DispatcherDelegate(Dispatcher dispatcher)
-        {
-            this.dispatcher = dispatcher ?? throw new Exception("Application dispatcher detached");
-        }
+        public DispatcherDelegate(Dispatcher dispatcher) => this.dispatcher = dispatcher ?? throw new Exception("Application dispatcher detached");
 
         static DispatcherDelegate()
         {
             DisableProcessingCountField = typeof(Dispatcher).GetField("_disableProcessingCount", BindingFlags.Instance | BindingFlags.GetField | BindingFlags.NonPublic);
         }
 
-        public void Invoke(Action action, DispatcherPriority priority)
-        {
-            if (priority == DispatcherPriority.Send && this.dispatcher.CheckAccess())
-            {
-                action();
-            }
-            else
-            {
-                this.dispatcher.Invoke(action, priority);
-            }
-        }
-
-        // Unless we are on the main thread and priority is Send, Invoke with the parameter provides
+        // Unless already on the main thread and priority is Send, Invoke with the parameter provides
         // practically no additional performance benefits for ValueType objects, because the parameter
         // has to get boxed anyway, and not to mention the fact that WPF dispatcher operations create
         // an instance of DispatcherOperationTaskSource which also creates a TaskCompletionSource and
         // DispatcherOperationTaskMapping AND an instance of CulturePreservingExecutionContext gets created too...
 
-        public void Invoke<T>(Action<T> action, T parameter, DispatcherPriority priority)
+        // public void Invoke<T>(Action<T> action, T parameter, DispatcherPriority priority)
+        // {
+        //     if (priority == DispatcherPriority.Send && this.dispatcher.CheckAccess())
+        //     {
+        //         action(parameter);
+        //     }
+        //     else
+        //     {
+        //         this.dispatcher.Invoke(priority, action, parameter);
+        //     }
+        // }
+
+        public void Invoke(Action action, DispatcherPriority priority)
         {
-            if (priority == DispatcherPriority.Send && this.dispatcher.CheckAccess())
-            {
-                action(parameter);
-            }
-            else
-            {
-                this.dispatcher.Invoke(priority, action, parameter);
-            }
+            this.dispatcher.Invoke(action, priority);
         }
 
         public T Invoke<T>(Func<T> function, DispatcherPriority priority)
         {
-            if (priority == DispatcherPriority.Send && this.dispatcher.CheckAccess())
-                return function();
             return this.dispatcher.Invoke(function, priority);
         }
 

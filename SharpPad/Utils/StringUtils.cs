@@ -25,10 +25,7 @@ namespace SharpPad.Utils
 {
     public static class StringUtils
     {
-        public static string JSubstring(this string @this, int startIndex, int endIndex)
-        {
-            return @this.Substring(startIndex, endIndex - startIndex);
-        }
+        public static string JavaSubstring(this string @this, int startIndex, int endIndex) => @this.Substring(startIndex, endIndex - startIndex);
 
         public static bool IsEmpty(this string @this)
         {

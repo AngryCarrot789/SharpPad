@@ -20,8 +20,10 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using SharpPad.AdvancedMenuService.ContextService.Controls;
 using SharpPad.Controls.Bindings;
 using SharpPad.Interactivity.Contexts;
+using SharpPad.Notepads.Contexts;
 
 namespace SharpPad.Notepads.Controls
 {
@@ -39,6 +41,7 @@ namespace SharpPad.Notepads.Controls
         public NotepadTabItem()
         {
             this.contextData = new ContextData().Set(DataKeys.UINotepadTabKey, this);
+            AdvancedContextMenu.SetContextGenerator(this, NotepadTabContextGenerator.Instance);
         }
 
         static NotepadTabItem()

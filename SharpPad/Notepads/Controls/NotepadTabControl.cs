@@ -34,8 +34,6 @@ namespace SharpPad.Notepads.Controls
             set => this.SetValue(NotepadProperty, value);
         }
 
-        private bool isUpdatingSelection;
-
         public NotepadTabControl() { }
 
         protected override void OnSelectionChanged(SelectionChangedEventArgs e)
@@ -46,10 +44,8 @@ namespace SharpPad.Notepads.Controls
                 return;
             }
 
-            this.isUpdatingSelection = true;
             int index = this.SelectedIndex;
             notepad.ActiveDocument = index == -1 ? null : notepad.Documents[index];
-            this.isUpdatingSelection = false;
         }
 
         static NotepadTabControl()

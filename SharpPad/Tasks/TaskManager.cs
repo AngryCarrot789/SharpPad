@@ -22,8 +22,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Threading;
+using SharpPad.Logger;
 using SharpPad.Utils;
 
 namespace SharpPad.Tasks
@@ -109,39 +108,19 @@ namespace SharpPad.Tasks
             this.threadToTask.Dispose();
         }
 
-        internal static void InternalBeginActivateTask_BGTHREAD(TaskManager taskManager, ActivityTask task)
+        internal static void InternalBeginActivateTask(TaskManager taskManager, ActivityTask task)
         {
             taskManager.threadToTask.Value = task;
-            IoC.Dispatcher.Invoke(() =>
-            {
-                InternalOnTaskStartedSafe(taskManager, task);
-                ActivityTask.InternalActivate(task);
-            });
+            IoC.Dispatcher.InvokeAsync(() => OnTaskStarted_AMT(taskManager, task));
         }
 
         internal static void InternalOnTaskCompleted_BGTHREAD(TaskManager taskManager, ActivityTask task, int state)
         {
             taskManager.threadToTask.Value = null;
-            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
-            {
-                ActivityTask.InternalComplete(task, state);
-                InternalOnTaskCompletedSafe(taskManager, task);
-                if (task.Exception is Exception e)
-                {
-                    const string msg = "An exception occurred while running a task";
-                    if (Debugger.IsAttached)
-                    {
-                        throw new Exception(msg, e);
-                    }
-                    else
-                    {
-                        IoC.MessageService.ShowMessage("Task Error", msg, e.GetToString());
-                    }
-                }
-            }), DispatcherPriority.Send);
+            IoC.Dispatcher.InvokeAsync(() => OnTaskCompleted_AMT(taskManager, task, state));
         }
 
-        internal static void InternalOnTaskStartedSafe(TaskManager taskManager, ActivityTask task)
+        internal static void OnTaskStarted_AMT(TaskManager taskManager, ActivityTask task)
         {
             lock (taskManager.locker)
             {
@@ -149,15 +128,31 @@ namespace SharpPad.Tasks
                 taskManager.tasks.Insert(index, task);
                 taskManager.TaskStarted?.Invoke(taskManager, task, index);
             }
+
+            ActivityTask.InternalActivate(task);
         }
 
-        internal static void InternalOnTaskCompletedSafe(TaskManager taskManager, ActivityTask task)
+        internal static void OnTaskCompleted_AMT(TaskManager taskManager, ActivityTask task, int state)
         {
+            ActivityTask.InternalComplete(task, state);
             lock (taskManager.locker)
             {
                 int index = taskManager.tasks.IndexOf(task);
+                if (index == -1)
+                {
+                    const string msg = "Completed activity task did not exist in this task manager's internal task list";
+                    AppLogger.Instance.WriteLine("[FATAL] " + msg);
+                    Debugger.Break();
+                    return;
+                }
+
                 taskManager.tasks.RemoveAt(index);
                 taskManager.TaskCompleted?.Invoke(taskManager, task, index);
+            }
+
+            if (task.Exception is Exception e)
+            {
+                IoC.MessageService.ShowMessage("Task Error", "An exception occurred while running a task", e.GetToString());
             }
         }
     }

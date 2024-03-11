@@ -93,15 +93,16 @@ namespace SharpPad
             {
                 IActivityProgress prog = TaskManager.Instance.CurrentTask.Progress;
                 prog.Text = "Dummy task";
-                const int seconds = 2;
-                const int interval = 100;
-                const int count = (int) (seconds / (interval / 1000d));
-                const double progPerStep = 1.0 / count;
+                const int duration = 1;
+                const double interval = 0.1;
+                const int updates = (int) (duration / interval);
+                const double progressPerUpdate = 1.0 / updates;
+                TimeSpan delayTime = TimeSpan.FromSeconds(interval);
 
-                for (int i = 0; i < count; i++)
+                for (int i = 0; i < updates; i++)
                 {
-                    await Task.Delay(interval);
-                    prog.OnProgress(progPerStep);
+                    await Task.Delay(delayTime);
+                    prog.OnProgress(progressPerUpdate);
                 }
             });
         }
@@ -110,9 +111,9 @@ namespace SharpPad
 
         private void LoadDefaultNotepad()
         {
-            this.Nodepad.AddDocument(new NotepadDocument() {DocumentName = "New Document 1"});
-            this.Nodepad.AddDocument(new NotepadDocument() {DocumentName = "New Document 2"});
-            this.Nodepad.AddDocument(new NotepadDocument() {DocumentName = "New Document 3"});
+            this.Nodepad.AddDocument(new NotepadDocument() {DocumentName = "New Document 1", Document = { Text = ""}, IsModified = false});
+            this.Nodepad.AddDocument(new NotepadDocument() {DocumentName = "New Document 2", Document = { Text = "some text here"}, IsModified = false});
+            this.Nodepad.AddDocument(new NotepadDocument() {DocumentName = "New Document 3", Document = { Text = "some more text 111"}, IsModified = false});
         }
 
         public void RegisterActions(CommandManager manager)

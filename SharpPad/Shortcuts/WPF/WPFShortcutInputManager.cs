@@ -1,6 +1,5 @@
 // #define PRINT_DEBUG_KEYSTROKES
 
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;

@@ -18,7 +18,6 @@
 //
 
 using System;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Document;

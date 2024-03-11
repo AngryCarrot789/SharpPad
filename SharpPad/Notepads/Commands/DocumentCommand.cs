@@ -88,7 +88,7 @@ namespace SharpPad.Notepads.Commands
 
         public static bool? SaveDocumentAs(NotepadDocument document)
         {
-            string filePath = IoC.FilePickService.SaveFile("Select a location to save the file", Filters.TextTypesAndAll);
+            string filePath = IoC.FilePickService.SaveFile("Select a location to save the file", Filters.AllAndTextType);
             if (filePath == null)
                 return null;
             document.FilePath = filePath;

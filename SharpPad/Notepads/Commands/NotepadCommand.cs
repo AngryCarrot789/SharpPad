@@ -19,8 +19,6 @@
 
 using System;
 using System.IO;
-using System.Threading.Tasks;
-using System.Windows.Media.Converters;
 using System.Windows.Threading;
 using SharpPad.CommandSystem;
 using SharpPad.Interactivity.Contexts;
@@ -85,7 +83,7 @@ namespace SharpPad.Notepads.Commands
                 return;
             }
 
-            string[] filePaths = IoC.FilePickService.OpenMultipleFiles("Select files to open", Filters.TextTypesAndAll);
+            string[] filePaths = IoC.FilePickService.OpenMultipleFiles("Select files to open", Filters.AllAndTextType);
             if (filePaths != null)
                 this.currentTask.SetTarget(OpenFiles(notepad, filePaths));
         }

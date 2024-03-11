@@ -56,6 +56,8 @@ namespace SharpPad.Notepads.Controls
         private readonly ContextData contextData;
         private bool isProcessingAsyncDrop;
 
+        public TextEditor Editor => this.PART_TextEditor;
+
         // use RDA to prevent lag if the active document changes very quickly, e.g. opening files
         // but the active document is set during each file opened for some reason
         private readonly RapidDispatchAction<NotepadDocument> updateActiveDocumentRDA;

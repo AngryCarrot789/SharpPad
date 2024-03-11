@@ -31,7 +31,7 @@ namespace SharpPad.Utils
     /// <summary>
     /// A class which stores event args for a <see cref="ExceptionEventHandler"/>
     /// </summary>
-    public class ExceptionEventArgs
+    public class ExceptionEventArgs : EventArgs
     {
         /// <summary>
         /// The exception that was caught. This will not be null

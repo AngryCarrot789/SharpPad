@@ -429,7 +429,7 @@ namespace SharpPad.AttachedProperties
                 {
                     IoC.MessageService.ShowMessage("Error", "An exception occurred while processing selection change. " +
                                                             "This may have corrupted the application in some way, so please restart.\n\n" +
-                                                            "See the app logs for more info");
+                                                            "See the app logs for more info", error.GetToString());
                 }
             }
         }

@@ -21,10 +21,10 @@ namespace SharpPad.Utils
 {
     public static class Filters
     {
-        public static readonly string TextTypesAndAll =
+        public static readonly string AllAndTextType =
             Filter.Of().
-                   AddFilter("Text File", "txt").
                    AddAllFiles().
+                   AddFilter("Text File", "txt").
                    ToString();
     }
 }

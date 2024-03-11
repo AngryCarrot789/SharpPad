@@ -43,27 +43,26 @@ namespace SharpPad
         bool IsSuspended { get; }
 
         /// <summary>
-        /// Synchronously executes the given function on the UI thread, or dispatches its execution on the UI thread if we are not
-        /// currently on it. This effectively blocks the current thread until the <see cref="Action"/> returns
+        /// Synchronously executes the given function on the UI thread. This will block the current thread until
+        /// the <see cref="Action"/> returns. If the priority is send and we are on the dispatcher thread, then
+        /// the action is invoked directly
         /// </summary>
         /// <param name="action">The function to execute on the UI thread</param>
         /// <param name="priority">The priority of the dispatch</param>
         void Invoke(Action action, DispatcherPriority priority = DispatcherPriority.Send);
 
-        /// <summary>
-        /// Synchronously executes the given function on the UI thread, or dispatches its execution on the UI thread if we are not
-        /// currently on it. This effectively blocks the current thread until the <see cref="Action"/> returns
-        /// <para>
-        /// Unless already on the main thread with a priority of <see cref="DispatcherPriority.Send"/>,
-        /// <see cref="Invoke"/> should be preferred over this method when an additional parameter is needed
-        /// due to the late-bound dynamic method invocation, which a lambda closure will likely outperform
-        /// </para>
-        /// </summary>
-        /// <param name="action">The function to execute on the UI thread</param>
-        /// <param name="parameter">A parameter to pass to the action</param>
-        /// <param name="priority">The priority of the dispatch</param>
-        /// <typeparam name="T">Type of parameter</typeparam>
-        void Invoke<T>(Action<T> action, T parameter, DispatcherPriority priority = DispatcherPriority.Send);
+        // /// <summary>
+        // /// Same as <see cref="Invoke"/> but it takes a parameter
+        // /// <para>
+        // /// <see cref="Invoke"/> should be preferred over this method due to the late-bound
+        // /// dynamic method invocation, which a lambda closure will likely outperform
+        // /// </para>
+        // /// </summary>
+        // /// <param name="action">The function to execute on the UI thread</param>
+        // /// <param name="parameter">A parameter to pass to the action</param>
+        // /// <param name="priority">The priority of the dispatch</param>
+        // /// <typeparam name="T">Type of parameter</typeparam>
+        // void Invoke<T>(Action<T> action, T parameter, DispatcherPriority priority = DispatcherPriority.Send);
 
         /// <summary>
         /// The same as <see cref="Invoke"/> but allows a return value
@@ -75,8 +74,7 @@ namespace SharpPad
         T Invoke<T>(Func<T> function, DispatcherPriority priority = DispatcherPriority.Send);
 
         /// <summary>
-        /// Asynchronously executes the given function on the UI thread, or dispatches its execution on the UI thread
-        /// if we are not currently on it. This is the best way to execute a function on the UI thread asynchronously
+        /// Asynchronously executes the given function on the UI thread
         /// </summary>
         /// <param name="action">The function to execute on the UI thread</param>
         /// <param name="priority">The priority of the dispatch</param>

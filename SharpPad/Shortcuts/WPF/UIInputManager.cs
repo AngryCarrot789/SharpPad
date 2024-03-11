@@ -22,7 +22,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
-using SharpPad.AdvancedMenuService.Controls;
+using SharpPad.AdvancedMenuService;
 using SharpPad.Interactivity.Contexts;
 using SharpPad.Utils;
 using SharpPad.Utils.Visuals;

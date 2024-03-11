@@ -240,10 +240,8 @@ namespace SharpPad.Utils
                 {
                     fileName = frame.GetFileName();
                 }
-                catch (NotSupportedException ex)
-                { }
-                catch (SecurityException ex)
-                { }
+                catch (NotSupportedException){ }
+                catch (SecurityException){ }
 
                 if (fileName != null)
                 {

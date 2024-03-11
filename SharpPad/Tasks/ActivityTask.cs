@@ -18,6 +18,7 @@
 //
 
 using System;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -66,12 +67,15 @@ namespace SharpPad.Tasks
         /// </summary>
         public Task Task { get; private set; }
 
+        private readonly AutoResetEvent Event;
+
         private ActivityTask(TaskManager taskManager, Func<Task> action, CancellationToken cancellationToken, IActivityProgress activityProgress)
         {
             this.taskManager = taskManager ?? throw new ArgumentNullException(nameof(taskManager));
             this.action = action ?? throw new ArgumentNullException(nameof(action));
             this.Progress = activityProgress ?? throw new ArgumentNullException(nameof(activityProgress));
             this.CancellationToken = cancellationToken;
+            this.Event = new AutoResetEvent(false);
         }
 
         /// <summary>
@@ -84,10 +88,28 @@ namespace SharpPad.Tasks
         {
             try
             {
-                TaskManager.InternalBeginActivateTask_BGTHREAD(this.taskManager, this);
-                while (this.state != 1)
+                TaskManager.InternalBeginActivateTask(this.taskManager, this);
+                bool eventState;
+                try
                 {
-                    await Task.Delay(1, this.CancellationToken);
+                    eventState = this.Event.WaitOne(5000);
+                }
+                catch (Exception e)
+                {
+                    Debugger.Break();
+                    this.OnCompleted(new TimeoutException("Exception while waiting for activity task activation", e));
+                    return;
+                }
+                finally
+                {
+                    this.Event.Dispose();
+                }
+
+                if (!eventState)
+                {
+                    Debugger.Break();
+                    this.OnCompleted(new TimeoutException("Activity task was not activated in a timely manner"));
+                    return;
                 }
 
                 this.CheckCancelled();
@@ -122,6 +144,9 @@ namespace SharpPad.Tasks
         private void OnCompleted(Exception e)
         {
             this.exception = e;
+            if (e != null)
+                Debugger.Break();
+
             TaskManager.InternalOnTaskCompleted_BGTHREAD(this.taskManager, this, 2);
         }
 
@@ -135,6 +160,7 @@ namespace SharpPad.Tasks
         public static void InternalActivate(ActivityTask task)
         {
             task.state = 1;
+            task.Event.Set();
         }
 
         public static void InternalComplete(ActivityTask task, int state)

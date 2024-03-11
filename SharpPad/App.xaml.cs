@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
@@ -20,7 +19,7 @@ namespace SharpPad
     /// </summary>
     public partial class App : Application
     {
-        private async void App_OnStartup(object sender, StartupEventArgs args)
+        private void App_OnStartup(object sender, StartupEventArgs args)
         {
             // if (true) {
             //     DefaultProgressTracker.TestCompletionRangeFunctionality();
@@ -56,7 +55,7 @@ namespace SharpPad
             try
             {
                 AppLogger.Instance.PushHeader("SharpPad initialisation");
-                await this.InitWPFApp();
+                this.InitWPFApp();
                 AppLogger.Instance.PopHeader();
             }
             catch (Exception ex)
@@ -71,9 +70,9 @@ namespace SharpPad
 
             NotepadWindow window = new NotepadWindow();
             window.Show();
+            window.Notepad = notepad;
             this.MainWindow = window;
             this.ShutdownMode = ShutdownMode.OnMainWindowClose;
-            window.Notepad = notepad;
             ApplicationCore.Instance.OnApplicationLoaded(notepad, args.Args);
         }
 
@@ -83,12 +82,10 @@ namespace SharpPad
             ApplicationCore.Instance.OnApplicationExiting();
         }
 
-        public async Task InitWPFApp()
+        public void InitWPFApp()
         {
             ShortcutManager.Instance = new WPFShortcutManager();
             TypeUtils.RunStaticConstructor<UIInputManager>();
-
-            await AppLogger.Instance.FlushEntries();
 
             ApplicationCore.Instance.RegisterActions(CommandManager.Instance);
 

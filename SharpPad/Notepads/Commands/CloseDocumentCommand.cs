@@ -17,7 +17,6 @@
 // along with SharpPad. If not, see <https://www.gnu.org/licenses/>.
 //
 
-using System.Threading.Tasks;
 using SharpPad.CommandSystem;
 using SharpPad.Interactivity.Contexts;
 
@@ -34,6 +33,7 @@ namespace SharpPad.Notepads.Commands
         {
             if (!DataKeys.NotepadKey.TryGetContext(e.ContextData, out Notepad notepad))
                 return;
+
             if (!DataKeys.DocumentKey.TryGetContext(e.ContextData, out NotepadDocument document))
                 return;
 
@@ -46,14 +46,10 @@ namespace SharpPad.Notepads.Commands
             if (isActiveDocument)
             {
                 if (index > 0)
-                {
                     index--;
-                }
 
                 if (index < notepad.Documents.Count)
-                {
                     notepad.ActiveDocument = notepad.Documents[index];
-                }
             }
         }
     }

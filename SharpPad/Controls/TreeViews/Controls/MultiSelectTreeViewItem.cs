@@ -53,7 +53,7 @@ namespace SharpPad.Controls.TreeViews.Controls
         public static readonly DependencyProperty IsExpandedProperty = DependencyProperty.Register("IsExpanded", typeof(bool), typeof(MultiSelectTreeViewItem), new FrameworkPropertyMetadata(BoolBox.False));
         public static readonly DependencyProperty IsEditableProperty = DependencyProperty.Register("IsEditable", typeof(bool), typeof(MultiSelectTreeViewItem), new FrameworkPropertyMetadata(true));
         public new static readonly DependencyProperty IsVisibleProperty = DependencyProperty.Register("IsVisible", typeof(bool), typeof(MultiSelectTreeViewItem), new FrameworkPropertyMetadata(true));
-        public static readonly DependencyProperty IsSelectedProperty = DependencyProperty.Register("IsSelected", typeof(bool), typeof(MultiSelectTreeViewItem), new FrameworkPropertyMetadata(new PropertyChangedCallback(OnIsSelectedChanged)));
+        public static readonly DependencyProperty IsSelectedProperty = DependencyProperty.Register("IsSelected", typeof(bool), typeof(MultiSelectTreeViewItem), new FrameworkPropertyMetadata(OnIsSelectedChanged));
         public static readonly DependencyProperty IsEditingProperty = DependencyProperty.Register("IsEditing", typeof(bool), typeof(MultiSelectTreeViewItem), new FrameworkPropertyMetadata(BoolBox.False));
         public static readonly DependencyProperty ContentTemplateEditProperty = DependencyProperty.Register("ContentTemplateEdit", typeof(DataTemplate), typeof(MultiSelectTreeViewItem));
         public static readonly DependencyProperty DisplayNameProperty = DependencyProperty.Register("DisplayName", typeof(string), typeof(MultiSelectTreeViewItem));

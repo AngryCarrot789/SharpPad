@@ -20,9 +20,10 @@
 namespace SharpPad.Utils.RDA
 {
     /// <summary>
-    /// An interface for the parameterless RDA implementations (both <see cref="RapidDispatchAction"/> and <see cref="RapidDispatchActionEx"/>)
+    /// An interface that represents a parameter-less object that signals work to be dispatched somewhere at some point.
+    /// Implementations so far are <see cref="RapidDispatchAction"/> and <see cref="RapidDispatchActionEx"/>
     /// </summary>
-    public interface IRapidDispatchAction
+    public interface IDispatchAction
     {
         /// <summary>
         /// Tries to schedule this RDA for execution with its dispatcher
@@ -31,10 +32,10 @@ namespace SharpPad.Utils.RDA
     }
 
     /// <summary>
-    /// A parameterised version of <see cref="IRapidDispatchAction"/>
+    /// A parameterised version of <see cref="IDispatchAction"/>
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface IRapidDispatchAction<in T>
+    public interface IDispatchAction<in T>
     {
         /// <summary>
         /// Tries to schedule this RDA for execution with its dispatcher

@@ -32,11 +32,9 @@ namespace SharpPad.AdvancedMenuService.ContextService.Controls
         protected override void OnClick()
         {
             EventContextEntry entry = this.Entry;
-            IContextData context = this.Menu.ContextOnMenuOpen;
+            IContextData context = this.Container.Context;
             if (entry != null && context != null)
-            {
                 this.Dispatcher.BeginInvoke((Action) (() => entry.Action?.Invoke(context)), DispatcherPriority.Render);
-            }
 
             base.OnClick();
         }

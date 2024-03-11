@@ -22,7 +22,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using SharpPad.Utils;
+using SharpPad.Utils.RDA;
 
 namespace SharpPad.Logger
 {
@@ -35,7 +35,8 @@ namespace SharpPad.Logger
         private readonly object PrintLock = new object();
         private readonly ThreadLocal<Stack<HeaderedLogEntry>> headers;
         private readonly List<(HeaderedLogEntry, LogEntry)> cachedEntries;
-        private readonly RateLimitedExecutor driver;
+        private readonly RateLimitedDispatchAction driver;
+        private int totalCount; // only read/write when locked under PrintLock
 
         private readonly HeaderedLogEntry rootEntry;
 
@@ -48,7 +49,7 @@ namespace SharpPad.Logger
             this.rootEntry = new HeaderedLogEntry(DateTime.Now, 0, Environment.StackTrace, "<root>");
             this.cachedEntries = new List<(HeaderedLogEntry, LogEntry)>();
             this.headers = new ThreadLocal<Stack<HeaderedLogEntry>>(() => new Stack<HeaderedLogEntry>());
-            this.driver = new RateLimitedExecutor(this.FlushEntries, TimeSpan.FromMilliseconds(50));
+            this.driver = new RateLimitedDispatchAction(this.FlushEntries, TimeSpan.FromMilliseconds(50));
 
             this.MessageLogged += (sender, entry) =>
             {
@@ -87,7 +88,7 @@ namespace SharpPad.Logger
                         entry.IsExpanded = false;
                     stack.Push(entry);
                     this.cachedEntries.Add((top, entry));
-                    this.driver.OnInput();
+                    this.driver.InvokeAsync();
                 }
             }
             else
@@ -138,9 +139,10 @@ namespace SharpPad.Logger
             {
                 LogEntry entry = new LogEntry(DateTime.Now, (top ?? this.rootEntry).Entries.Count, Environment.StackTrace, line);
                 this.cachedEntries.Add((top, entry));
+                this.totalCount++;
             }
 
-            this.driver.OnInput();
+            this.driver.InvokeAsync();
         }
 
         public Task FlushEntries()

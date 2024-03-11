@@ -72,8 +72,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AdvancedMenuService\ContextCapturingMenu.cs" />
+    <Compile Include="AdvancedMenuService\IAdvancedContainer.cs" />
+    <Compile Include="AdvancedMenuService\MenuService.cs" />
+    <Compile Include="AdvancedMenuService\RegularMenuService\AdvancedRegularMenu.cs" />
+    <Compile Include="AdvancedMenuService\RegularMenuService\AdvancedMenuItem.cs" />
+    <Compile Include="AdvancedMenuService\StandAlone\CommandMenuItem.cs" />
     <Compile Include="ApplicationCore.cs" />
     <Compile Include="CommandSystem\AsyncCommand.cs" />
+    <Compile Include="CommandSystem\CommandGroup.cs" />
+    <Compile Include="CommandSystem\SimpleCommandGroup.cs" />
     <Compile Include="CommandSystem\Usages\BasicButtonCommandUsage.cs" />
     <Compile Include="CommandSystem\Usages\CommandSourceCommandUsage.cs" />
     <Compile Include="Controls\Bindings\AccessorAutoEventPropertyBinder.cs" />
@@ -116,6 +124,8 @@
     <Compile Include="Notepads\Commands\EditorCommand.cs" />
     <Compile Include="Notepads\Commands\NotepadCommand.cs" />
     <Compile Include="Notepads\Commands\CloseDocumentCommand.cs" />
+    <Compile Include="Notepads\Contexts\EditMenuContextGenerator.cs" />
+    <Compile Include="Notepads\Contexts\NotepadTabContextGenerator.cs" />
     <Compile Include="Notepads\Controls\INotepadTabUI.cs" />
     <Compile Include="Notepads\Controls\NotepadEditorPanel.cs" />
     <Compile Include="Notepads\Controls\NotepadTabControl.cs" />
@@ -281,7 +291,6 @@
     <Compile Include="Utils\KeyboardUtils.cs" />
     <Compile Include="Utils\KeyUtils.cs" />
     <Compile Include="Utils\Lang.cs" />
-    <Compile Include="Utils\LimitedRapidDispatchAction.cs" />
     <Compile Include="Utils\Maths.cs" />
     <Compile Include="Utils\NumberAverager.cs" />
     <Compile Include="Utils\Numerics\SizeI.cs" />
@@ -289,7 +298,8 @@
     <Compile Include="Utils\Periodic.cs" />
     <Compile Include="Utils\PrecisionTimer.cs" />
     <Compile Include="Utils\RandomUtils.cs" />
-    <Compile Include="Utils\RDA\IRapidDispatchAction.cs" />
+    <Compile Include="Utils\RDA\IDispatchAction.cs" />
+    <Compile Include="Utils\RDA\RateLimitedDispatchAction.cs" />
     <Compile Include="Utils\RDA\RapidDispatchAction.cs" />
     <Compile Include="Utils\RDA\RapidDispatchActionEx.cs" />
     <Compile Include="Utils\Rect2d.cs" />
@@ -360,14 +370,11 @@
     <Compile Include="AdvancedMenuService\ContextService\Controls\AdvancedContextEventMenuItem.cs" />
     <Compile Include="AdvancedMenuService\ContextService\Controls\AdvancedContextMenu.cs" />
     <Compile Include="AdvancedMenuService\ContextService\Controls\AdvancedContextMenuItem.cs" />
-    <Compile Include="AdvancedMenuService\ContextService\Controls\IAdvancedMenu.cs" />
     <Compile Include="AdvancedMenuService\ContextService\EventContextEntry.cs" />
     <Compile Include="AdvancedMenuService\ContextService\GroupContextEntry.cs" />
     <Compile Include="AdvancedMenuService\ContextService\IContextEntry.cs" />
     <Compile Include="AdvancedMenuService\ContextService\IContextGenerator.cs" />
     <Compile Include="AdvancedMenuService\ContextService\SeparatorEntry.cs" />
-    <Compile Include="AdvancedMenuService\Controls\AdvancedCommandMenuItem.cs" />
-    <Compile Include="AdvancedMenuService\Controls\ContextCapturingMenu.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>

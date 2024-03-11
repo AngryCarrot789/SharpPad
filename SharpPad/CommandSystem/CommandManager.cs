@@ -125,6 +125,8 @@ namespace SharpPad.CommandSystem
             return !string.IsNullOrEmpty(id) && this.commands.TryGetValue(id, out CommandEntry command) ? command.Command : null;
         }
 
+        public bool TryGetCommandById(string id, out Command command) => (command = this.GetCommandById(id)) != null;
+
         /// <summary>
         /// Executes a command with the given ID and context
         /// </summary>

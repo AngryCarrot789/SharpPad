@@ -2,11 +2,14 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                    xmlns:wpf="clr-namespace:SharpPad.AdvancedMenuService.Controls"
                     xmlns:acs="clr-namespace:SharpPad.AdvancedMenuService.ContextService.Controls"
+                    xmlns:sa="clr-namespace:SharpPad.AdvancedMenuService.StandAlone"
+                    xmlns:wpf="clr-namespace:SharpPad.AdvancedMenuService"
+                    xmlns:rms="clr-namespace:SharpPad.AdvancedMenuService.RegularMenuService"
                     mc:Ignorable="d">
+    <Style TargetType="{x:Type rms:AdvancedMenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}"/>
     <Style TargetType="{x:Type wpf:ContextCapturingMenu}" BasedOn="{StaticResource {x:Type Menu}}"/>
-    <Style TargetType="{x:Type wpf:AdvancedCommandMenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}"/>
+    <Style TargetType="{x:Type sa:CommandMenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}"/>
     <Style TargetType="{x:Type acs:AdvancedContextMenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}"/>
     <Style TargetType="{x:Type acs:AdvancedContextCommandMenuItem}" BasedOn="{StaticResource {x:Type acs:AdvancedContextMenuItem}}"/>
     <Style TargetType="{x:Type acs:AdvancedContextEventMenuItem}" BasedOn="{StaticResource {x:Type acs:AdvancedContextMenuItem}}"/>
