@@ -135,6 +135,8 @@ namespace SharpPad.Utils.RDA {
         }
 
         protected abstract Task ExecuteCore();
+
+        // TODO: method to clear critical/rescheduled state, similar to RLDA
     }
 
     /// <summary>

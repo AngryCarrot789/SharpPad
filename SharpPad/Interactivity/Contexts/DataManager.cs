@@ -22,7 +22,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
-using SharpPad.Utils;
 using SharpPad.Utils.Visuals;
 
 namespace SharpPad.Interactivity.Contexts {

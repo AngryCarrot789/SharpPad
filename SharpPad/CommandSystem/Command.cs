@@ -57,7 +57,7 @@ namespace SharpPad.CommandSystem {
         public virtual Executability CanExecute(CommandEventArgs e) => Executability.Valid;
 
         /// <summary>
-        /// Executes this command with the given command event args. This is always called on the main application thread (MAT)
+        /// Executes this command with the given command event args. This is always called on the main application thread (AMT)
         /// </summary>
         /// <param name="e">The command event args, containing info about the current context</param>
         protected abstract void Execute(CommandEventArgs e);

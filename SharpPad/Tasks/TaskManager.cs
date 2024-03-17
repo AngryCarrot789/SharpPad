@@ -86,7 +86,7 @@ namespace SharpPad.Tasks {
 
         internal static Task InternalBeginActivateTask_BGT(TaskManager taskManager, ActivityTask task) {
             taskManager.threadToTask.Value = task;
-            return IoC.Dispatcher.InvokeAsync(() => InternalOnTaskStarted_MAT(taskManager, task));
+            return IoC.Dispatcher.InvokeAsync(() => InternalOnTaskStarted_AMT(taskManager, task));
         }
 
         internal static Task InternalOnTaskCompleted_BGT(TaskManager taskManager, ActivityTask task, int state) {
@@ -94,10 +94,10 @@ namespace SharpPad.Tasks {
 
             // Before AsyncLocal, I was trying out a dispatcher for each task XD
             // Dispatcher.CurrentDispatcher.BeginInvokeShutdown(DispatcherPriority.Background);
-            return IoC.Dispatcher.InvokeAsync(() => InternalOnTaskCompleted_MAT(taskManager, task, state));
+            return IoC.Dispatcher.InvokeAsync(() => InternalOnTaskCompleted_AMT(taskManager, task, state));
         }
 
-        internal static void InternalOnTaskStarted_MAT(TaskManager taskManager, ActivityTask task) {
+        internal static void InternalOnTaskStarted_AMT(TaskManager taskManager, ActivityTask task) {
             lock (taskManager.locker) {
                 int index = taskManager.tasks.Count;
                 taskManager.tasks.Insert(index, task);
@@ -107,7 +107,7 @@ namespace SharpPad.Tasks {
             ActivityTask.InternalActivate(task);
         }
 
-        internal static void InternalOnTaskCompleted_MAT(TaskManager taskManager, ActivityTask task, int state) {
+        internal static void InternalOnTaskCompleted_AMT(TaskManager taskManager, ActivityTask task, int state) {
             ActivityTask.InternalComplete(task, state);
             lock (taskManager.locker) {
                 int index = taskManager.tasks.IndexOf(task);

@@ -146,7 +146,7 @@ namespace SharpPad.Views {
 
         protected sealed override void OnClosing(CancelEventArgs e) {
             // check isHandlingSyncClosing for recursive close attempt, even though it shouldn't occur
-            // check isHandlingAsyncClose for close attempt in async code (OnClosingInternal dispatches back to MAT)
+            // check isHandlingAsyncClose for close attempt in async code (OnClosingInternal dispatches back to AMT)
             if (this.isHandlingSyncClosing || this.isHandlingAsyncClose) {
                 return;
             }

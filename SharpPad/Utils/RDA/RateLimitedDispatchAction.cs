@@ -29,16 +29,16 @@ namespace SharpPad.Utils.RDA {
     /// that has to pass before the callback is scheduled, ensuring the callback is not executed too quickly
     /// </summary>
     public class RateLimitedDispatchAction : IDispatchAction {
-        private const int F_CONTINUE = 1; // Keep the task running
-        private const int F_RUNNING = 2; // The task is running or not
-        private const int F_EXECUTING = 4; // The task is executing the callback
+        private const int F_CONTINUE = 1;          // Keeps the task running
+        private const int F_RUNNING = 2;           // Whether or not the task is running
+        private const int F_EXECUTING = 4;         // Whether or not we're executing the callback
         private const int F_CONTINUE_CRITICAL = 8; // InvokeAsync was called while executing
 
         private readonly Func<Task> callback; // The non-null user callback method to run code
-        private readonly object stateLock; // Used to guard state modifications
-        private volatile int state; // Stores the current state of this object
-        private long lastExecutionTime; // The time at which the callback execution completed
-        private long minIntervalTicks; // The minimum interval per callbacks
+        private readonly object stateLock;    // Used to guard state modifications
+        private volatile int state;           // Stores the current state of this object
+        private long lastExecutionTime;       // The time at which the callback execution completed
+        private long minIntervalTicks;        // The minimum interval per callbacks
 
         /// <summary>
         /// Gets or sets the minimum callback interval, that is, the smallest amount of time
@@ -180,6 +180,29 @@ namespace SharpPad.Utils.RDA {
                 lastExecTime = Time.GetSystemTicks();
                 interval = 0;
             } while (true);
+        }
+
+        /// <summary>
+        /// Clears the critical continuation state.
+        /// <para>
+        /// This state is used to re-schedule the callback when <see cref="InvokeAsync"/> is invoked during
+        /// execution of the callback.
+        /// </para>
+        /// <para>
+        /// By clearing the state, it means the callback won't be rescheduled if <see cref="InvokeAsync"/> was invoked during
+        /// the callback execution. This is useful if you have code to handle similar 're-scheduling' behaviour manually
+        /// </para>
+        /// </summary>
+        public void ClearCriticalState() {
+            lock (this.stateLock) {
+                int myState = this.state;
+                if ((myState & F_CONTINUE_CRITICAL) != 0) {
+                    // Critical condition is active, so remove it, as if it was never activated
+                    myState &= ~F_CONTINUE_CRITICAL;
+                }
+
+                this.state = myState;
+            }
         }
     }
 }

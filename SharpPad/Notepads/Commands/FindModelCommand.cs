@@ -17,12 +17,9 @@
 // along with SharpPad. If not, see <https://www.gnu.org/licenses/>.
 //
 
-using ICSharpCode.AvalonEdit.Snippets;
 using SharpPad.CommandSystem;
-using SharpPad.CommandSystem.Usages;
 using SharpPad.Interactivity.Contexts;
 using SharpPad.Notepads.Controls;
-using SharpPad.Utils;
 
 namespace SharpPad.Notepads.Commands {
     public abstract class FindModelCommand : Command {
