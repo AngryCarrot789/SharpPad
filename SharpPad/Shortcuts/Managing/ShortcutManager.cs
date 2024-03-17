@@ -188,8 +188,9 @@ namespace SharpPad.Shortcuts.Managing {
         /// <returns>The result of the shortcut activation used by the processor's input manager</returns>
         protected virtual bool OnShortcutActivatedOverride(ShortcutInputManager inputManager, GroupedShortcut shortcut) {
             Command command = CommandManager.Instance.GetCommandById(shortcut.CommandId);
-            if (command == null)
+            if (command == null) {
                 return false;
+            }
 
             CommandManager.Instance.Execute(shortcut.CommandId, command, inputManager.ProvideCurrentContextInternal());
             return true;

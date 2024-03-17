@@ -19,6 +19,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
@@ -118,20 +119,31 @@ namespace SharpPad.Shortcuts.WPF {
 
         protected internal override void OnNoSuchShortcutForMouseStroke(ShortcutInputManager inputManager, string group, MouseStroke stroke) {
             base.OnNoSuchShortcutForMouseStroke(inputManager, group, stroke);
-            BroadcastShortcutActivity("No such shortcut for mouse stroke: " + stroke + " in group: " + group);
+            if (Debugger.IsAttached) {
+                BroadcastShortcutActivity("No such shortcut for mouse stroke: " + stroke + " in group: " + group);
+            }
         }
 
         protected internal override void OnNoSuchShortcutForKeyStroke(ShortcutInputManager inputManager, string group, KeyStroke stroke) {
             base.OnNoSuchShortcutForKeyStroke(inputManager, group, stroke);
-            if (stroke.IsKeyDown) {
+            if (stroke.IsKeyDown && Debugger.IsAttached) {
                 BroadcastShortcutActivity("No such shortcut for key stroke: " + stroke + " in group: " + group);
             }
         }
 
         protected override bool OnShortcutActivatedOverride(ShortcutInputManager inputManager, GroupedShortcut shortcut) {
-            BroadcastShortcutActivity($"Activating shortcut command: {shortcut} -> {shortcut.CommandId}...");
+            string tostr;
+
+            if (Debugger.IsAttached) {
+                tostr = $"shortcut command: {shortcut} -> {(string.IsNullOrWhiteSpace(shortcut.CommandId) ? "<none>" : shortcut.CommandId)}";
+            }
+            else {
+                tostr = $"shortcut command: {(string.IsNullOrWhiteSpace(shortcut.CommandId) ? "<none>" : shortcut.CommandId)}";
+            }
+
+            BroadcastShortcutActivity($"Activating {tostr}...");
             bool result = Application.Current.Dispatcher.Invoke(() => base.OnShortcutActivatedOverride(inputManager, shortcut), DispatcherPriority.Render);
-            BroadcastShortcutActivity($"Activated shortcut command: {shortcut} -> {shortcut.CommandId}!");
+            BroadcastShortcutActivity($"Activated {tostr}!");
             return result;
         }
 

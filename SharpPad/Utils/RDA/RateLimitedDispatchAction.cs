@@ -138,6 +138,7 @@ namespace SharpPad.Utils.RDA {
                         return;
                     }
                     else {
+                        // Not sure if CONTINUE needs to be removed here... I don't think it does
                         this.state = (myState & ~F_CONTINUE) | F_EXECUTING;
                     }
                 }

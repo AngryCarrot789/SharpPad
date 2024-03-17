@@ -20,7 +20,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Threading;
 using System.Threading.Tasks;
 using ICSharpCode.AvalonEdit.Document;
 using SharpPad.Tasks;
@@ -34,15 +33,14 @@ namespace SharpPad.Notepads {
         private readonly RateLimitedDispatchAction queryChangedRlda;
         private readonly List<TextRange> results;
 
-        private string searchText;
-        private string replaceText;
-        private bool isMatchCases;
-        private bool isWordSearch;
-        private bool isRegexSearch;
+        private volatile string searchText;
+        private volatile string replaceText;
+        private volatile bool isMatchCases;
+        private volatile bool isWordSearch;
+        private volatile bool isRegexSearch;
         private int currentResultIndex;
 
-        private CancellationTokenSource cancelSearch;
-        private volatile bool hasDocumentChangedOnMainThread;
+        private volatile bool isActiveSearchInvalid;
         private ActivityTask activeTask;
         private readonly object criticalLock; // used to guard critical sections
 
@@ -53,7 +51,7 @@ namespace SharpPad.Notepads {
                     return;
                 this.searchText = value;
                 this.SearchTextChanged?.Invoke(this);
-                this.UpdateSearch();
+                this.InvalidateSearchState();
             }
         }
 
@@ -74,7 +72,7 @@ namespace SharpPad.Notepads {
                     return;
                 this.isMatchCases = value;
                 this.IsMatchCasesChanged?.Invoke(this);
-                this.UpdateSearch();
+                this.InvalidateSearchState();
             }
         }
 
@@ -89,7 +87,7 @@ namespace SharpPad.Notepads {
 
                 this.isWordSearch = value;
                 this.IsWordSearchChanged?.Invoke(this);
-                this.UpdateSearch();
+                this.InvalidateSearchState();
             }
         }
 
@@ -109,7 +107,7 @@ namespace SharpPad.Notepads {
 
                 this.isRegexSearch = value;
                 this.IsRegexSearchChanged?.Invoke(this);
-                this.UpdateSearch();
+                this.InvalidateSearchState();
             }
         }
 
@@ -159,6 +157,14 @@ namespace SharpPad.Notepads {
             document.Document.Changed += this.OnDocumentModified;
         }
 
+        private void InvalidateSearchState() {
+            lock (this.criticalLock) {
+                this.isActiveSearchInvalid = true;
+            }
+
+            this.UpdateSearch();
+        }
+
         public void MoveToNextResult() {
             int resultCount = this.results.Count;
             if (resultCount < 1) {
@@ -189,10 +195,9 @@ namespace SharpPad.Notepads {
 
         private void OnDocumentModified(object sender, DocumentChangeEventArgs e) {
             lock (this.criticalLock) {
-                this.hasDocumentChangedOnMainThread = true;
+                this.isActiveSearchInvalid = true;
+                this.UpdateSearch();
             }
-
-            this.UpdateSearch();
         }
 
         public void Reset() {
@@ -219,12 +224,7 @@ namespace SharpPad.Notepads {
         public void UpdateSearch() {
             string find = this.searchText;
             if (string.IsNullOrEmpty(find)) {
-                this.CurrentResultIndex = -1;
-                if (this.results.Count > 0) {
-                    this.results.Clear();
-                    this.SearchResultsChanged?.Invoke(this);
-                }
-
+                this.ClearResults();
                 return;
             }
 
@@ -232,24 +232,13 @@ namespace SharpPad.Notepads {
         }
 
         private async Task OnSearchQueryChanged_AMT() {
-            string find = this.searchText;
-            if (string.IsNullOrEmpty(find)) {
+            this.ClearResults();
+            if (string.IsNullOrEmpty(this.searchText)) {
                 return;
             }
 
-            SearchOptions options = new SearchOptions(find, this.isMatchCases, this.isWordSearch, this.isRegexSearch);
-
             TextDocument document = this.Document.Document;
-
-            // UNNECESSARY
-            // if (this.cancelSearch != null) {
-            //     this.cancelSearch.Cancel();
-            //     this.cancelSearch.Dispose();
-            // }
-
-            this.cancelSearch = new CancellationTokenSource();
-
-            this.results.Clear();
+            List<TextRange> ranges = new List<TextRange>();
             this.activeTask = TaskManager.Instance.RunTask(async () => {
                 ActivityTask task = TaskManager.Instance.CurrentTask;
                 task.Progress.Text = "Searching...";
@@ -257,92 +246,97 @@ namespace SharpPad.Notepads {
                 // tiny delay to let the progress text update in the UI ;)
                 await Task.Delay(5);
 
-                List<TextRange> ranges = new List<TextRange>();
+                lock (this.criticalLock) {
+                    this.isActiveSearchInvalid = false;
+                    this.queryChangedRlda.ClearCriticalState();
+                }
 
                 // Keep searching in a loop. SearchImpl returns false when the document is modified externally,
                 // meaning previous search results would be invalid, so just forget about them and search again.
                 // This could be optimised a lot based on what changed in the document... but it works for now :D
-                lock (this.criticalLock) {
-                    this.hasDocumentChangedOnMainThread = false;
-                    this.queryChangedRlda.ClearCriticalState();
-                }
+                while (!await this.SearchImpl(task, document, ranges)) {
+                    ranges.Clear();
 
-                try {
-                    while (!await this.SearchImpl(options, task, document, ranges)) {
-                        ranges.Clear();
-                        await Task.Delay(100, task.CancellationToken);
+                    task.Progress.Text = "Restarting search...";
+                    task.Progress.TotalCompletion = 0;
 
-                        lock (this.criticalLock) {
-                            this.hasDocumentChangedOnMainThread = false;
+                    // Add a delay between each search attempt when the document or search query changes
+                    await Task.Delay(200, task.CancellationToken);
 
-                            // we clear the critical state, because this activity can recover.
-                            // There is a tiny window where the activity user code is finished but
-                            // the document or search query changes, meaning the activity will get
-                            // re-created and the search happens again.
-                            // But at a guess, this is maybe a sub-millisecond time window where the user
-                            // would have to modify the document or search query riiight as the search is
-                            // about to finish, and I'm fine with that being the case, it won't crash :)
-                            this.queryChangedRlda.ClearCriticalState();
-                        }
+                    task.Progress.Text = "Searching...";
+                    lock (this.criticalLock) {
+                        this.isActiveSearchInvalid = false;
+
+                        // we clear the critical state, because this activity can recover.
+                        // There is a tiny window where the activity user code is finished but
+                        // the document or search query changes, meaning the activity will get
+                        // re-created and the search happens again.
+                        // But at a guess, this is maybe a sub-millisecond time window where the user
+                        // would have to modify the document or search query riiight as the search is
+                        // about to finish, and I'm fine with that being the case, it won't crash :)
+                        this.queryChangedRlda.ClearCriticalState();
                     }
                 }
-                finally {
-                    this.results.Clear();
-                }
-
-                this.results.AddRange(ranges);
-            }, this.cancelSearch.Token);
+            }, new DefaultProgressTracker(System.Windows.Threading.DispatcherPriority.Background));
 
             await this.activeTask;
-            if (!this.activeTask.CancellationToken.IsCancellationRequested) {
-                this.cancelSearch?.Dispose();
-                this.cancelSearch = null;
 
-                this.CurrentResultIndex = -1;
+            // This handles that edge case, where the search is invalidated just after
+            // search code completes but before the above await statement finishes
+            if (!this.isActiveSearchInvalid) {
+                this.results.AddRange(ranges);
                 this.SearchResultsChanged?.Invoke(this);
             }
             else {
-                int a = 34;
+                this.UpdateSearch();
             }
         }
 
-        private async Task<bool> SearchImpl(SearchOptions options, ActivityTask task, TextDocument document, List<TextRange> results) {
+        // Returns:
+        //   FALSE: document or search query/settings changed during operation
+        //   TRUE: Operation was successful
+        private async Task<bool> SearchImpl(ActivityTask task, TextDocument document, List<TextRange> results) {
+            SearchOptions options = new SearchOptions(this.searchText, this.isMatchCases, this.isWordSearch, this.isRegexSearch);
             int textLen = options.textToFind.Length;
-            task.CheckCancelled();
-            if (this.hasDocumentChangedOnMainThread)
+            if (textLen < 1) {
+                return true;
+            }
+
+            if (this.isActiveSearchInvalid) {
                 return false;
+            }
 
             // Get text on main thread
-            this.hasDocumentChangedOnMainThread = false;
             string text = await IoC.Dispatcher.InvokeAsync(() => document.Text);
-            if (this.hasDocumentChangedOnMainThread)
+            if (this.isActiveSearchInvalid) {
                 return false;
+            }
 
-            int idx, nextStartIndex = 0, checkState = 0, progUpdateCounter = 0;
-            while ((idx = DoNonRegexIndexOf(text, nextStartIndex, ref options)) != -1) {
-                // avoid checking the cancellation/modified state each time, because it will ruin performance
-                if (++checkState == 15) {
-                    task.CheckCancelled();
-                    if (this.hasDocumentChangedOnMainThread)
+            int idx, nextIndex = 0, checkCancel = 0, progUpdateCounter = 0;
+            while ((idx = DoNonRegexIndexOf(text, nextIndex, ref options)) != -1) {
+                if (++checkCancel == 5) {
+                    if (this.isActiveSearchInvalid)
                         return false;
-                    checkState = 0;
+                    checkCancel = 0;
                 }
 
-                if (++progUpdateCounter == 10000) {
+                // Updating total completion takes a bit of time to get working,
+                // so only start doing it for big operations (with 10000+ results)
+                if (++progUpdateCounter == 1000) {
                     progUpdateCounter = 0;
                     task.Progress.TotalCompletion = (double) idx / text.Length;
                 }
 
                 results.Add(new TextRange(idx, textLen));
-                nextStartIndex = idx + textLen;
+                nextIndex = idx + textLen;
             }
 
-            return !this.hasDocumentChangedOnMainThread;
+            return !this.isActiveSearchInvalid;
         }
 
         private static int DoNonRegexIndexOf(string src, int beginIndex, ref SearchOptions options) {
             if (options.isWordSearch) {
-                return IndexOfWholeWord(src, options.textToFind, beginIndex);
+                return IndexOfWholeWord(src, ref options, beginIndex);
             }
             else {
                 return CultureInfo.CurrentCulture.CompareInfo.IndexOf(
@@ -354,10 +348,14 @@ namespace SharpPad.Notepads {
             }
         }
 
-        public static int IndexOfWholeWord(string str, string word, int beginIndex) {
-            for (int j = beginIndex; j < str.Length && (j = str.IndexOf(word, j, StringComparison.Ordinal)) >= 0; j++)
-                if ((j == 0 || !char.IsLetterOrDigit(str, j - 1)) && (j + word.Length == str.Length || !char.IsLetterOrDigit(str, j + word.Length)))
-                    return j;
+        private static int IndexOfWholeWord(string src, ref SearchOptions options, int i) {
+            int srcLen = src.Length, findLen = options.textToFind.Length;
+            for (; i < srcLen && (i = src.IndexOf(options.textToFind, i, StringComparison.Ordinal)) >= 0; i++) {
+                if ((i == 0 || !char.IsLetterOrDigit(src, i - 1)) && ((i + findLen) == srcLen || !char.IsLetterOrDigit(src, i + findLen))) {
+                    return i;
+                }
+            }
+
             return -1;
         }
 
