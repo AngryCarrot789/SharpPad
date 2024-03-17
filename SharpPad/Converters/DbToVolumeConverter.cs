@@ -23,19 +23,15 @@ using System.Windows;
 using System.Windows.Data;
 using SharpPad.Utils;
 
-namespace SharpPad.Converters
-{
-    public class DbToVolumeConverter : IValueConverter
-    {
+namespace SharpPad.Converters {
+    public class DbToVolumeConverter : IValueConverter {
         public static DbToVolumeConverter Instance { get; } = new DbToVolumeConverter();
 
         public int? RoundedPlaces { get; set; }
 
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
             double input;
-            switch (value)
-            {
+            switch (value) {
                 case float f:
                     input = f;
                     break;
@@ -51,18 +47,14 @@ namespace SharpPad.Converters
             return value is float ? (float) val : val;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if (value is float f)
-            {
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+            if (value is float f) {
                 return AudioUtils.VolumeToDb(f);
             }
-            else if (value is double d)
-            {
+            else if (value is double d) {
                 return AudioUtils.VolumeToDb(d);
             }
-            else
-            {
+            else {
                 return DependencyProperty.UnsetValue;
             }
         }

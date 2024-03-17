@@ -25,28 +25,23 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
 
-namespace SharpPad.Controls.TreeViews.Controls
-{
+namespace SharpPad.Controls.TreeViews.Controls {
     /// <summary>
     /// Helper methods to focus.
     /// </summary>
-    public static class FocusHelper
-    {
+    public static class FocusHelper {
         #region Public methods
 
-        public static void Focus(EditTextBox element)
-        {
+        public static void Focus(EditTextBox element) {
             //System.Diagnostics.Debug.WriteLine("Focus textbox with helper:" + element.Text);
             FocusCore(element);
             element.BringIntoView();
         }
 
-        public static void Focus(MultiSelectTreeViewItem element, bool bringIntoView = false)
-        {
+        public static void Focus(MultiSelectTreeViewItem element, bool bringIntoView = false) {
             //System.Diagnostics.Debug.WriteLine("FocusHelper focusing " + (bringIntoView ? "[into view] " : "") + element);
             FocusCore(element);
-            if (bringIntoView)
-            {
+            if (bringIntoView) {
                 FrameworkElement itemContent = (FrameworkElement) element.Template.FindName("headerBorder", element);
                 if (itemContent != null) // May not be rendered yet...
                 {
@@ -55,19 +50,16 @@ namespace SharpPad.Controls.TreeViews.Controls
             }
         }
 
-        public static void Focus(MultiSelectTreeView element)
-        {
+        public static void Focus(MultiSelectTreeView element) {
             //System.Diagnostics.Debug.WriteLine("Focus Tree with helper");
             FocusCore(element);
             element.BringIntoView();
         }
 
-        private static void FocusCore(FrameworkElement element)
-        {
+        private static void FocusCore(FrameworkElement element) {
             //System.Diagnostics.Debug.WriteLine("Focusing element " + element.ToString());
             //System.Diagnostics.Debug.WriteLine(Environment.StackTrace);
-            if (!element.Focus())
-            {
+            if (!element.Focus()) {
                 //System.Diagnostics.Debug.WriteLine("- Element could not be focused, invoking in dispatcher thread");
                 element.Dispatcher.BeginInvoke(DispatcherPriority.Input, new ThreadStart(() => element.Focus()));
             }

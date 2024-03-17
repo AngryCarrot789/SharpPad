@@ -22,10 +22,8 @@ using System.Windows.Controls;
 using System.Windows.Threading;
 using SharpPad.Utils;
 
-namespace SharpPad.Tasks
-{
-    public class StandardActivityControl : Control
-    {
+namespace SharpPad.Tasks {
+    public class StandardActivityControl : Control {
         public static readonly DependencyProperty CaptionProperty = DependencyProperty.Register("Caption", typeof(string), typeof(StandardActivityControl), new PropertyMetadata(null));
         public static readonly DependencyProperty TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(StandardActivityControl), new PropertyMetadata(null));
         public static readonly DependencyProperty IsProgressIndeterminateProperty = DependencyProperty.Register("IsProgressIndeterminate", typeof(bool), typeof(StandardActivityControl), new PropertyMetadata(BoolBox.False));
@@ -40,61 +38,51 @@ namespace SharpPad.Tasks
                 new PropertyMetadata(null, (d, e) => ((StandardActivityControl) d).OnProgressTrackerChanged((IActivityProgress) e.OldValue, (IActivityProgress) e.NewValue)));
 
 
-        public string Caption
-        {
+        public string Caption {
             get => (string) this.GetValue(CaptionProperty);
             set => this.SetValue(CaptionProperty, value);
         }
 
-        public string Text
-        {
+        public string Text {
             get => (string) this.GetValue(TextProperty);
             set => this.SetValue(TextProperty, value);
         }
 
-        public bool IsProgressIndeterminate
-        {
+        public bool IsProgressIndeterminate {
             get => (bool) this.GetValue(IsProgressIndeterminateProperty);
             set => this.SetValue(IsProgressIndeterminateProperty, value.Box());
         }
 
-        public double CompletionValue
-        {
+        public double CompletionValue {
             get => (double) this.GetValue(CompletionValueProperty);
             set => this.SetValue(CompletionValueProperty, value);
         }
 
-        public IActivityProgress ActivityProgress
-        {
+        public IActivityProgress ActivityProgress {
             get => (IActivityProgress) this.GetValue(ActivityProgressProperty);
             set => this.SetValue(ActivityProgressProperty, value);
         }
 
-        public bool IsModal
-        {
+        public bool IsModal {
             get => (bool) this.GetValue(IsModalProperty);
             set => this.SetValue(IsModalProperty, value);
         }
 
         public StandardActivityControl() { }
 
-        static StandardActivityControl()
-        {
+        static StandardActivityControl() {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(StandardActivityControl), new FrameworkPropertyMetadata(typeof(StandardActivityControl)));
         }
 
-        private void OnProgressTrackerChanged(IActivityProgress oldProgress, IActivityProgress newProgress)
-        {
-            if (oldProgress != null)
-            {
+        private void OnProgressTrackerChanged(IActivityProgress oldProgress, IActivityProgress newProgress) {
+            if (oldProgress != null) {
                 oldProgress.IsIndeterminateChanged -= this.OnIsIndeterminateChanged;
                 oldProgress.CompletionValueChanged -= this.OnCompletionValueChanged;
                 oldProgress.HeaderTextChanged -= this.OnHeaderTextChanged;
                 oldProgress.TextChanged -= this.OnTextChanged;
             }
 
-            if (newProgress != null)
-            {
+            if (newProgress != null) {
                 newProgress.IsIndeterminateChanged += this.OnIsIndeterminateChanged;
                 newProgress.CompletionValueChanged += this.OnCompletionValueChanged;
                 newProgress.HeaderTextChanged += this.OnHeaderTextChanged;
@@ -107,8 +95,7 @@ namespace SharpPad.Tasks
             this.SetDescriptionText();
         }
 
-        private void OnIsIndeterminateChanged(IActivityProgress tracker)
-        {
+        private void OnIsIndeterminateChanged(IActivityProgress tracker) {
             if (this.IsModal)
                 this.Dispatcher.Invoke(this.SetIsIndeterminate, this.Dispatcher.CheckAccess() ? DispatcherPriority.Render : DispatcherPriority.Send);
             else if (this.Dispatcher.CheckAccess())
@@ -117,8 +104,7 @@ namespace SharpPad.Tasks
                 this.Dispatcher.InvokeAsync(this.SetIsIndeterminate);
         }
 
-        private void OnCompletionValueChanged(IActivityProgress tracker)
-        {
+        private void OnCompletionValueChanged(IActivityProgress tracker) {
             if (this.IsModal)
                 this.Dispatcher.Invoke(this.SetCompletionValue, this.Dispatcher.CheckAccess() ? DispatcherPriority.Render : DispatcherPriority.Send);
             else if (this.Dispatcher.CheckAccess())
@@ -127,8 +113,7 @@ namespace SharpPad.Tasks
                 this.Dispatcher.InvokeAsync(this.SetCompletionValue);
         }
 
-        private void OnHeaderTextChanged(IActivityProgress tracker)
-        {
+        private void OnHeaderTextChanged(IActivityProgress tracker) {
             if (this.IsModal)
                 this.Dispatcher.Invoke(this.SetHeaderText, this.Dispatcher.CheckAccess() ? DispatcherPriority.Render : DispatcherPriority.Send);
             else if (this.Dispatcher.CheckAccess())
@@ -137,8 +122,7 @@ namespace SharpPad.Tasks
                 this.Dispatcher.InvokeAsync(this.SetHeaderText);
         }
 
-        private void OnTextChanged(IActivityProgress tracker)
-        {
+        private void OnTextChanged(IActivityProgress tracker) {
             if (this.IsModal)
                 this.Dispatcher.Invoke(this.SetDescriptionText, this.Dispatcher.CheckAccess() ? DispatcherPriority.Render : DispatcherPriority.Send);
             else if (this.Dispatcher.CheckAccess())
@@ -147,23 +131,19 @@ namespace SharpPad.Tasks
                 this.Dispatcher.InvokeAsync(this.SetDescriptionText);
         }
 
-        private void SetIsIndeterminate()
-        {
+        private void SetIsIndeterminate() {
             this.IsProgressIndeterminate = this.ActivityProgress?.IsIndeterminate ?? false;
         }
 
-        private void SetCompletionValue()
-        {
+        private void SetCompletionValue() {
             this.CompletionValue = Maths.Clamp(this.ActivityProgress?.TotalCompletion ?? 0.0, 0.0, 1.0);
         }
 
-        private void SetHeaderText()
-        {
+        private void SetHeaderText() {
             this.Caption = this.ActivityProgress?.HeaderText ?? "";
         }
 
-        private void SetDescriptionText()
-        {
+        private void SetDescriptionText() {
             this.Text = this.ActivityProgress?.Text ?? "";
         }
     }

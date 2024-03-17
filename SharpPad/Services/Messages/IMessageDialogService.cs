@@ -19,10 +19,8 @@
 
 using System.Windows;
 
-namespace SharpPad.Services.Messages
-{
-    public interface IMessageDialogService
-    {
+namespace SharpPad.Services.Messages {
+    public interface IMessageDialogService {
         /// <summary>
         /// Shows a dialog message, blocking until it closes. This must be called on the application main thread
         /// </summary>

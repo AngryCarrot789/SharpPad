@@ -21,16 +21,13 @@ using System;
 using System.Windows.Threading;
 using SharpPad.Interactivity.Contexts;
 
-namespace SharpPad.AdvancedMenuService.ContextService.Controls
-{
-    public class AdvancedContextEventMenuItem : AdvancedContextMenuItem
-    {
+namespace SharpPad.AdvancedMenuService.ContextService.Controls {
+    public class AdvancedContextEventMenuItem : AdvancedContextMenuItem {
         public new EventContextEntry Entry => (EventContextEntry) base.Entry;
 
         public AdvancedContextEventMenuItem() { }
 
-        protected override void OnClick()
-        {
+        protected override void OnClick() {
             EventContextEntry entry = this.Entry;
             IContextData context = this.Container.Context;
             if (entry != null && context != null)

@@ -22,13 +22,11 @@ using System.Collections.Generic;
 using SharpPad.Shortcuts.Inputs;
 using SharpPad.Shortcuts.Usage;
 
-namespace SharpPad.Shortcuts
-{
+namespace SharpPad.Shortcuts {
     /// <summary>
     /// The base class for all shortcuts
     /// </summary>
-    public interface IShortcut
-    {
+    public interface IShortcut {
         /// <summary>
         /// Whether this shortcut is a keyboard-based shortcut. When false, it may be something else (mouse, joystick, etc)
         /// </summary>

@@ -19,14 +19,12 @@
 
 using System.Windows;
 
-namespace SharpPad.Controls.Bindings
-{
+namespace SharpPad.Controls.Bindings {
     /// <summary>
     /// A generic interface for a binder
     /// </summary>
     /// <typeparam name="TModel">The type of model this binder attaches to</typeparam>
-    public interface IBinder<TModel> : IBinder where TModel : class
-    {
+    public interface IBinder<TModel> : IBinder where TModel : class {
         /// <summary>
         /// The currently attached element that owns this binder
         /// </summary>
@@ -77,8 +75,7 @@ namespace SharpPad.Controls.Bindings
     /// <summary>
     /// A non-generic interface for a binder
     /// </summary>
-    public interface IBinder
-    {
+    public interface IBinder {
         /// <summary>
         /// Returns true when this binder is fully attached to a control and model,
         /// meaning <see cref="Control"/> and <see cref="Model"/> are non-null

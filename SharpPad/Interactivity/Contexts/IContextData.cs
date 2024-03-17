@@ -19,13 +19,11 @@
 
 using System.Collections.Generic;
 
-namespace SharpPad.Interactivity.Contexts
-{
+namespace SharpPad.Interactivity.Contexts {
     /// <summary>
     /// An immutable object that stores context information. Any entry will always have a non-null value (null values are not permitted)
     /// </summary>
-    public interface IContextData
-    {
+    public interface IContextData {
         /// <summary>
         /// Returns an enumerable that allows iteration of all entries in this object
         /// </summary>

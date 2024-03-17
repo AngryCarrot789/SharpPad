@@ -19,16 +19,14 @@
 
 using System.Windows;
 
-namespace SharpPad.Behaviours
-{
+namespace SharpPad.Behaviours {
     /// <summary>
     /// The main class for all behaviours. Behaviours can be used to add functionality to a class without having
     /// to use behind-code or create a sub-class of an existing control (e.g. a behaviour that processes buttons
     /// clicks, changes a control's background based on context data, or anything else really)
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class Behaviour<T> : BehaviourBase where T : DependencyObject
-    {
+    public abstract class Behaviour<T> : BehaviourBase where T : DependencyObject {
         public new T AttachedElement => (T) ((IBehaviour) this).AttachedElement;
 
         static Behaviour() { }

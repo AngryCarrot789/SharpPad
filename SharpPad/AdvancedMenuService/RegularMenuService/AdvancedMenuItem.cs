@@ -24,17 +24,14 @@ using System.Windows.Controls;
 using SharpPad.AdvancedMenuService.ContextService;
 using SharpPad.Interactivity.Contexts;
 
-namespace SharpPad.AdvancedMenuService.RegularMenuService
-{
+namespace SharpPad.AdvancedMenuService.RegularMenuService {
     /// <summary>
     /// A menu item which can be placed in any menu or menu item that uses a context generator to generate its children
     /// </summary>
-    public class AdvancedMenuItem : MenuItem, IAdvancedContainer
-    {
+    public class AdvancedMenuItem : MenuItem, IAdvancedContainer {
         public static readonly DependencyProperty ContextGeneratorProperty = DependencyProperty.Register("ContextGenerator", typeof(IContextGenerator), typeof(AdvancedMenuItem), new PropertyMetadata(null, (d, e) => ((AdvancedMenuItem) d).OnContextGeneratorChanged((IContextGenerator) e.OldValue, (IContextGenerator) e.NewValue)));
 
-        public IContextGenerator ContextGenerator
-        {
+        public IContextGenerator ContextGenerator {
             get => (IContextGenerator) this.GetValue(ContextGeneratorProperty);
             set => this.SetValue(ContextGeneratorProperty, value);
         }
@@ -43,8 +40,7 @@ namespace SharpPad.AdvancedMenuService.RegularMenuService
 
         private readonly Dictionary<Type, Stack<FrameworkElement>> itemCache;
 
-        public AdvancedMenuItem()
-        {
+        public AdvancedMenuItem() {
             this.itemCache = new Dictionary<Type, Stack<FrameworkElement>>();
             this.Loaded += this.OnLoaded;
             this.Unloaded += this.OnUnloaded;
@@ -52,44 +48,37 @@ namespace SharpPad.AdvancedMenuService.RegularMenuService
             this.SubmenuClosed += this.OnSubmenuClosed;
         }
 
-        private void OnSubmenuOpened(object sender, RoutedEventArgs e)
-        {
+        private void OnSubmenuOpened(object sender, RoutedEventArgs e) {
             this.Context = ContextCapturingMenu.GetCapturedContextData(this) ?? DataManager.GetFullContextData(this);
             this.GenerateChildren();
         }
 
-        private void OnSubmenuClosed(object sender, RoutedEventArgs e)
-        {
+        private void OnSubmenuClosed(object sender, RoutedEventArgs e) {
             MenuService.ClearItemNodes(this);
             this.Items.Add(null);
         }
 
-        private void OnContextGeneratorChanged(IContextGenerator oldGen, IContextGenerator newGen)
-        {
+        private void OnContextGeneratorChanged(IContextGenerator oldGen, IContextGenerator newGen) {
             if (this.IsLoaded)
                 this.GenerateChildren();
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
-        {
+        private void OnLoaded(object sender, RoutedEventArgs e) {
             this.Context = ContextCapturingMenu.GetCapturedContextData(this) ?? DataManager.GetFullContextData(this);
             this.GenerateChildren();
         }
 
-        private void OnUnloaded(object sender, RoutedEventArgs e)
-        {
+        private void OnUnloaded(object sender, RoutedEventArgs e) {
             this.Context = null;
         }
 
-        private void GenerateChildren()
-        {
+        private void GenerateChildren() {
             if (this.Context == null)
                 return;
 
             MenuService.ClearItemNodes(this);
             IContextGenerator generator = this.ContextGenerator;
-            if (generator != null)
-            {
+            if (generator != null) {
                 List<IContextEntry> list = new List<IContextEntry>();
                 generator.Generate(list, this.Context);
                 if (list.Count > 0)

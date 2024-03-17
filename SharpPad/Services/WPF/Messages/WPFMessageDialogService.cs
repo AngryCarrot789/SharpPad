@@ -20,14 +20,10 @@
 using System.Windows;
 using SharpPad.Services.Messages;
 
-namespace SharpPad.Services.WPF.Messages
-{
-    public class WPFMessageDialogService : IMessageDialogService
-    {
-        public MessageBoxResult ShowMessage(string caption, string message, MessageBoxButton buttons = MessageBoxButton.OK)
-        {
-            MessageDialog dialog = new MessageDialog()
-            {
+namespace SharpPad.Services.WPF.Messages {
+    public class WPFMessageDialogService : IMessageDialogService {
+        public MessageBoxResult ShowMessage(string caption, string message, MessageBoxButton buttons = MessageBoxButton.OK) {
+            MessageDialog dialog = new MessageDialog() {
                 Title = caption,
                 Header = null,
                 Message = message,
@@ -38,10 +34,8 @@ namespace SharpPad.Services.WPF.Messages
             return dialog.GetClickedButton();
         }
 
-        public MessageBoxResult ShowMessage(string caption, string header, string message, MessageBoxButton buttons = MessageBoxButton.OK)
-        {
-            MessageDialog dialog = new MessageDialog()
-            {
+        public MessageBoxResult ShowMessage(string caption, string header, string message, MessageBoxButton buttons = MessageBoxButton.OK) {
+            MessageDialog dialog = new MessageDialog() {
                 Title = caption,
                 Header = header,
                 Message = message,

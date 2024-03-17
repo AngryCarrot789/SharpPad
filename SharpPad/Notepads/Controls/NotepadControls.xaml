@@ -2,31 +2,41 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:SharpPad.Notepads.Controls"
                     xmlns:wpf="clr-namespace:SharpPad.Shortcuts.WPF"
-                    xmlns:usages="clr-namespace:SharpPad.CommandSystem.Usages"
+                    xmlns:u="clr-namespace:SharpPad.CommandSystem.Usages"
                     xmlns:ae="http://icsharpcode.net/sharpdevelop/avalonedit"
                     xmlns:ap="clr-namespace:SharpPad.AttachedProperties">
     <SolidColorBrush x:Key="DropBrush" Color="OrangeRed" Opacity="0.3"/>
 
-    <Style TargetType="{x:Type local:NotepadEditorPanel}">
+    <Style TargetType="{x:Type local:NotepadEditorControl}">
         <Setter Property="AllowDrop" Value="True"/>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type local:NotepadEditorPanel}">
+                <ControlTemplate TargetType="{x:Type local:NotepadEditorControl}">
                     <DockPanel Background="Transparent">
                         <local:NotepadTabControl DockPanel.Dock="Top" x:Name="PART_TabControl"/>
-                        <Border BorderBrush="{DynamicResource PanelBorderBrush}" BorderThickness="0,1,0,0">
-                            <ae:TextEditor x:Name="PART_TextEditor"
-                                           wpf:UIInputManager.FocusPath="Application/Notepad/Document"
-                                           Background="{DynamicResource ABrush.Tone3.Background.Static}"
-                                           BorderBrush="Transparent" BorderThickness="0"
-                                           Foreground="{DynamicResource ABrush.Foreground.Static}"
-                                           ShowLineNumbers="True"
-                                           FontSize="14" FontFamily="Consolas"
-                                           ap:HorizontalScrolling.UseHorizontalScrolling="True">
-                                <ae:TextEditor.Options>
-                                    <ae:TextEditorOptions/>
-                                </ae:TextEditor.Options>
-                            </ae:TextEditor>
+                        <Border Background="{DynamicResource ABrush.Tone3.Background.Static}"
+                                BorderBrush="{DynamicResource PanelBorderBrush}"
+                                BorderThickness="0,1,0,0">
+                            <DockPanel>
+                                <Border Height="29" DockPanel.Dock="Bottom"
+                                        Background="{DynamicResource ABrush.Tone4.Background.Static}"
+                                        BorderBrush="{DynamicResource PanelBorderBrush}"
+                                        BorderThickness="0,1,0,0">
+                                    <local:FindAndReplaceControl x:Name="PART_FindAndReplacePanel"/>
+                                </Border>
+                                <ae:TextEditor x:Name="PART_TextEditor"
+                                               wpf:UIInputManager.FocusPath="Application/Notepad/Document"
+                                               Background="Transparent"
+                                               BorderBrush="Transparent" BorderThickness="0"
+                                               Foreground="{DynamicResource ABrush.Foreground.Static}"
+                                               ShowLineNumbers="True"
+                                               FontSize="14" FontFamily="Consolas"
+                                               ap:HorizontalScrolling.UseHorizontalScrolling="True">
+                                    <ae:TextEditor.Options>
+                                        <ae:TextEditorOptions/>
+                                    </ae:TextEditor.Options>
+                                </ae:TextEditor>
+                            </DockPanel>
                         </Border>
                     </DockPanel>
                     <ControlTemplate.Triggers>
@@ -126,7 +136,7 @@
                             <Button DockPanel.Dock="Right"
                                     Width="16" Height="16" Margin="0,5,5,5"
                                     Background="Transparent" BorderThickness="0"
-                                    usages:CommandUsageManager.BasicButtonCommandId="CloseDocument">
+                                    u:CommandUsageManager.BasicButtonCommandId="CloseDocument">
                                 <TextBlock Text="X" FontSize="11" Margin="0,0,0,0" Background="Transparent"/>
                             </Button>
                             <TextBlock x:Name="PART_DocNameTextBlock" VerticalAlignment="Center" Padding="7,4" Margin="0"
@@ -149,6 +159,48 @@
                             <Setter Property="BorderBrush" TargetName="mainBorder" Value="{DynamicResource TabItem.Disabled.Background}"/>
                         </DataTrigger>
                     </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type local:FindAndReplaceControl}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:FindAndReplaceControl}">
+                    <DockPanel>
+                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                            <Button Width="28" Content="X" Background="Transparent" BorderThickness="0"/>
+                        </StackPanel>
+                        <Grid HorizontalAlignment="Stretch">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" MaxWidth="400"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Background="{DynamicResource ABrush.Tone6.Background.Static}"
+                                    Grid.Column="0">
+                                <DockPanel>
+                                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                                        <Separator Style="{StaticResource VerticalSeparator}" Background="{DynamicResource PanelBorderBrush}" Margin="0"/>
+                                        <Button Width="28" Content="Cc" Background="Transparent" BorderThickness="0"
+                                                u:CommandUsageManager.BasicButtonCommandId="ToggleFindMatchCase" ToolTip="Go to last result"/>
+                                        <Button Width="28" Content="W" Background="Transparent" BorderThickness="0"
+                                                ToolTip="Go to next result"/>
+                                        <Button Width="28" Content=".*" Background="Transparent" BorderThickness="0"
+                                                ToolTip="Go to next result"/>
+                                    </StackPanel>
+                                    <TextBox x:Name="PART_SearchTextBox" BorderThickness="0" Padding="2,0" Background="Transparent" VerticalContentAlignment="Center"/>
+                                </DockPanel>
+                            </Border>
+                            <Separator Style="{StaticResource VerticalSeparator}" Background="{DynamicResource PanelBorderBrush}" HorizontalAlignment="Right" Margin="0"/>
+                            <StackPanel Orientation="Horizontal" Grid.Column="1">
+                                <Button Width="28" Content="←" FontSize="18" Background="Transparent" BorderThickness="0"
+                                        ToolTip="Go to last result"/>
+                                <Button Width="28" Content="→" FontSize="18" Background="Transparent" BorderThickness="0"
+                                        ToolTip="Go to next result" u:CommandUsageManager.BasicButtonCommandId="NextFindResult"/>
+                            </StackPanel>
+                        </Grid>
+                    </DockPanel>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

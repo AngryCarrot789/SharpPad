@@ -24,18 +24,13 @@ using System.Windows.Controls;
 using SharpPad.AdvancedMenuService.ContextService;
 using SharpPad.AdvancedMenuService.ContextService.Controls;
 
-namespace SharpPad.AdvancedMenuService
-{
-    public static class MenuService
-    {
-        public static IEnumerable<IContextEntry> CleanEntries(List<IContextEntry> entries)
-        {
+namespace SharpPad.AdvancedMenuService {
+    public static class MenuService {
+        public static IEnumerable<IContextEntry> CleanEntries(List<IContextEntry> entries) {
             IContextEntry lastEntry = null;
-            for (int i = 0, end = entries.Count - 1; i <= end; i++)
-            {
+            for (int i = 0, end = entries.Count - 1; i <= end; i++) {
                 IContextEntry entry = entries[i];
-                if (!(entry is SeparatorEntry) || (i != 0 && i != end && !(lastEntry is SeparatorEntry)))
-                {
+                if (!(entry is SeparatorEntry) || (i != 0 && i != end && !(lastEntry is SeparatorEntry))) {
                     yield return entry;
                 }
 
@@ -43,32 +38,26 @@ namespace SharpPad.AdvancedMenuService
             }
         }
 
-        internal static void InsertItemNodes(IAdvancedContainer container, ItemsControl parent, List<IContextEntry> entries)
-        {
+        internal static void InsertItemNodes(IAdvancedContainer container, ItemsControl parent, List<IContextEntry> entries) {
             ItemCollection items = parent.Items;
-            foreach (IContextEntry entry in CleanEntries(entries))
-            {
+            foreach (IContextEntry entry in CleanEntries(entries)) {
                 FrameworkElement element = container.CreateChildItem(entry);
-                if (element is AdvancedContextMenuItem menuItem)
-                {
+                if (element is AdvancedContextMenuItem menuItem) {
                     menuItem.OnAdding(container, parent, (BaseContextEntry) entry);
                     items.Add(menuItem);
                     menuItem.OnAdded();
                 }
-                else
-                {
+                else {
                     items.Add(element);
                 }
             }
         }
 
-        internal static void ClearItemNodes(ItemsControl control)
-        {
+        internal static void ClearItemNodes(ItemsControl control) {
             System.Diagnostics.Debug.WriteLine("Clearing items for " + control.GetType());
             ItemCollection list = control.Items;
             IAdvancedContainer container;
-            switch (control)
-            {
+            switch (control) {
                 case AdvancedContextMenu a:
                     container = a;
                     break;
@@ -80,19 +69,16 @@ namespace SharpPad.AdvancedMenuService
                     break;
             }
 
-            for (int i = list.Count - 1; i >= 0; i--)
-            {
+            for (int i = list.Count - 1; i >= 0; i--) {
                 FrameworkElement item = (FrameworkElement) list[i];
-                if (item is AdvancedContextMenuItem menuItem)
-                {
+                if (item is AdvancedContextMenuItem menuItem) {
                     Type type = menuItem.Entry.GetType();
                     menuItem.OnRemoving();
                     list.RemoveAt(i);
                     menuItem.OnRemoved();
                     container?.PushCachedItem(type, item);
                 }
-                else
-                {
+                else {
                     list.RemoveAt(i);
                     if (container != null && item is Separator)
                         container.PushCachedItem(typeof(SeparatorEntry), item);
@@ -103,8 +89,7 @@ namespace SharpPad.AdvancedMenuService
         /// <summary>
         /// Default implementation for <see cref="IAdvancedContainer.PushCachedItem"/>
         /// </summary>
-        public static bool PushCachedItem(Dictionary<Type, Stack<FrameworkElement>> itemCache, Type entryType, FrameworkElement item, int maxCache = 16)
-        {
+        public static bool PushCachedItem(Dictionary<Type, Stack<FrameworkElement>> itemCache, Type entryType, FrameworkElement item, int maxCache = 16) {
             if (item == null)
                 throw new ArgumentNullException(nameof(item));
             if (entryType == null)
@@ -122,8 +107,7 @@ namespace SharpPad.AdvancedMenuService
         /// <summary>
         /// Default implementation for <see cref="IAdvancedContainer.PopCachedItem"/>
         /// </summary>
-        public static FrameworkElement PopCachedItem(Dictionary<Type, Stack<FrameworkElement>> itemCache, Type entryType)
-        {
+        public static FrameworkElement PopCachedItem(Dictionary<Type, Stack<FrameworkElement>> itemCache, Type entryType) {
             if (entryType == null)
                 throw new ArgumentNullException(nameof(entryType));
 
@@ -136,13 +120,10 @@ namespace SharpPad.AdvancedMenuService
         /// <summary>
         /// Default implementation for <see cref="IAdvancedContainer.CreateChildItem"/>
         /// </summary>
-        public static FrameworkElement CreateChildItem(IAdvancedContainer container, IContextEntry entry)
-        {
+        public static FrameworkElement CreateChildItem(IAdvancedContainer container, IContextEntry entry) {
             FrameworkElement element = container.PopCachedItem(entry.GetType());
-            if (element == null)
-            {
-                switch (entry)
-                {
+            if (element == null) {
+                switch (entry) {
                     case CommandContextEntry _:
                         element = new AdvancedContextCommandMenuItem();
                         break;

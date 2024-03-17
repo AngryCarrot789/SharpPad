@@ -21,13 +21,11 @@ using System.Collections.Generic;
 using System.Linq;
 using SharpPad.Utils;
 
-namespace SharpPad.Interactivity.Contexts
-{
+namespace SharpPad.Interactivity.Contexts {
     /// <summary>
     /// An implementation of <see cref="IContextData"/> that stores static entries in an internal dictionary
     /// </summary>
-    public class ContextData : IContextData
-    {
+    public class ContextData : IContextData {
         private Dictionary<string, object> map;
 
         /// <summary>
@@ -46,8 +44,7 @@ namespace SharpPad.Interactivity.Contexts
         /// Copy constructor, effectively the same as <see cref="Clone"/>
         /// </summary>
         /// <param name="ctx">The context to copy, if non-null</param>
-        public ContextData(ContextData ctx)
-        {
+        public ContextData(ContextData ctx) {
             if (ctx.map != null && ctx.map.Count > 0)
                 this.map = new Dictionary<string, object>(ctx.map);
         }
@@ -56,22 +53,17 @@ namespace SharpPad.Interactivity.Contexts
         /// Copy constructor, effectively the same as <see cref="Clone"/>
         /// </summary>
         /// <param name="ctx">The context to copy, if non-null</param>
-        public ContextData(IContextData context)
-        {
-            if (context is ContextData ctx)
-            {
+        public ContextData(IContextData context) {
+            if (context is ContextData ctx) {
                 if (ctx.map != null && ctx.map.Count > 0)
                     this.map = new Dictionary<string, object>(ctx.map);
             }
-            else if (!(context is EmptyContext))
-            {
-                using (IEnumerator<KeyValuePair<string, object>> enumerator = context.Entries.GetEnumerator())
-                {
+            else if (!(context is EmptyContext)) {
+                using (IEnumerator<KeyValuePair<string, object>> enumerator = context.Entries.GetEnumerator()) {
                     if (!enumerator.MoveNext())
                         return;
                     this.map = new Dictionary<string, object>();
-                    do
-                    {
+                    do {
                         KeyValuePair<string, object> entry = enumerator.Current;
                         this.map[entry.Key] = entry.Value;
                     } while (enumerator.MoveNext());
@@ -83,35 +75,54 @@ namespace SharpPad.Interactivity.Contexts
 
         public ContextData Set(DataKey<bool> key, bool? value) => this.SetRaw(key.Id, value.BoxNullable());
 
-        public ContextData SetRaw(string key, object value)
-        {
-            if (value == null)
-            {
+        public ContextData SetRaw(string key, object value) {
+            if (value == null) {
                 this.map?.Remove(key);
             }
-            else
-            {
+            else {
                 (this.map ?? (this.map = new Dictionary<string, object>()))[key] = value;
             }
 
             return this;
         }
 
-        public bool TryGetContext(string key, out object value)
-        {
+        /// <summary>
+        /// Tries to replace an existing value with the given value or tries to remove the given key.
+        /// Returns true when value is null and the key is in this context data, or when value is non-null
+        /// and was not in this context data. Returns false when value is null and the key did not exist or
+        /// the value is non-null and existed in this context data
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public bool TryReplace<T>(DataKey<T> key, T value) => this.TryReplaceRaw(key.Id, value);
+
+        public bool TryReplaceRaw(string key, object value) {
+            if (value == null) {
+                return this.map.Remove(key);
+            }
+            else if (this.map == null || this.map.TryGetValue(key, out object oldVal) && value.Equals(oldVal)) {
+                return false;
+            }
+            else {
+                this.map[key] = value;
+                return true;
+            }
+        }
+
+        public bool TryGetContext(string key, out object value) {
             if (this.map != null && this.map.TryGetValue(key, out value))
                 return true;
             value = default;
             return false;
         }
 
-        public bool ContainsKey(DataKey key)
-        {
+        public bool ContainsKey(DataKey key) {
             return this.map != null && this.map.ContainsKey(key.Id);
         }
 
-        public bool ContainsKey(string key)
-        {
+        public bool ContainsKey(string key) {
             return this.map != null && this.map.ContainsKey(key);
         }
 
@@ -121,8 +132,7 @@ namespace SharpPad.Interactivity.Contexts
         /// Creates a new instance of <see cref="ContextData"/> containing all entries from this instance
         /// </summary>
         /// <returns>A new cloned instance</returns>
-        public ContextData Clone()
-        {
+        public ContextData Clone() {
             ContextData ctx = new ContextData();
             if (this.map != null && this.map.Count > 0)
                 ctx.map = new Dictionary<string, object>(this.map);
@@ -131,17 +141,12 @@ namespace SharpPad.Interactivity.Contexts
 
         public ContextData ToNullIfEmpty() => this.Count > 0 ? this : null;
 
-        public void Merge(IContextData ctx)
-        {
-            if (ctx is ContextData cd && cd.map != null)
-            {
-                using (Dictionary<string, object>.Enumerator enumerator = cd.map.GetEnumerator())
-                {
-                    if (enumerator.MoveNext())
-                    {
+        public void Merge(IContextData ctx) {
+            if (ctx is ContextData cd && cd.map != null) {
+                using (Dictionary<string, object>.Enumerator enumerator = cd.map.GetEnumerator()) {
+                    if (enumerator.MoveNext()) {
                         Dictionary<string, object> myMap = this.map ?? (this.map = new Dictionary<string, object>());
-                        do
-                        {
+                        do {
                             KeyValuePair<string, object> entry = enumerator.Current;
                             myMap[entry.Key] = entry.Value;
                         } while (enumerator.MoveNext());
@@ -150,11 +155,9 @@ namespace SharpPad.Interactivity.Contexts
             }
         }
 
-        public override string ToString()
-        {
+        public override string ToString() {
             string details = "";
-            if (this.map != null && this.map.Count > 0)
-            {
+            if (this.map != null && this.map.Count > 0) {
                 details = string.Join(", ", this.map.Select(x => "\"" + x.Key + "\"" + "=" + x.Value));
             }
 
@@ -169,8 +172,7 @@ namespace SharpPad.Interactivity.Contexts
         /// <param name="dataA">Source</param>
         /// <param name="dataB">Merge</param>
         /// <returns>A new context data containing entries from dataA and dataB</returns>
-        public static ContextData Merge(ContextData dataA, ContextData dataB)
-        {
+        public static ContextData Merge(ContextData dataA, ContextData dataB) {
             ContextData data = new ContextData(dataA);
             data.Merge(dataB);
             return data;

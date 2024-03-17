@@ -19,10 +19,8 @@
 
 using System.Windows;
 
-namespace SharpPad.Themes
-{
-    public static class ColourKeys
-    {
+namespace SharpPad.Themes {
+    public static class ColourKeys {
         public static ResourceKey Tone1Key { get; }
     }
 }

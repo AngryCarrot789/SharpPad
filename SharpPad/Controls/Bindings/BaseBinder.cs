@@ -20,8 +20,7 @@
 using System;
 using System.Windows;
 
-namespace SharpPad.Controls.Bindings
-{
+namespace SharpPad.Controls.Bindings {
     /// <summary>
     /// The base class for general binders, which are used to create a "bind" between model and event.
     /// <para>
@@ -37,8 +36,7 @@ namespace SharpPad.Controls.Bindings
     /// </para>
     /// </summary>
     /// <typeparam name="TModel">The type of model</typeparam>
-    public abstract class BaseBinder<TModel> : IBinder<TModel> where TModel : class
-    {
+    public abstract class BaseBinder<TModel> : IBinder<TModel> where TModel : class {
         public FrameworkElement Control { get; private set; }
 
         public TModel Model { get; private set; }
@@ -53,31 +51,25 @@ namespace SharpPad.Controls.Bindings
 
         protected BaseBinder() { }
 
-        public void OnModelValueChanged()
-        {
-            if (!this.IsFullyAttached)
-            {
+        public void OnModelValueChanged() {
+            if (!this.IsFullyAttached) {
                 return;
             }
 
             // We don't check if we are updating the control, just in case the model
             // decided to coerce its own value which is different from the UI control
 
-            try
-            {
+            try {
                 this.IsUpdatingControl = true;
                 this.UpdateControlCore();
             }
-            finally
-            {
+            finally {
                 this.IsUpdatingControl = false;
             }
         }
 
-        public void OnControlValueChanged()
-        {
-            if (!this.IsUpdatingControl && this.IsFullyAttached)
-            {
+        public void OnControlValueChanged() {
+            if (!this.IsUpdatingControl && this.IsFullyAttached) {
                 this.UpdateModelCore();
             }
         }
@@ -92,8 +84,7 @@ namespace SharpPad.Controls.Bindings
         /// </summary>
         protected abstract void UpdateControlCore();
 
-        public void Attach(FrameworkElement control, TModel model)
-        {
+        public void Attach(FrameworkElement control, TModel model) {
             if (this.IsFullyAttached)
                 throw new Exception("Already fully attached");
             if (this.Control != null)
@@ -112,8 +103,7 @@ namespace SharpPad.Controls.Bindings
             this.OnModelValueChanged();
         }
 
-        public void AttachControl(FrameworkElement control)
-        {
+        public void AttachControl(FrameworkElement control) {
             if (this.IsFullyAttached)
                 throw new Exception("Already fully attached");
             if (this.Control != null)
@@ -121,16 +111,14 @@ namespace SharpPad.Controls.Bindings
             if (control == null)
                 throw new ArgumentNullException(nameof(control));
             this.Control = control;
-            if (this.Model != null)
-            {
+            if (this.Model != null) {
                 this.IsFullyAttached = true;
                 this.OnAttached();
                 this.OnModelValueChanged();
             }
         }
 
-        public void AttachModel(TModel model)
-        {
+        public void AttachModel(TModel model) {
             if (this.IsFullyAttached)
                 throw new Exception("Already fully attached");
             if (this.Model != null)
@@ -138,16 +126,14 @@ namespace SharpPad.Controls.Bindings
             if (model == null)
                 throw new ArgumentNullException(nameof(model));
             this.Model = model;
-            if (this.Control != null)
-            {
+            if (this.Control != null) {
                 this.IsFullyAttached = true;
                 this.OnAttached();
                 this.OnModelValueChanged();
             }
         }
 
-        public void Detach()
-        {
+        public void Detach() {
             if (!this.IsFullyAttached)
                 throw new Exception("Not attached");
             this.TryDetatchCore();
@@ -155,16 +141,14 @@ namespace SharpPad.Controls.Bindings
             this.Control = null;
         }
 
-        public void DetachControl()
-        {
+        public void DetachControl() {
             if (this.Control == null)
                 throw new InvalidOperationException("No control is attached");
             this.TryDetatchCore();
             this.Control = null;
         }
 
-        public void DetachModel()
-        {
+        public void DetachModel() {
             if (this.Model == null)
                 throw new InvalidOperationException("No model is attached");
             this.TryDetatchCore();
@@ -175,10 +159,8 @@ namespace SharpPad.Controls.Bindings
 
         protected abstract void OnDetached();
 
-        private void TryDetatchCore()
-        {
-            if (this.IsFullyAttached)
-            {
+        private void TryDetatchCore() {
+            if (this.IsFullyAttached) {
                 this.OnDetached();
                 this.IsFullyAttached = false;
             }

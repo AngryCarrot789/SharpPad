@@ -23,29 +23,24 @@ using SharpPad.CommandSystem;
 using SharpPad.Interactivity.Contexts;
 using SharpPad.Shortcuts.WPF.Converters;
 
-namespace SharpPad.AdvancedMenuService.StandAlone
-{
+namespace SharpPad.AdvancedMenuService.StandAlone {
     /// <summary>
     /// A stand-alone menu item that represents a <see cref="Command"/> in the command system (not an <see cref="System.Windows.Input.ICommand"/>)
     /// </summary>
-    public class CommandMenuItem : MenuItem
-    {
+    public class CommandMenuItem : MenuItem {
         public static readonly DependencyProperty CommandIdProperty = DependencyProperty.Register("CommandId", typeof(string), typeof(CommandMenuItem), new PropertyMetadata(null, (d, e) => ((CommandMenuItem) d).OnCommandIdChanged()));
 
         /// <summary>
         /// Gets or sets the command ID that this menu item represents
         /// </summary>
-        public string CommandId
-        {
+        public string CommandId {
             get => (string) this.GetValue(CommandIdProperty);
             set => this.SetValue(CommandIdProperty, value);
         }
 
-        protected bool CanExecute
-        {
+        protected bool CanExecute {
             get => this.canExecute;
-            set
-            {
+            set {
                 this.canExecute = value;
 
                 // Causes IsEnableCore to be fetched, which returns false if we are executing something or
@@ -60,28 +55,23 @@ namespace SharpPad.AdvancedMenuService.StandAlone
         private bool canExecute;
         private bool generateItemsOnLoad;
 
-        public CommandMenuItem()
-        {
+        public CommandMenuItem() {
             this.Click += this.OnClick;
             this.Loaded += this.OnLoaded;
             this.Unloaded += this.OnUnloaded;
         }
 
-        private void OnCommandIdChanged()
-        {
-            if (this.IsLoaded)
-            {
+        private void OnCommandIdChanged() {
+            if (this.IsLoaded) {
                 this.generateItemsOnLoad = false;
                 this.GenerateChildren();
             }
-            else
-            {
+            else {
                 this.generateItemsOnLoad = true;
             }
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
-        {
+        private void OnLoaded(object sender, RoutedEventArgs e) {
             this.loadedContextData = ContextCapturingMenu.GetCapturedContextData(this) ?? DataManager.GetFullContextData(this);
             string id = this.CommandId;
             if (string.IsNullOrWhiteSpace(id))
@@ -89,36 +79,29 @@ namespace SharpPad.AdvancedMenuService.StandAlone
 
             Executability state = id != null ? CommandManager.Instance.CanExecute(id, this.loadedContextData) : Executability.Invalid;
             this.CanExecute = state == Executability.Valid;
-            if (this.CanExecute)
-            {
-                if (CommandIdToGestureConverter.CommandIdToGesture(id, null, out string value))
-                {
+            if (this.CanExecute) {
+                if (CommandIdToGestureConverter.CommandIdToGesture(id, null, out string value)) {
                     this.SetCurrentValue(InputGestureTextProperty, value);
                 }
             }
 
-            if (this.generateItemsOnLoad)
-            {
+            if (this.generateItemsOnLoad) {
                 this.generateItemsOnLoad = false;
                 this.GenerateChildren();
             }
         }
 
-        private void OnUnloaded(object sender, RoutedEventArgs e)
-        {
+        private void OnUnloaded(object sender, RoutedEventArgs e) {
             this.loadedContextData = null;
         }
 
-        private void OnClick(object sender, RoutedEventArgs e)
-        {
-            if (this.loadedContextData != null && this.CommandId is string commandId)
-            {
+        private void OnClick(object sender, RoutedEventArgs e) {
+            if (this.loadedContextData != null && this.CommandId is string commandId) {
                 CommandManager.Instance.Execute(commandId, this.loadedContextData);
             }
         }
 
-        private void GenerateChildren()
-        {
+        private void GenerateChildren() {
             string cmdId = this.CommandId;
             if (string.IsNullOrWhiteSpace(cmdId))
                 return;
@@ -128,8 +111,7 @@ namespace SharpPad.AdvancedMenuService.StandAlone
 
             ItemCollection list = this.Items;
             list.Clear();
-            foreach (string childCmdId in group.Commands)
-            {
+            foreach (string childCmdId in group.Commands) {
                 list.Add(new CommandMenuItem() {CommandId = childCmdId});
             }
         }

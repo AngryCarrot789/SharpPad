@@ -19,23 +19,19 @@
 
 using System;
 
-namespace SharpPad.Utils.Numerics
-{
-    public readonly struct SizeI : IEquatable<SizeI>
-    {
+namespace SharpPad.Utils.Numerics {
+    public readonly struct SizeI : IEquatable<SizeI> {
         public static readonly SizeI Empty = default;
 
         public readonly int Width;
         public readonly int Height;
 
-        public SizeI(int width, int height)
-        {
+        public SizeI(int width, int height) {
             this.Width = width;
             this.Height = height;
         }
 
-        public SizeI(Vector2i vec)
-        {
+        public SizeI(Vector2i vec) {
             this.Width = vec.X;
             this.Height = vec.Y;
         }

@@ -25,10 +25,8 @@ using System.Windows;
 using System.Windows.Media;
 using SharpPad.Utils.Visuals;
 
-namespace SharpPad.Behaviours
-{
-    public class BehaviourCollection : FreezableCollection<BehaviourBase>
-    {
+namespace SharpPad.Behaviours {
+    public class BehaviourCollection : FreezableCollection<BehaviourBase> {
         public static readonly DependencyProperty BehavioursProperty = DependencyProperty.RegisterAttached("Behaviours", typeof(BehaviourCollection), typeof(BehaviourCollection), new PropertyMetadata(null, OnBehavioursChanged));
 
         private static readonly Action<Visual> RemoveHandler;
@@ -43,52 +41,43 @@ namespace SharpPad.Behaviours
         // lazily add/remove event handler for VAC, as handlers existing do have some tiny overhead in the VT operations
         private int vacCount;
 
-        public BehaviourCollection()
-        {
+        public BehaviourCollection() {
             ((INotifyCollectionChanged) this).CollectionChanged += this.OnCollectionChanged;
         }
 
-        static BehaviourCollection()
-        {
+        static BehaviourCollection() {
             VisualAncestorChangedEventInterface.CreateInterface(OnVisualAncestorChanged, out AddHandler, out RemoveHandler);
         }
 
-        internal void RegisterVAC(BehaviourBase behaviour)
-        {
+        internal void RegisterVAC(BehaviourBase behaviour) {
             if (this.Owner == null)
                 throw new InvalidOperationException("No owner");
 
-            if (!this.IsOwnerVisual)
-            {
+            if (!this.IsOwnerVisual) {
                 Debug.WriteLine(behaviour.GetType() + " tried to register the VisualAncestorChanged event, but our owner is not a visual: " + this.Owner);
                 return;
             }
 
-            if (this.vacCount == 0)
-            {
+            if (this.vacCount == 0) {
                 AddHandler((Visual) this.Owner);
             }
 
             this.vacCount++;
         }
 
-        internal void UnregisterVAC()
-        {
+        internal void UnregisterVAC() {
             if (this.Owner == null)
                 throw new InvalidOperationException("No owner");
             if (!this.IsOwnerVisual)
                 return;
 
-            if (--this.vacCount == 0)
-            {
+            if (--this.vacCount == 0) {
                 RemoveHandler((Visual) this.Owner);
             }
         }
 
-        private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            switch (e.Action)
-            {
+        private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+            switch (e.Action) {
                 case NotifyCollectionChangedAction.Add:
                     this.DetatchAndTryAttachAll(e.NewItems);
                     break;
@@ -107,10 +96,8 @@ namespace SharpPad.Behaviours
             }
         }
 
-        private void DetatchAndTryAttachAll(IEnumerable enumerable)
-        {
-            foreach (BehaviourBase behaviour in enumerable)
-            {
+        private void DetatchAndTryAttachAll(IEnumerable enumerable) {
+            foreach (BehaviourBase behaviour in enumerable) {
                 if (behaviour.AttachedElement != null)
                     behaviour.Detatch();
                 if (this.Owner != null && ((IBehaviour) behaviour).CanAttachTo(this.Owner))
@@ -118,17 +105,14 @@ namespace SharpPad.Behaviours
             }
         }
 
-        private static void DetatchAll(IEnumerable enumerable)
-        {
-            foreach (BehaviourBase behaviour in enumerable)
-            {
+        private static void DetatchAll(IEnumerable enumerable) {
+            foreach (BehaviourBase behaviour in enumerable) {
                 if (behaviour.AttachedElement != null)
                     behaviour.Detatch();
             }
         }
 
-        public void Connect(DependencyObject element)
-        {
+        public void Connect(DependencyObject element) {
             if (this.Owner != null)
                 throw new InvalidOperationException("Already attached");
             if (element == null)
@@ -138,14 +122,12 @@ namespace SharpPad.Behaviours
             this.DetatchAndTryAttachAll(this);
         }
 
-        public void Disconnect()
-        {
+        public void Disconnect() {
             if (this.Owner == null)
                 throw new InvalidOperationException("Not attached: no owner");
 
             DetatchAll(this);
-            if (this.IsOwnerVisual && this.vacCount > 0)
-            {
+            if (this.IsOwnerVisual && this.vacCount > 0) {
                 Debug.WriteLine("Expected VACCount to be zero when all items are detached");
                 Debugger.Break();
                 this.vacCount = 0;
@@ -156,45 +138,36 @@ namespace SharpPad.Behaviours
             this.IsOwnerVisual = false;
         }
 
-        public static void SetBehaviours(UIElement element, BehaviourCollection value)
-        {
+        public static void SetBehaviours(UIElement element, BehaviourCollection value) {
             element.SetValue(BehavioursProperty, value);
         }
 
-        public static BehaviourCollection GetBehaviours(UIElement element)
-        {
+        public static BehaviourCollection GetBehaviours(UIElement element) {
             return (BehaviourCollection) element.GetValue(BehavioursProperty);
         }
 
-        private static void OnBehavioursChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (e.OldValue is BehaviourCollection oldCollection)
-            {
+        private static void OnBehavioursChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            if (e.OldValue is BehaviourCollection oldCollection) {
                 oldCollection.Disconnect();
             }
 
-            if (e.NewValue is BehaviourCollection newCollection)
-            {
+            if (e.NewValue is BehaviourCollection newCollection) {
                 if (newCollection.Owner != null)
                     newCollection.Disconnect();
                 newCollection.Connect(d);
             }
         }
 
-        private static void OnVisualAncestorChanged(object sender, DependencyObject element, DependencyObject oldParent)
-        {
-            if (ReferenceEquals(sender, element) && element.GetValue(BehavioursProperty) is BehaviourCollection collection)
-            {
+        private static void OnVisualAncestorChanged(object sender, DependencyObject element, DependencyObject oldParent) {
+            if (ReferenceEquals(sender, element) && element.GetValue(BehavioursProperty) is BehaviourCollection collection) {
                 // collection should be non-null realistically, based on the VAC event registration logic
-                if (collection.Owner != element)
-                {
+                if (collection.Owner != element) {
                     Debug.WriteLine("Fatal error: received VAC event for unrelated visual");
                     Debugger.Break();
                     return;
                 }
 
-                foreach (BehaviourBase behaviour in collection)
-                {
+                foreach (BehaviourBase behaviour in collection) {
                     BehaviourBase.InternalProcessVisualParentChanged(behaviour, oldParent);
                 }
             }

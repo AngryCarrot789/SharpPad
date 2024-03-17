@@ -22,15 +22,15 @@ using ICSharpCode.AvalonEdit;
 using SharpPad.Notepads;
 using SharpPad.Notepads.Controls;
 
-namespace SharpPad.Interactivity.Contexts
-{
-    public static class DataKeys
-    {
+namespace SharpPad.Interactivity.Contexts {
+    public static class DataKeys {
         public static readonly DataKey<Window> HostWindowKey = DataKey<Window>.Create("HostWindow");
         public static readonly DataKey<Notepad> NotepadKey = DataKey<Notepad>.Create("Notepad");
         public static readonly DataKey<NotepadDocument> DocumentKey = DataKey<NotepadDocument>.Create("Document");
-        public static readonly DataKey<TextEditor> TextEditorKey = DataKey<TextEditor>.Create("TextEditor");
+        public static readonly DataKey<NotepadEditor> EditorKey = DataKey<NotepadEditor>.Create("TextEditor");
+        public static readonly DataKey<FindAndReplaceModel> FindModelKey = DataKey<FindAndReplaceModel>.Create("FindAndReplaceModel");
 
         public static readonly DataKey<INotepadTabUI> UINotepadTabKey = DataKey<INotepadTabUI>.Create("UINotepadTab");
+        public static readonly DataKey<INotepadEditorUI> UINotepadEditorKey = DataKey<INotepadEditorUI>.Create("UINotepadEditor");
     }
 }

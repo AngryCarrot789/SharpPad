@@ -20,7 +20,6 @@
 using System.Threading.Tasks;
 using SharpPad.Shortcuts.Managing;
 
-namespace SharpPad.Shortcuts.WPF
-{
+namespace SharpPad.Shortcuts.WPF {
     public delegate Task<bool> ShortcutActivateHandler(ShortcutInputManager inputManager, GroupedShortcut shortcut);
 }

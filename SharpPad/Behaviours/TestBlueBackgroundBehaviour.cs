@@ -21,35 +21,27 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace SharpPad.Behaviours
-{
-    public class TestRedBackgroundBehaviour1 : Behaviour<Control>
-    {
-        protected override void OnAttached()
-        {
+namespace SharpPad.Behaviours {
+    public class TestRedBackgroundBehaviour1 : Behaviour<Control> {
+        protected override void OnAttached() {
             this.AttachedElement.Background = Brushes.DarkRed;
         }
 
-        protected override void OnDetatched()
-        {
+        protected override void OnDetatched() {
             this.AttachedElement.ClearValue(Control.BackgroundProperty);
         }
     }
 
-    public class TestBlueBackgroundBehaviour2 : Behaviour<Control>
-    {
-        protected override void OnAttached()
-        {
+    public class TestBlueBackgroundBehaviour2 : Behaviour<Control> {
+        protected override void OnAttached() {
             this.AttachedElement.BorderBrush = Brushes.Red;
         }
 
-        protected override void OnDetatched()
-        {
+        protected override void OnDetatched() {
             this.AttachedElement.ClearValue(Control.BorderBrushProperty);
         }
 
-        protected override void OnVisualParentChanged(DependencyObject oldParent)
-        {
+        protected override void OnVisualParentChanged(DependencyObject oldParent) {
             base.OnVisualParentChanged(oldParent);
         }
     }

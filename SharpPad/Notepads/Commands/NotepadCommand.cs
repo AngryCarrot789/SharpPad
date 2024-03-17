@@ -19,25 +19,25 @@
 
 using System;
 using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Windows.Forms;
 using System.Windows.Threading;
+using ICSharpCode.AvalonEdit.Document;
 using SharpPad.CommandSystem;
 using SharpPad.Interactivity.Contexts;
 using SharpPad.Tasks;
 using SharpPad.Utils;
 
-namespace SharpPad.Notepads.Commands
-{
-    public abstract class NotepadCommand : Command
-    {
-        public override Executability CanExecute(CommandEventArgs e)
-        {
+namespace SharpPad.Notepads.Commands {
+    public abstract class NotepadCommand : Command {
+        public override Executability CanExecute(CommandEventArgs e) {
             if (!DataKeys.NotepadKey.TryGetContext(e.ContextData, out Notepad notepad))
                 return Executability.Invalid;
             return this.CanExecute(notepad, e);
         }
 
-        protected override void Execute(CommandEventArgs e)
-        {
+        protected override void Execute(CommandEventArgs e) {
             if (DataKeys.NotepadKey.TryGetContext(e.ContextData, out Notepad notepad))
                 this.Execute(notepad, e);
         }
@@ -47,38 +47,30 @@ namespace SharpPad.Notepads.Commands
         public abstract void Execute(Notepad notepad, CommandEventArgs e);
     }
 
-    public class NewFileCommand : NotepadCommand
-    {
-        public override Executability CanExecute(Notepad notepad, CommandEventArgs e)
-        {
+    public class NewFileCommand : NotepadCommand {
+        public override Executability CanExecute(Notepad notepad, CommandEventArgs e) {
             return Executability.Valid;
         }
 
-        public override void Execute(Notepad notepad, CommandEventArgs e)
-        {
-            notepad.AddDocument(new NotepadDocument()
-            {
-                DocumentName = "New Document " + (notepad.Documents.Count + 1)
+        public override void Execute(Notepad notepad, CommandEventArgs e) {
+            notepad.AddNewEditor(new NotepadDocument() {
+                DocumentName = "New Document " + (notepad.Editors.Count + 1)
             });
         }
     }
 
-    public class OpenFilesCommand : NotepadCommand
-    {
+    public class OpenFilesCommand : NotepadCommand {
         // lazy
         private readonly WeakReference<ActivityTask> currentTask = new WeakReference<ActivityTask>(null);
 
-        public override Executability CanExecute(Notepad notepad, CommandEventArgs e)
-        {
+        public override Executability CanExecute(Notepad notepad, CommandEventArgs e) {
             if (this.currentTask.TryGetTarget(out var task) && task.IsRunning)
                 return Executability.ValidButCannotExecute;
             return Executability.Valid;
         }
 
-        public override void Execute(Notepad notepad, CommandEventArgs e)
-        {
-            if (this.currentTask.TryGetTarget(out ActivityTask activityTask) && activityTask.IsRunning)
-            {
+        public override void Execute(Notepad notepad, CommandEventArgs e) {
+            if (this.currentTask.TryGetTarget(out ActivityTask activityTask) && activityTask.IsRunning) {
                 IoC.MessageService.ShowMessage("Processing", "Already opening files. Please wait until the last operation has completed");
                 return;
             }
@@ -90,79 +82,60 @@ namespace SharpPad.Notepads.Commands
 
         public static ActivityTask OpenFile(Notepad notepad, string path) => OpenFiles(notepad, new string[] {path});
 
-        public static ActivityTask OpenFiles(Notepad notepad, string[] paths)
-        {
-            return TaskManager.Instance.RunTask(async () =>
-            {
+        public static ActivityTask OpenFiles(Notepad notepad, string[] paths) {
+            return TaskManager.Instance.RunTask(async () => {
                 IActivityProgress progress = TaskManager.Instance.CurrentTask.Progress;
                 progress.Text = "Reading files";
 
                 string[] textArray = new string[paths.Length];
                 double percentPerFile = 1.0 / paths.Length;
-                using (progress.PushCompletionRange(0.0, 0.5))
-                {
-                    for (int i = 0; i < paths.Length; i++)
-                    {
+                using (progress.PushCompletionRange(0.0, 0.5)) {
+                    for (int i = 0; i < paths.Length; i++) {
                         textArray[i] = File.ReadAllText(paths[i]);
                         progress.OnProgress(percentPerFile);
                     }
                 }
 
                 progress.Text = "Creating tabs";
-                NotepadDocument lastDocument = null;
-                using (progress.PushCompletionRange(0.5, 1.0))
-                {
-                    for (int i = 0; i < paths.Length; i++)
-                    {
+                NotepadEditor lastEditor = null;
+                using (progress.PushCompletionRange(0.5, 1.0)) {
+                    for (int i = 0; i < paths.Length; i++) {
                         string path = paths[i];
                         string text = textArray[i];
                         // Need dispatcher because TextDocument is not thread-safe and also tracks the owner thread
-                        await IoC.Dispatcher.InvokeAsync(() =>
-                        {
-                            NotepadDocument document = new NotepadDocument()
-                            {
-                                FilePath = path
+                        TextDocument textDocument = new TextDocument(text);
+                        textDocument.SetOwnerThread(IoC.Dispatcher.Thread);
+                        await IoC.Dispatcher.InvokeAsync(() => {
+                            NotepadDocument document = new NotepadDocument(textDocument) {
+                                FilePath = path,
+                                IsModified = false
                             };
 
-                            try
-                            {
-                                document.Document.Text = text;
-                            }
-                            catch (Exception ex)
-                            {
-                                IoC.MessageService.ShowMessage("Error", "Error reading file", ex.GetToString());
-                            }
-
-                            document.IsModified = false;
-                            notepad.AddDocument(lastDocument = document);
+                            lastEditor = notepad.AddNewEditor(document);
                         }, DispatcherPriority.Loaded);
 
                         progress.OnProgress(percentPerFile);
                     }
                 }
 
-                if (lastDocument != null)
-                {
-                    await IoC.Dispatcher.InvokeAsync(() =>
-                    {
-                        notepad.ActiveDocument = lastDocument;
+                if (lastEditor != null) {
+                    await IoC.Dispatcher.InvokeAsync(() => {
+                        notepad.ActiveEditor = lastEditor;
                     });
                 }
             });
         }
     }
 
-    public class SaveAllDocumentsCommand : NotepadCommand
-    {
-        public override Executability CanExecute(Notepad notepad, CommandEventArgs e)
-        {
+    public class SaveAllDocumentsCommand : NotepadCommand {
+        public override Executability CanExecute(Notepad notepad, CommandEventArgs e) {
             return Executability.Valid;
         }
 
-        public override void Execute(Notepad notepad, CommandEventArgs e)
-        {
-            foreach (NotepadDocument document in notepad.Documents)
-                SaveDocumentCommand.SaveOrSaveAs(document);
+        public override void Execute(Notepad notepad, CommandEventArgs e) {
+            foreach (NotepadEditor editor in notepad.Editors.Where(x => x.Document != null)) {
+                SaveDocumentCommand.SaveOrSaveAs(editor.Document);
+            }
         }
     }
 }

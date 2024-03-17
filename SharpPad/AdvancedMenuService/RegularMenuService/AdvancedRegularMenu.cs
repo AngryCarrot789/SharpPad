@@ -23,17 +23,14 @@ using System.Windows;
 using SharpPad.AdvancedMenuService.ContextService;
 using SharpPad.Interactivity.Contexts;
 
-namespace SharpPad.AdvancedMenuService.RegularMenuService
-{
+namespace SharpPad.AdvancedMenuService.RegularMenuService {
     // TODO: not completed yet. Need to add a context generator property
-    public class AdvancedRegularMenu : ContextCapturingMenu, IAdvancedContainer
-    {
+    public class AdvancedRegularMenu : ContextCapturingMenu, IAdvancedContainer {
         private readonly Dictionary<Type, Stack<FrameworkElement>> itemCache;
 
         public IContextData Context { get; internal set; }
 
-        public AdvancedRegularMenu()
-        {
+        public AdvancedRegularMenu() {
             this.itemCache = new Dictionary<Type, Stack<FrameworkElement>>();
         }
 

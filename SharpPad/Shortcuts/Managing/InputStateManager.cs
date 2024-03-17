@@ -22,13 +22,11 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace SharpPad.Shortcuts.Managing
-{
+namespace SharpPad.Shortcuts.Managing {
     /// <summary>
     /// Manages multiple input states and only allows one to be active at a time. Instances of this class are managed by a <see cref="ShortcutManager"/>
     /// </summary>
-    public class InputStateManager
-    {
+    public class InputStateManager {
         private readonly List<GroupedInputState> inputStates;
 
         public ShortcutManager Manager { get; }
@@ -43,8 +41,7 @@ namespace SharpPad.Shortcuts.Managing
         /// </summary>
         public IReadOnlyList<GroupedInputState> InputStates => this.inputStates;
 
-        public InputStateManager(ShortcutManager manager, string id)
-        {
+        public InputStateManager(ShortcutManager manager, string id) {
             this.Manager = manager ?? throw new ArgumentNullException(nameof(manager));
             this.inputStates = new List<GroupedInputState>();
             this.Id = id;
@@ -54,8 +51,7 @@ namespace SharpPad.Shortcuts.Managing
         private GroupedInputState lastActiveInput;
 
         // e.g. clicking a toggle button
-        public Task OnInputStateTriggeredExternal(ShortcutInputManager inputManager, GroupedInputState state, bool activate)
-        {
+        public Task OnInputStateTriggeredExternal(ShortcutInputManager inputManager, GroupedInputState state, bool activate) {
             return Task.CompletedTask;
         }
 
@@ -69,16 +65,11 @@ namespace SharpPad.Shortcuts.Managing
         /// <param name="inputManager">The processor that caused this input state to be triggered</param>
         /// <param name="state">The input state to modify</param>
         /// <param name="activate">Whether or not to activate or deactivate the state</param>
-        public void OnInputStateTriggered(ShortcutInputManager inputManager, GroupedInputState state, bool activate)
-        {
-            if (activate)
-            {
-                if (!state.IsActive)
-                {
-                    foreach (GroupedInputState inputState in this.inputStates)
-                    {
-                        if (inputState.IsActive)
-                        {
+        public void OnInputStateTriggered(ShortcutInputManager inputManager, GroupedInputState state, bool activate) {
+            if (activate) {
+                if (!state.IsActive) {
+                    foreach (GroupedInputState inputState in this.inputStates) {
+                        if (inputState.IsActive) {
                             inputState.OnDeactivated(inputManager);
                         }
                     }
@@ -87,8 +78,7 @@ namespace SharpPad.Shortcuts.Managing
                     this.lastActiveInput = state;
                 }
             }
-            else if (state.IsActive)
-            {
+            else if (state.IsActive) {
                 state.OnDeactivated(inputManager);
             }
 
@@ -149,10 +139,8 @@ namespace SharpPad.Shortcuts.Managing
             // }
         }
 
-        public bool Add(GroupedInputState state)
-        {
-            if (state.StateManager != null)
-            {
+        public bool Add(GroupedInputState state) {
+            if (state.StateManager != null) {
                 throw new Exception($"State ({state}) was already located in the state manager '{state.StateManager}'");
             }
 

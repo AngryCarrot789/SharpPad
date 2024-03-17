@@ -19,10 +19,8 @@
 
 using System;
 
-namespace SharpPad.Logger
-{
-    public class LogEntry
-    {
+namespace SharpPad.Logger {
+    public class LogEntry {
         /// <summary>
         /// Gets the time at which this log entry was created
         /// </summary>
@@ -40,8 +38,7 @@ namespace SharpPad.Logger
         /// </summary>
         public string Content { get; }
 
-        public LogEntry(DateTime logTime, int index, string stackTrace, string content)
-        {
+        public LogEntry(DateTime logTime, int index, string stackTrace, string content) {
             this.LogTime = logTime;
             this.Index = index;
             this.StackTrace = stackTrace;

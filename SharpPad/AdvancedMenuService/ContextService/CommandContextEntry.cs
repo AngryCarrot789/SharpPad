@@ -20,17 +20,14 @@
 using System.Collections.Generic;
 using SharpPad.Utils;
 
-namespace SharpPad.AdvancedMenuService.ContextService
-{
+namespace SharpPad.AdvancedMenuService.ContextService {
     /// <summary>
     /// The class for command-based context entries. The header, tooltip, etc, are automatically fetched
     /// </summary>
-    public class CommandContextEntry : BaseContextEntry
-    {
+    public class CommandContextEntry : BaseContextEntry {
         public string CommandId { get; }
 
-        public CommandContextEntry(string commandId, string header, string description, IEnumerable<IContextEntry> children = null) : base(header, description, children)
-        {
+        public CommandContextEntry(string commandId, string header, string description, IEnumerable<IContextEntry> children = null) : base(header, description, children) {
             this.CommandId = commandId;
         }
 

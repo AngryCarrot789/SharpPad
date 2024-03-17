@@ -23,31 +23,28 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 
-namespace SharpPad.Utils.RDA
-{
+namespace SharpPad.Utils.RDA {
     /// <summary>
     /// A class that is similar to <see cref="RapidDispatchActionEx"/>, but has a set amount of time
     /// that has to pass before the callback is scheduled, ensuring the callback is not executed too quickly
     /// </summary>
-    public class RateLimitedDispatchAction : IDispatchAction
-    {
-        private const int F_CONTINUE = 1;          // Keep the task running
-        private const int F_RUNNING = 2;           // The task is running or not
-        private const int F_EXECUTING = 4;         // The task is executing the callback
+    public class RateLimitedDispatchAction : IDispatchAction {
+        private const int F_CONTINUE = 1; // Keep the task running
+        private const int F_RUNNING = 2; // The task is running or not
+        private const int F_EXECUTING = 4; // The task is executing the callback
         private const int F_CONTINUE_CRITICAL = 8; // InvokeAsync was called while executing
 
         private readonly Func<Task> callback; // The non-null user callback method to run code
-        private readonly object stateLock;   // Used to guard state modifications
-        private volatile int state;          // Stores the current state of this object
-        private long lastExecutionTime;      // The time at which the callback execution completed
-        private long minIntervalTicks;       // The minimum interval per callbacks
+        private readonly object stateLock; // Used to guard state modifications
+        private volatile int state; // Stores the current state of this object
+        private long lastExecutionTime; // The time at which the callback execution completed
+        private long minIntervalTicks; // The minimum interval per callbacks
 
         /// <summary>
         /// Gets or sets the minimum callback interval, that is, the smallest amount of time
         /// that must pass before the callback function can be invoked and awaited
         /// </summary>
-        public TimeSpan MinimumInterval
-        {
+        public TimeSpan MinimumInterval {
             get => new TimeSpan(Interlocked.Read(ref this.minIntervalTicks));
             set => Interlocked.Exchange(ref this.minIntervalTicks, value.Ticks);
         }
@@ -59,8 +56,7 @@ namespace SharpPad.Utils.RDA
 
         public RateLimitedDispatchAction(Func<Task> callback) : this(callback, TimeSpan.FromMilliseconds(250)) { }
 
-        public RateLimitedDispatchAction(Func<Task> callback, TimeSpan minimumInterval)
-        {
+        public RateLimitedDispatchAction(Func<Task> callback, TimeSpan minimumInterval) {
             Validate.NotNull(callback, nameof(callback));
             if (minimumInterval.Ticks < 0)
                 throw new ArgumentOutOfRangeException(nameof(minimumInterval), "Minimum interval must represent zero or more time");
@@ -72,12 +68,10 @@ namespace SharpPad.Utils.RDA
 
         public static RateLimitedDispatchAction ForDispatcherAsync(Func<Task> callback, TimeSpan minInterval, DispatcherPriority priority = DispatcherPriority.Send) => ForDispatcherAsync(callback, minInterval, Application.Current.Dispatcher, priority);
 
-        public static RateLimitedDispatchAction ForDispatcherAsync(Func<Task> callback, TimeSpan minInterval, Dispatcher dispatcher, DispatcherPriority priority = DispatcherPriority.Send)
-        {
+        public static RateLimitedDispatchAction ForDispatcherAsync(Func<Task> callback, TimeSpan minInterval, Dispatcher dispatcher, DispatcherPriority priority = DispatcherPriority.Send) {
             Validate.NotNull(callback, nameof(callback));
             Validate.NotNull(dispatcher, nameof(dispatcher));
-            return new RateLimitedDispatchAction(async () =>
-            {
+            return new RateLimitedDispatchAction(async () => {
                 // We first await InvokeAsync, then we await either the task that callback gave
                 // or Task.Completed just in case the callback returns a null task for some reason
                 await (await dispatcher.InvokeAsync(callback, priority) ?? Task.CompletedTask);
@@ -86,8 +80,7 @@ namespace SharpPad.Utils.RDA
 
         public static RateLimitedDispatchAction ForDispatcherSync(Action callback, TimeSpan minInterval, DispatcherPriority priority = DispatcherPriority.Send) => ForDispatcherSync(callback, minInterval, Application.Current.Dispatcher, priority);
 
-        public static RateLimitedDispatchAction ForDispatcherSync(Action callback, TimeSpan minInterval, Dispatcher dispatcher, DispatcherPriority priority = DispatcherPriority.Send)
-        {
+        public static RateLimitedDispatchAction ForDispatcherSync(Action callback, TimeSpan minInterval, Dispatcher dispatcher, DispatcherPriority priority = DispatcherPriority.Send) {
             Validate.NotNull(callback, nameof(callback));
             Validate.NotNull(dispatcher, nameof(dispatcher));
             // No need to use async, since we can just directly access the DispatcherOperation's task,
@@ -98,43 +91,35 @@ namespace SharpPad.Utils.RDA
         /// <summary>
         /// Triggers this executor, possibly starting a new <see cref="Task"/>, or notifying the existing internal task that there's new input
         /// </summary>
-        public void InvokeAsync()
-        {
-            lock (this.stateLock)
-            {
+        public void InvokeAsync() {
+            lock (this.stateLock) {
                 int myState = this.state;
-                if ((myState & F_EXECUTING) == 0)
-                {
+                if ((myState & F_EXECUTING) == 0) {
                     // We are not executing, so append CONTINUE to let the task continue running
                     myState |= F_CONTINUE;
                 }
-                else
-                {
+                else {
                     // The callback is currently being processed, so the critical condition is set
                     myState |= F_CONTINUE_CRITICAL;
                 }
 
-                if ((myState & F_RUNNING) == 0)
-                {
+                if ((myState & F_RUNNING) == 0) {
                     // We are not running, so start a new task and append RUNNING
                     this.state = myState | F_RUNNING;
                     Task.Run(this.TaskMain);
                 }
-                else
-                {
+                else {
                     // Task is already running, so just volatile write the state
                     this.state = myState;
                 }
             }
         }
 
-        private async Task TaskMain()
-        {
+        private async Task TaskMain() {
             long lastExecTime = Interlocked.Read(ref this.lastExecutionTime);
             long interval = Time.GetSystemTicks() - lastExecTime;
 
-            do
-            {
+            do {
                 // We will sleep at least twice, even if InvokeAsync is only called.
                 // This is so that we don't need to keep creating lots of tasks when
                 // InvokeAsync is called very often
@@ -143,31 +128,25 @@ namespace SharpPad.Utils.RDA
                     await Task.Delay(new TimeSpan(minInterval - interval));
 
                 int myState;
-                lock (this.stateLock)
-                {
-                    if (((myState = this.state) & F_CONTINUE) == 0)
-                    {
+                lock (this.stateLock) {
+                    if (((myState = this.state) & F_CONTINUE) == 0) {
                         this.state = myState & ~F_RUNNING;
                         Interlocked.Exchange(ref this.lastExecutionTime, lastExecTime);
                         return;
                     }
-                    else
-                    {
+                    else {
                         this.state = (myState & ~F_CONTINUE) | F_EXECUTING;
                     }
                 }
 
-                try
-                {
+                try {
                     // Use CompletedTask just in case execute returns a null task for some reason
                     await (this.callback.Invoke() ?? Task.CompletedTask);
                 }
-                catch (Exception e)
-                {
+                catch (Exception e) {
                     this.CallbackException?.Invoke(this, new ExceptionEventArgs(e));
                 }
-                finally
-                {
+                finally {
                     // This sets CONTINUE to false, indicating that there is no more work required.
                     // However there is a window between when the task finishes and condition being set to false
                     // where another thread can set condition to true:
@@ -177,15 +156,12 @@ namespace SharpPad.Utils.RDA
                     // That might mean that whatever work the task does will lose out on the absolute latest
                     // update (that occurred a few microseconds~ after the task completed)
                     // So hopefully, the usage of EXECUTING and CONTINUE_CRITICAL will help against that
-                    lock (this.stateLock)
-                    {
-                        if (((myState = this.state) & F_CONTINUE_CRITICAL) != 0)
-                        {
+                    lock (this.stateLock) {
+                        if (((myState = this.state) & F_CONTINUE_CRITICAL) != 0) {
                             // Critical condition is active, so: Remove CRITICAL and append CONTINUE
                             myState = (myState & ~F_CONTINUE_CRITICAL) | F_CONTINUE;
                         }
-                        else
-                        {
+                        else {
                             // Critical condition not met, so just remove continue,
                             // allowing the task to possibly exit normally
                             myState &= ~F_CONTINUE;

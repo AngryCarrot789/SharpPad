@@ -6,7 +6,7 @@
             xmlns:v="clr-namespace:SharpPad.Views"
             xmlns:wpf="clr-namespace:SharpPad.Shortcuts.WPF"
             xmlns:bh="clr-namespace:SharpPad.Behaviours"
-            xmlns:controls="clr-namespace:SharpPad.Notepads.Controls"
+            xmlns:nc="clr-namespace:SharpPad.Notepads.Controls"
             xmlns:ams="clr-namespace:SharpPad.AdvancedMenuService"
             xmlns:amss="clr-namespace:SharpPad.AdvancedMenuService.StandAlone"
             mc:Ignorable="d"
@@ -30,7 +30,7 @@
             This is used to implement a kind of "contextual" non-context menu item
         -->
         <ams:ContextCapturingMenu Grid.Row="0" BorderBrush="{DynamicResource PanelBorderBrush}" BorderThickness="0,0,0,1"
-                                Background="{Binding TitlebarBrush, RelativeSource={RelativeSource AncestorType={x:Type v:WindowEx}, Mode=FindAncestor}}">
+                                  Background="{Binding TitlebarBrush, RelativeSource={RelativeSource AncestorType={x:Type v:WindowEx}, Mode=FindAncestor}}">
             <MenuItem Header="File">
                 <amss:CommandMenuItem Header="New File" CommandId="NewFile"/>
                 <amss:CommandMenuItem Header="Open File(s)..." CommandId="OpenFile"/>
@@ -87,8 +87,8 @@
                 <TextBlock Text="Press CTRL+N to create a new file, or drop files here" TextWrapping="Wrap"
                            Foreground="{DynamicResource ABrush.Foreground.Disabled}" FontSize="14"
                            VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                <controls:NotepadEditorPanel x:Name="PART_NotepadPanel" Background="Transparent"
-                                             VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+                <nc:NotepadEditorControl x:Name="PART_NotepadPanel" Background="Transparent"
+                                       VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
             </Grid>
         </Border>
         <Border Grid.Row="2" Background="{DynamicResource ABrush.Tone5.Background.Static}"

@@ -19,10 +19,8 @@
 
 using System;
 
-namespace SharpPad.Services.Messages
-{
-    public interface IUserInputDialogService
-    {
+namespace SharpPad.Services.Messages {
+    public interface IUserInputDialogService {
         /// <summary>
         /// Shows a dialog which accepts a general text input, optionally with a validation predicate which
         /// prevents the dialog closing successfully if the value fails the validation

@@ -27,15 +27,13 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using SharpPad.Interactivity.Contexts;
 
-namespace SharpPad.AdvancedMenuService
-{
+namespace SharpPad.AdvancedMenuService {
     /// <summary>
     /// A menu that captures the data context of the keyboard's focused element before this menu is focused
     /// (e.g. by showing a sub-menu item) allowing menu items to be treated like context menu items. Child menu
     /// items can access the <see cref="CapturedContextDataProperty"/> (which is inherited) to get the data
     /// </summary>
-    public class ContextCapturingMenu : Menu
-    {
+    public class ContextCapturingMenu : Menu {
         private const BindingFlags InternalInstanceFlags = BindingFlags.Instance | BindingFlags.NonPublic;
         private static readonly DependencyPropertyKey CapturedContextDataPropertyKey = DependencyProperty.RegisterAttachedReadOnly("CapturedContextData", typeof(IContextData), typeof(ContextCapturingMenu), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.Inherits));
         public static readonly DependencyProperty CapturedContextDataProperty = CapturedContextDataPropertyKey.DependencyProperty;
@@ -46,14 +44,12 @@ namespace SharpPad.AdvancedMenuService
 
         private bool canProcessFocusChange;
 
-        public ContextCapturingMenu()
-        {
+        public ContextCapturingMenu() {
             MenuModeChangedEventInfo.AddMethod.Invoke(this, InternalInstanceFlags, null, new object[] {new EventHandler(this.OnMenuModeChanged)}, CultureInfo.CurrentCulture);
         }
 
         // Called by UIInputManager
-        internal static void OnKeyboardFocusChanged(object sender, KeyboardFocusChangedEventArgs e, ProcessInputEventArgs processInputArgs)
-        {
+        internal static void OnKeyboardFocusChanged(object sender, KeyboardFocusChangedEventArgs e, ProcessInputEventArgs processInputArgs) {
             // This method is another workaround for the fact that all of the 'menu mode' based mechanisms are internal.
             // The KeyboardNavigation class is responsible for focusing a MenuItem (whose parent Menu's IsMainMenu property is true)
             // which means we need to capture the context, during that focus transition, in this method here
@@ -64,8 +60,7 @@ namespace SharpPad.AdvancedMenuService
                 return;
 
             DependencyObject parent = menuItem.Parent;
-            if (parent is ContextCapturingMenu menu && menu.canProcessFocusChange)
-            {
+            if (parent is ContextCapturingMenu menu && menu.canProcessFocusChange) {
                 menu.CaptureContextFromObject(oldFocus);
                 menu.canProcessFocusChange = false;
             }
@@ -73,17 +68,14 @@ namespace SharpPad.AdvancedMenuService
 
         static ContextCapturingMenu() { }
 
-        private void OnMenuModeChanged(object sender, EventArgs e)
-        {
+        private void OnMenuModeChanged(object sender, EventArgs e) {
             // ContextMenu can capture the focused element in here since right clicking (well, opening the
             // context menu) doesn't seem to transfer focus from the originally focused element, however,
             // a Menu cannot be opened without focus (AFAIK)
-            if (this.IsMenuMode)
-            {
+            if (this.IsMenuMode) {
                 this.canProcessFocusChange = true;
             }
-            else
-            {
+            else {
                 this.ClearValue(CapturedContextDataPropertyKey);
                 DataManager.ClearContextData(this);
                 Debug.WriteLine("Cleared captured data context");
@@ -102,8 +94,7 @@ namespace SharpPad.AdvancedMenuService
         //     }
         // }
 
-        private void CaptureContextFromObject(DependencyObject focused)
-        {
+        private void CaptureContextFromObject(DependencyObject focused) {
             IContextData ctx = DataManager.GetFullContextData(focused);
             Debug.WriteLine($"Captured context{(ctx is ContextData data ? $" ({data.Count} entries) " : " ")}before menu focus switch");
             this.SetValue(CapturedContextDataPropertyKey, ctx);

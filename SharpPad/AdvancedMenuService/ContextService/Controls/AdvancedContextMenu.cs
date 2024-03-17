@@ -24,13 +24,11 @@ using System.Windows.Controls;
 using System.Windows.Threading;
 using SharpPad.Interactivity.Contexts;
 
-namespace SharpPad.AdvancedMenuService.ContextService.Controls
-{
+namespace SharpPad.AdvancedMenuService.ContextService.Controls {
     /// <summary>
     /// A context menu that uses dynamic item generation, based on available context
     /// </summary>
-    public class AdvancedContextMenu : ContextMenu, IAdvancedContainer
-    {
+    public class AdvancedContextMenu : ContextMenu, IAdvancedContainer {
         private static readonly ContextMenuEventHandler MenuOpenHandlerForGenerable = OnContextMenuOpeningForGenerable;
         private static readonly ContextMenuEventHandler MenuCloseHandlerForGenerable = OnContextMenuClosingForGenerable;
 
@@ -46,8 +44,7 @@ namespace SharpPad.AdvancedMenuService.ContextService.Controls
 
         public IContextData Context { get; internal set; }
 
-        public AdvancedContextMenu()
-        {
+        public AdvancedContextMenu() {
             this.itemCache = new Dictionary<Type, Stack<FrameworkElement>>();
         }
 
@@ -57,20 +54,17 @@ namespace SharpPad.AdvancedMenuService.ContextService.Controls
 
         public FrameworkElement CreateChildItem(IContextEntry entry) => MenuService.CreateChildItem(this, entry);
 
-        private static void OnContextGeneratorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        private static void OnContextGeneratorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             ContextMenuService.RemoveContextMenuOpeningHandler(d, MenuOpenHandlerForGenerable);
             ContextMenuService.RemoveContextMenuClosingHandler(d, MenuCloseHandlerForGenerable);
-            if (e.NewValue != null)
-            {
+            if (e.NewValue != null) {
                 GetOrCreateContextMenu(d);
                 ContextMenuService.AddContextMenuOpeningHandler(d, MenuOpenHandlerForGenerable);
                 ContextMenuService.AddContextMenuClosingHandler(d, MenuCloseHandlerForGenerable);
             }
         }
 
-        public static void OnContextMenuOpeningForGenerable(object sender, ContextMenuEventArgs e)
-        {
+        public static void OnContextMenuOpeningForGenerable(object sender, ContextMenuEventArgs e) {
             if (!(sender is DependencyObject sourceObject))
                 return;
 
@@ -85,8 +79,7 @@ namespace SharpPad.AdvancedMenuService.ContextService.Controls
             List<IContextEntry> list = new List<IContextEntry>();
             IContextData context = DataManager.GetFullContextData(sourceObject);
             generator.Generate(list, context);
-            if (list.Count < 1)
-            {
+            if (list.Count < 1) {
                 // Handle the event so that the context menu does not show.
                 // With zero items, it will only be a tiny rectangle for the
                 // border, so there's no point in showing it
@@ -98,19 +91,15 @@ namespace SharpPad.AdvancedMenuService.ContextService.Controls
             MenuService.InsertItemNodes(menu, menu, list);
         }
 
-        public static void OnContextMenuClosingForGenerable(object sender, ContextMenuEventArgs e)
-        {
-            if (sender is DependencyObject obj && ContextMenuService.GetContextMenu(obj) is ContextMenu menu)
-            {
+        public static void OnContextMenuClosingForGenerable(object sender, ContextMenuEventArgs e) {
+            if (sender is DependencyObject obj && ContextMenuService.GetContextMenu(obj) is ContextMenu menu) {
                 menu.Dispatcher.Invoke(() => MenuService.ClearItemNodes(menu), DispatcherPriority.DataBind);
             }
         }
 
-        private static AdvancedContextMenu GetOrCreateContextMenu(DependencyObject targetElement)
-        {
+        private static AdvancedContextMenu GetOrCreateContextMenu(DependencyObject targetElement) {
             ContextMenu menu = ContextMenuService.GetContextMenu(targetElement);
-            if (!(menu is AdvancedContextMenu advancedMenu))
-            {
+            if (!(menu is AdvancedContextMenu advancedMenu)) {
                 ContextMenuService.SetContextMenu(targetElement, advancedMenu = new AdvancedContextMenu());
                 // advancedMenu.StaysOpen = true;
             }

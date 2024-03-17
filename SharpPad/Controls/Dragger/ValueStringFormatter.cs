@@ -17,14 +17,11 @@
 // along with SharpPad. If not, see <https://www.gnu.org/licenses/>.
 // 
 
-namespace SharpPad.Controls.Dragger
-{
-    public class ValueStringFormatter : IValueFormatter
-    {
+namespace SharpPad.Controls.Dragger {
+    public class ValueStringFormatter : IValueFormatter {
         public string Format { get; set; }
 
-        public string ToString(double value, int? places)
-        {
+        public string ToString(double value, int? places) {
             return string.Format(this.Format ?? "{0}", value.ToString());
         }
     }

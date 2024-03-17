@@ -22,13 +22,11 @@ using System.Windows;
 using SharpPad.AdvancedMenuService.ContextService;
 using SharpPad.Interactivity.Contexts;
 
-namespace SharpPad.AdvancedMenuService
-{
+namespace SharpPad.AdvancedMenuService {
     /// <summary>
     /// An interface for an object that stores menu item entries. This could be a menu, context menu or a menu item
     /// </summary>
-    public interface IAdvancedContainer
-    {
+    public interface IAdvancedContainer {
         /// <summary>
         /// Gets the context for the container menu or root container menu item
         /// </summary>

@@ -21,13 +21,11 @@ using System;
 using System.Collections.Generic;
 using SharpPad.Utils;
 
-namespace SharpPad.CommandSystem
-{
+namespace SharpPad.CommandSystem {
     /// <summary>
     /// A command that stores a collection of child commands
     /// </summary>
-    public class CommandGroup : Command
-    {
+    public class CommandGroup : Command {
         private readonly List<string> commands;
 
         public IReadOnlyList<string> Commands => this.commands;
@@ -38,8 +36,7 @@ namespace SharpPad.CommandSystem
 
         private CommandGroup(List<string> commands) => this.commands = commands;
 
-        public CommandGroup AddCommand(string commandId)
-        {
+        public CommandGroup AddCommand(string commandId) {
             Validate.NotNullOrWhiteSpaces(commandId, nameof(commandId));
 
             if (this.commands.Contains(commandId))
@@ -49,8 +46,7 @@ namespace SharpPad.CommandSystem
             return this;
         }
 
-        public CommandGroup AddCommands(params string[] cmds)
-        {
+        public CommandGroup AddCommands(params string[] cmds) {
             Validate.NotNull(cmds, nameof(cmds));
             foreach (string cmdId in cmds)
                 if (string.IsNullOrWhiteSpace(cmdId))
@@ -74,20 +70,16 @@ namespace SharpPad.CommandSystem
             return this;
         }
 
-        public bool RemoveCommand(string commandId)
-        {
+        public bool RemoveCommand(string commandId) {
             Validate.NotNullOrWhiteSpaces(commandId, nameof(commandId));
             return this.commands.Remove(commandId);
         }
 
-        public override Executability CanExecute(CommandEventArgs e)
-        {
+        public override Executability CanExecute(CommandEventArgs e) {
             return this.commands.Count > 0 ? base.CanExecute(e) : Executability.Invalid;
         }
 
-        protected override void Execute(CommandEventArgs e)
-        {
-
+        protected override void Execute(CommandEventArgs e) {
         }
     }
 }

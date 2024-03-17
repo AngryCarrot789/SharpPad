@@ -17,7 +17,6 @@
 // along with SharpPad. If not, see <https://www.gnu.org/licenses/>.
 //
 
-namespace SharpPad.Controls.Dragger
-{
+namespace SharpPad.Controls.Dragger {
     public delegate void EditStartEventHandler(object sender, EditStartEventArgs e);
 }

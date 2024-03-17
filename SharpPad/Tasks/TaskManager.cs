@@ -20,20 +20,23 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
+using System.Runtime.CompilerServices;
+using System.Runtime.Remoting.Messaging;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 using SharpPad.Logger;
 using SharpPad.Utils;
 
-namespace SharpPad.Tasks
-{
+namespace SharpPad.Tasks {
     public delegate void TaskManagerTaskEventHandler(TaskManager taskManager, ActivityTask task, int index);
 
-    public class TaskManager : IDisposable
-    {
+    public class TaskManager : IDisposable {
         public static TaskManager Instance => IoC.TaskManager;
 
-        private readonly ThreadLocal<ActivityTask> threadToTask;
+        // private readonly ThreadLocal<ActivityTask> threadToTask;
+        private readonly AsyncLocal<ActivityTask> threadToTask;
         private readonly List<ActivityTask> tasks;
         private readonly object locker;
 
@@ -42,33 +45,26 @@ namespace SharpPad.Tasks
 
         public IReadOnlyList<ActivityTask> ActiveTasks => this.tasks;
 
-        public TaskManager()
-        {
-            this.threadToTask = new ThreadLocal<ActivityTask>();
+        public TaskManager() {
+            this.threadToTask = new AsyncLocal<ActivityTask>();
             this.tasks = new List<ActivityTask>();
             this.locker = new object();
         }
 
-        public ActivityTask RunTask(Func<Task> action)
-        {
-            return ActivityTask.InternalRun(this, action, null, CancellationToken.None);
+        public ActivityTask RunTask(Func<Task> action) {
+            return ActivityTask.InternalStartActivity(this, action, null, CancellationToken.None);
         }
 
-        public ActivityTask RunTask(Func<Task> action, IActivityProgress progress)
-        {
-            return ActivityTask.InternalRun(this, action, progress, CancellationToken.None);
+        public ActivityTask RunTask(Func<Task> action, IActivityProgress progress) {
+            return ActivityTask.InternalStartActivity(this, action, progress, CancellationToken.None);
         }
 
-        /// <summary>
-        /// Runs the given action in a background thread
-        /// </summary>
-        /// <param name="action">The action to invoke</param>
-        /// <param name="progress">The task progress used to represent the task's completion</param>
-        /// <param name="cancellationToken">A token used to signal task cancellation</param>
-        /// <returns>The task</returns>
-        public ActivityTask RunTask(Func<Task> action, IActivityProgress progress, CancellationToken cancellationToken)
-        {
-            return ActivityTask.InternalRun(this, action, progress, cancellationToken);
+        public ActivityTask RunTask(Func<Task> action, CancellationToken token) {
+            return ActivityTask.InternalStartActivity(this, action, new DefaultProgressTracker(), token);
+        }
+
+        public ActivityTask RunTask(Func<Task> action, IActivityProgress progress, CancellationToken cancellationToken) {
+            return ActivityTask.InternalStartActivity(this, action, progress, cancellationToken);
         }
 
         /// <summary>
@@ -76,54 +72,50 @@ namespace SharpPad.Tasks
         /// </summary>
         /// <param name="task">The task associated with the current thread</param>
         /// <returns>True if this thread is running a task</returns>
-        public bool TryGetCurrentTask(out ActivityTask task)
-        {
-            if (this.threadToTask.IsValueCreated && (task = this.threadToTask.Value) != null)
-            {
-                return true;
+        public bool TryGetCurrentTask(out ActivityTask task) {
+            lock (this.threadToTask) {
+                return (task = this.threadToTask.Value) != null;
             }
-
-            task = null;
-            return false;
         }
 
-        public ActivityTask CurrentTask => this.threadToTask.Value;
+        public ActivityTask CurrentTask => this.TryGetCurrentTask(out ActivityTask task) ? task : throw new InvalidOperationException("No task running on this thread");
 
         /// <summary>
         /// Gets either the current task's activity progress tracker, or the <see cref="EmptyActivityProgress"/> instance (for convenience over null-checks)
         /// </summary>
         /// <returns></returns>
-        public IActivityProgress GetCurrentProgressOrEmpty()
-        {
-            if (this.TryGetCurrentTask(out ActivityTask task))
-            {
+        public IActivityProgress GetCurrentProgressOrEmpty() {
+            if (this.TryGetCurrentTask(out ActivityTask task)) {
                 return task.Progress;
             }
 
             return EmptyActivityProgress.Instance;
         }
 
-        public void Dispose()
-        {
-            this.threadToTask.Dispose();
+        public void Dispose() {
+            // this.threadToTask.Dispose();
         }
 
-        internal static void InternalBeginActivateTask(TaskManager taskManager, ActivityTask task)
-        {
-            taskManager.threadToTask.Value = task;
-            IoC.Dispatcher.InvokeAsync(() => OnTaskStarted_AMT(taskManager, task));
+        internal static Task InternalBeginActivateTask_BGT(TaskManager taskManager, ActivityTask task) {
+            lock (taskManager.threadToTask) {
+                taskManager.threadToTask.Value = task;
+            }
+
+            return IoC.Dispatcher.InvokeAsync(() => InternalOnTaskStarted_AMT(taskManager, task));
         }
 
-        internal static void InternalOnTaskCompleted_BGTHREAD(TaskManager taskManager, ActivityTask task, int state)
-        {
-            taskManager.threadToTask.Value = null;
-            IoC.Dispatcher.InvokeAsync(() => OnTaskCompleted_AMT(taskManager, task, state));
+        internal static Task InternalOnTaskCompleted_BGT(TaskManager taskManager, ActivityTask task, int state) {
+            lock (taskManager.threadToTask) {
+                taskManager.threadToTask.Value = null;
+            }
+
+            // Before AsyncLocal, I was trying out a dispatcher for each task XD
+            // Dispatcher.CurrentDispatcher.BeginInvokeShutdown(DispatcherPriority.Background);
+            return IoC.Dispatcher.InvokeAsync(() => InternalOnTaskCompleted_AMT(taskManager, task, state));
         }
 
-        internal static void OnTaskStarted_AMT(TaskManager taskManager, ActivityTask task)
-        {
-            lock (taskManager.locker)
-            {
+        internal static void InternalOnTaskStarted_AMT(TaskManager taskManager, ActivityTask task) {
+            lock (taskManager.locker) {
                 int index = taskManager.tasks.Count;
                 taskManager.tasks.Insert(index, task);
                 taskManager.TaskStarted?.Invoke(taskManager, task, index);
@@ -132,14 +124,11 @@ namespace SharpPad.Tasks
             ActivityTask.InternalActivate(task);
         }
 
-        internal static void OnTaskCompleted_AMT(TaskManager taskManager, ActivityTask task, int state)
-        {
+        internal static void InternalOnTaskCompleted_AMT(TaskManager taskManager, ActivityTask task, int state) {
             ActivityTask.InternalComplete(task, state);
-            lock (taskManager.locker)
-            {
+            lock (taskManager.locker) {
                 int index = taskManager.tasks.IndexOf(task);
-                if (index == -1)
-                {
+                if (index == -1) {
                     const string msg = "Completed activity task did not exist in this task manager's internal task list";
                     AppLogger.Instance.WriteLine("[FATAL] " + msg);
                     Debugger.Break();
@@ -150,8 +139,7 @@ namespace SharpPad.Tasks
                 taskManager.TaskCompleted?.Invoke(taskManager, task, index);
             }
 
-            if (task.Exception is Exception e)
-            {
+            if (task.Exception is Exception e) {
                 IoC.MessageService.ShowMessage("Task Error", "An exception occurred while running a task", e.GetToString());
             }
         }

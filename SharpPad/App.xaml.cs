@@ -1,5 +1,8 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
@@ -12,15 +15,12 @@ using SharpPad.Shortcuts.Managing;
 using SharpPad.Shortcuts.WPF;
 using SharpPad.Utils;
 
-namespace SharpPad
-{
+namespace SharpPad {
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public partial class App : Application
-    {
-        private void App_OnStartup(object sender, StartupEventArgs args)
-        {
+    public partial class App : Application {
+        private void App_OnStartup(object sender, StartupEventArgs args) {
             // if (true) {
             //     DefaultProgressTracker.TestCompletionRangeFunctionality();
             //     this.Dispatcher.InvokeShutdown();
@@ -34,32 +34,27 @@ namespace SharpPad
             this.ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
             string[] envArgs = Environment.GetCommandLineArgs();
-            if (envArgs.Length > 0 && Path.GetDirectoryName(envArgs[0]) is string dir && dir.Length > 0)
-            {
+            if (envArgs.Length > 0 && Path.GetDirectoryName(envArgs[0]) is string dir && dir.Length > 0) {
                 Directory.SetCurrentDirectory(dir);
             }
 
-            try
-            {
+            try {
                 // This is where services are registered
                 TypeUtils.RunStaticConstructor<ApplicationCore>();
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 MessageBox.Show("Failed to initialise application: " + ex.GetToString(), "Fatal App init failure");
                 this.Dispatcher.InvokeShutdown();
                 return;
             }
 
             // Most if not all services are available below here
-            try
-            {
+            try {
                 AppLogger.Instance.PushHeader("SharpPad initialisation");
                 this.InitWPFApp();
                 AppLogger.Instance.PopHeader();
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 MessageBox.Show("Failed to start SharpPad: " + ex.GetToString(), "Fatal App setup failure");
                 this.Dispatcher.InvokeShutdown();
                 return;
@@ -76,14 +71,12 @@ namespace SharpPad
             ApplicationCore.Instance.OnApplicationLoaded(notepad, args.Args);
         }
 
-        protected override void OnExit(ExitEventArgs e)
-        {
+        protected override void OnExit(ExitEventArgs e) {
             base.OnExit(e);
             ApplicationCore.Instance.OnApplicationExiting();
         }
 
-        public void InitWPFApp()
-        {
+        public void InitWPFApp() {
             ShortcutManager.Instance = new WPFShortcutManager();
             TypeUtils.RunStaticConstructor<UIInputManager>();
 
@@ -94,35 +87,31 @@ namespace SharpPad
             // overwrite while backing up old file... or just try to convert file
 
             string keymapFilePath = Path.GetFullPath(@"Keymap.xml");
-            if (File.Exists(keymapFilePath))
-            {
-                try
-                {
-                    using (FileStream stream = File.OpenRead(keymapFilePath))
-                    {
+            if (File.Exists(keymapFilePath)) {
+                try {
+                    using (FileStream stream = File.OpenRead(keymapFilePath)) {
                         WPFShortcutManager.WPFInstance.DeserialiseRoot(stream);
                     }
                 }
-                catch (Exception ex)
-                {
+                catch (Exception ex) {
                     IoC.MessageService.ShowMessage("Keymap", "Failed to read keymap file" + keymapFilePath + ":" + ex.GetToString());
                 }
             }
-            else
-            {
+            else {
                 IoC.MessageService.ShowMessage("Keymap", "Keymap file does not exist at " + keymapFilePath);
             }
         }
 
-        private void App_OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
-        {
-            if (ApplicationCore.Instance.Services.TryGetService(out IMessageDialogService service))
-            {
-                service.ShowMessage("Error", "An unhandled error occurred in the application. It will now shutdown", e.Exception?.GetToString());
+        private void App_OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e) {
+            if (ApplicationCore.Instance.Services.TryGetService(out IMessageDialogService service)) {
+                service.ShowMessage("Error", "An unhandled error occurred in the application. It might now shutdown", e.Exception?.GetToString());
             }
-            else
-            {
-                MessageBox.Show("An unhandled error occurred in the application. It will now shutdown\n\n" + e.Exception?.GetToString(), "Error");
+            else {
+                MessageBox.Show("An unhandled error occurred in the application. It might now shutdown\n\n" + e.Exception?.GetToString(), "Error");
+            }
+
+            if (this.MainWindow != null && DesignerProperties.GetIsInDesignMode(this.MainWindow)) {
+                return;
             }
 
             this.Dispatcher.BeginInvokeShutdown(DispatcherPriority.Normal);

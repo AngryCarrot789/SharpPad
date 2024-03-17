@@ -21,14 +21,12 @@ using System.Linq;
 using System.Windows.Controls;
 using SharpPad.Controls.Bindings;
 
-namespace SharpPad.AdvancedMenuService.ContextService.Controls
-{
+namespace SharpPad.AdvancedMenuService.ContextService.Controls {
     /// <summary>
     /// A menu item that represents a <see cref="BaseContextEntry"/>. This could be stored in anything
     /// such as a <see cref="AdvancedContextMenu"/>, <see cref="AdvancedContextMenuItem"/>, etc.
     /// </summary>
-    public class AdvancedContextMenuItem : MenuItem
-    {
+    public class AdvancedContextMenuItem : MenuItem {
         /// <summary>
         /// Gets the container object, that being, the root object that stores the menu item tree that this instance is in
         /// </summary>
@@ -46,40 +44,33 @@ namespace SharpPad.AdvancedMenuService.ContextService.Controls
 
         public AdvancedContextMenuItem() { }
 
-        public virtual void OnAdding(IAdvancedContainer container, ItemsControl parent, BaseContextEntry entry)
-        {
+        public virtual void OnAdding(IAdvancedContainer container, ItemsControl parent, BaseContextEntry entry) {
             this.Container = container;
             this.ParentNode = parent;
             this.Entry = entry;
         }
 
-        public virtual void OnAdded()
-        {
+        public virtual void OnAdded() {
             this.headerBinder.Attach(this, this.Entry);
             this.toolTipBinder.Attach(this, this.Entry);
-            if (this.Entry.Children != null)
-            {
+            if (this.Entry.Children != null) {
                 MenuService.InsertItemNodes(this.Container, this, this.Entry.Children.ToList());
             }
         }
 
-        public virtual void OnRemoving()
-        {
+        public virtual void OnRemoving() {
             this.headerBinder.Detach();
             this.toolTipBinder.Detach();
             MenuService.ClearItemNodes(this);
         }
 
-        public virtual void OnRemoved()
-        {
+        public virtual void OnRemoved() {
             this.Container = null;
             this.ParentNode = null;
             this.Entry = null;
         }
 
-        public virtual void UpdateCanExecute()
-        {
-
+        public virtual void UpdateCanExecute() {
         }
     }
 }

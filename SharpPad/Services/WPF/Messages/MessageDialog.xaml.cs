@@ -23,23 +23,19 @@ using System.Windows.Input;
 using SharpPad.Utils;
 using SharpPad.Views;
 
-namespace SharpPad.Services.WPF.Messages
-{
+namespace SharpPad.Services.WPF.Messages {
     /// <summary>
     /// Interaction logic for MessageDialog.xaml
     /// </summary>
-    public partial class MessageDialog : WindowEx
-    {
+    public partial class MessageDialog : WindowEx {
         public static readonly DependencyProperty HeaderProperty = DependencyProperty.Register("Header", typeof(string), typeof(MessageDialog), new PropertyMetadata(null, OnHeaderChanged));
         public static readonly DependencyProperty MessageProperty = DependencyProperty.Register("Message", typeof(string), typeof(MessageDialog), new PropertyMetadata(null, OnMessageChanged));
         public static readonly DependencyProperty ButtonsProperty = DependencyProperty.Register("Buttons", typeof(MessageBoxButton), typeof(MessageDialog), new PropertyMetadata(MessageBoxButton.OK, OnButtonsChanged));
         public static readonly DependencyProperty DefaultButtonProperty = DependencyProperty.Register("DefaultButton", typeof(MessageBoxResult), typeof(MessageDialog), new PropertyMetadata(MessageBoxResult.OK, (d, e) => ((MessageDialog) d).FocusDefaultButton(), CoerceValueCallback));
 
-        private static object CoerceValueCallback(DependencyObject d, object value)
-        {
+        private static object CoerceValueCallback(DependencyObject d, object value) {
             MessageBoxResult btn = (MessageBoxResult) value;
-            switch (((MessageDialog) d).Buttons)
-            {
+            switch (((MessageDialog) d).Buttons) {
                 case MessageBoxButton.OK: return btn == MessageBoxResult.OK ? value : MessageBoxResult.OK;
                 case MessageBoxButton.OKCancel: return btn == MessageBoxResult.OK || btn == MessageBoxResult.Cancel ? value : MessageBoxResult.OK;
                 case MessageBoxButton.YesNoCancel: return btn == MessageBoxResult.Yes || btn == MessageBoxResult.No || btn == MessageBoxResult.Cancel ? value : MessageBoxResult.Yes;
@@ -48,34 +44,29 @@ namespace SharpPad.Services.WPF.Messages
             }
         }
 
-        public string Header
-        {
+        public string Header {
             get => (string) this.GetValue(HeaderProperty);
             set => this.SetValue(HeaderProperty, value);
         }
 
-        public string Message
-        {
+        public string Message {
             get => (string) this.GetValue(MessageProperty);
             set => this.SetValue(MessageProperty, value);
         }
 
-        public MessageBoxButton Buttons
-        {
+        public MessageBoxButton Buttons {
             get => (MessageBoxButton) this.GetValue(ButtonsProperty);
             set => this.SetValue(ButtonsProperty, value);
         }
 
-        public MessageBoxResult DefaultButton
-        {
+        public MessageBoxResult DefaultButton {
             get => (MessageBoxResult) this.GetValue(DefaultButtonProperty);
             set => this.SetValue(DefaultButtonProperty, value);
         }
 
         private MessageBoxResult? clickedButton;
 
-        public MessageDialog()
-        {
+        public MessageDialog() {
             this.InitializeComponent();
             this.CalculateOwnerAndSetCentered();
             this.PART_HeaderTextBlock.Visibility = Visibility.Collapsed;
@@ -83,8 +74,7 @@ namespace SharpPad.Services.WPF.Messages
             this.MaxHeight = 800;
             this.SetButtonVisibilities((MessageBoxButton) ButtonsProperty.DefaultMetadata.DefaultValue);
 
-            this.Loaded += (sender, args) =>
-            {
+            this.Loaded += (sender, args) => {
                 // 588x260 = window
                 // 580x140 = text
                 // Makes the window fit the size of the button bar + check boxes
@@ -96,8 +86,7 @@ namespace SharpPad.Services.WPF.Messages
                 double width = Math.Ceiling(this.ButtonBarBorder.DesiredSize.Width) + 2;
                 double actualWidth = this.ActualWidth;
                 this.ButtonBarBorder.InvalidateMeasure();
-                if (width > actualWidth)
-                {
+                if (width > actualWidth) {
                     this.Width = width;
                 }
 
@@ -114,33 +103,25 @@ namespace SharpPad.Services.WPF.Messages
             };
         }
 
-        protected override void OnPreviewKeyDown(KeyEventArgs e)
-        {
+        protected override void OnPreviewKeyDown(KeyEventArgs e) {
             base.OnPreviewKeyDown(e);
-            if (e.Key == Key.Escape || e.Key == Key.Enter)
-            {
+            if (e.Key == Key.Escape || e.Key == Key.Enter) {
                 e.Handled = true;
 
-                if (e.Key == Key.Enter && !this.clickedButton.HasValue)
-                {
-                    if (this.PART_ButtonOK.IsFocused)
-                    {
+                if (e.Key == Key.Enter && !this.clickedButton.HasValue) {
+                    if (this.PART_ButtonOK.IsFocused) {
                         this.clickedButton = MessageBoxResult.OK;
                     }
-                    else if (this.PART_ButtonYes.IsFocused)
-                    {
+                    else if (this.PART_ButtonYes.IsFocused) {
                         this.clickedButton = MessageBoxResult.Yes;
                     }
-                    else if (this.PART_ButtonNo.IsFocused)
-                    {
+                    else if (this.PART_ButtonNo.IsFocused) {
                         this.clickedButton = MessageBoxResult.No;
                     }
-                    else if (this.PART_ButtonCancel.IsFocused)
-                    {
+                    else if (this.PART_ButtonCancel.IsFocused) {
                         this.clickedButton = MessageBoxResult.Cancel;
                     }
-                    else
-                    {
+                    else {
                         this.clickedButton = MessageBoxResult.None;
                     }
                 }
@@ -149,63 +130,52 @@ namespace SharpPad.Services.WPF.Messages
             }
         }
 
-        private static void OnHeaderChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        private static void OnHeaderChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             MessageDialog dialog = (MessageDialog) d;
-            if (e.NewValue is string value && !string.IsNullOrWhiteSpace(value))
-            {
+            if (e.NewValue is string value && !string.IsNullOrWhiteSpace(value)) {
                 dialog.PART_HeaderTextBlock.Text = value;
                 dialog.PART_HeaderTextBlock.Visibility = Visibility.Visible;
             }
-            else
-            {
+            else {
                 dialog.PART_HeaderTextBlock.Visibility = Visibility.Collapsed;
                 dialog.PART_HeaderTextBlock.Text = null;
             }
         }
 
-        private static void OnMessageChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        private static void OnMessageChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             MessageDialog dialog = (MessageDialog) d;
             dialog.PART_ContentTextBox.Text = (string) e.NewValue;
         }
 
-        private static void OnButtonsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
+        private static void OnButtonsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             ((MessageDialog) d).SetButtonVisibilities((MessageBoxButton) e.NewValue);
             d.CoerceValue(DefaultButtonProperty);
         }
 
-        private void SetButtonVisibilities(MessageBoxButton buttons)
-        {
-            switch (buttons)
-            {
-                case MessageBoxButton.OK:
-                {
+        private void SetButtonVisibilities(MessageBoxButton buttons) {
+            switch (buttons) {
+                case MessageBoxButton.OK: {
                     this.PART_ButtonOK.Visibility = Visibility.Visible;
                     this.PART_ButtonYes.Visibility = Visibility.Collapsed;
                     this.PART_ButtonNo.Visibility = Visibility.Collapsed;
                     this.PART_ButtonCancel.Visibility = Visibility.Collapsed;
                     break;
                 }
-                case MessageBoxButton.OKCancel:
-                {
+                case MessageBoxButton.OKCancel: {
                     this.PART_ButtonOK.Visibility = Visibility.Visible;
                     this.PART_ButtonCancel.Visibility = Visibility.Visible;
                     this.PART_ButtonYes.Visibility = Visibility.Collapsed;
                     this.PART_ButtonNo.Visibility = Visibility.Collapsed;
                     break;
                 }
-                case MessageBoxButton.YesNoCancel:
-                {
+                case MessageBoxButton.YesNoCancel: {
                     this.PART_ButtonCancel.Visibility = Visibility.Visible;
                     this.PART_ButtonYes.Visibility = Visibility.Visible;
                     this.PART_ButtonNo.Visibility = Visibility.Visible;
                     this.PART_ButtonOK.Visibility = Visibility.Collapsed;
                     break;
                 }
-                case MessageBoxButton.YesNo:
-                {
+                case MessageBoxButton.YesNo: {
                     this.PART_ButtonYes.Visibility = Visibility.Visible;
                     this.PART_ButtonNo.Visibility = Visibility.Visible;
                     this.PART_ButtonOK.Visibility = Visibility.Collapsed;
@@ -216,13 +186,11 @@ namespace SharpPad.Services.WPF.Messages
             }
         }
 
-        private void FocusDefaultButton()
-        {
+        private void FocusDefaultButton() {
             if (!this.IsLoaded)
                 return;
 
-            switch (this.DefaultButton)
-            {
+            switch (this.DefaultButton) {
                 case MessageBoxResult.OK:
                     this.PART_ButtonOK.Focus();
                     break;
@@ -239,26 +207,20 @@ namespace SharpPad.Services.WPF.Messages
             }
         }
 
-        private void OnButtonClicked(object sender, RoutedEventArgs e)
-        {
-            if (ReferenceEquals(sender, this.PART_ButtonOK))
-            {
+        private void OnButtonClicked(object sender, RoutedEventArgs e) {
+            if (ReferenceEquals(sender, this.PART_ButtonOK)) {
                 this.clickedButton = MessageBoxResult.OK;
             }
-            else if (ReferenceEquals(sender, this.PART_ButtonYes))
-            {
+            else if (ReferenceEquals(sender, this.PART_ButtonYes)) {
                 this.clickedButton = MessageBoxResult.Yes;
             }
-            else if (ReferenceEquals(sender, this.PART_ButtonNo))
-            {
+            else if (ReferenceEquals(sender, this.PART_ButtonNo)) {
                 this.clickedButton = MessageBoxResult.No;
             }
-            else if (ReferenceEquals(sender, this.PART_ButtonCancel))
-            {
+            else if (ReferenceEquals(sender, this.PART_ButtonCancel)) {
                 this.clickedButton = MessageBoxResult.Cancel;
             }
-            else
-            {
+            else {
                 this.clickedButton = MessageBoxResult.None;
             }
 

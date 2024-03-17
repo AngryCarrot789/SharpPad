@@ -20,13 +20,11 @@
 using System;
 using SharpPad.Shortcuts.Managing;
 
-namespace SharpPad.Shortcuts.Keymapping
-{
+namespace SharpPad.Shortcuts.Keymapping {
     /// <summary>
     /// Stores information about a keymap
     /// </summary>
-    public class Keymap
-    {
+    public class Keymap {
         /// <summary>
         /// The keymap version
         /// </summary>

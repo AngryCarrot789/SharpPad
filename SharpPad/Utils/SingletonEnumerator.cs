@@ -20,10 +20,8 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace SharpPad.Utils
-{
-    public class SingletonEnumerator<T> : IEnumerator<T>
-    {
+namespace SharpPad.Utils {
+    public class SingletonEnumerator<T> : IEnumerator<T> {
         private bool hasMovedNext;
 
         // should this throw if hasMovedNext is false?
@@ -31,26 +29,21 @@ namespace SharpPad.Utils
 
         object IEnumerator.Current => this.Current;
 
-        public SingletonEnumerator(T value)
-        {
+        public SingletonEnumerator(T value) {
             this.Current = value;
         }
 
-        public bool MoveNext()
-        {
-            if (this.hasMovedNext)
-            {
+        public bool MoveNext() {
+            if (this.hasMovedNext) {
                 return false;
             }
-            else
-            {
+            else {
                 this.hasMovedNext = true;
                 return true;
             }
         }
 
-        public void Reset()
-        {
+        public void Reset() {
             this.hasMovedNext = false;
         }
 

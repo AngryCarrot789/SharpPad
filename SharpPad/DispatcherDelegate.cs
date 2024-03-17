@@ -23,10 +23,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 
-namespace SharpPad
-{
-    public class DispatcherDelegate : IDispatcher
-    {
+namespace SharpPad {
+    public class DispatcherDelegate : IDispatcher {
         private static readonly FieldInfo DisableProcessingCountField;
         private readonly Dispatcher dispatcher;
 
@@ -34,10 +32,11 @@ namespace SharpPad
 
         public bool IsSuspended => (int) DisableProcessingCountField.GetValue(this.dispatcher) > 0;
 
+        public Thread Thread => this.dispatcher.Thread;
+
         public DispatcherDelegate(Dispatcher dispatcher) => this.dispatcher = dispatcher ?? throw new Exception("Application dispatcher detached");
 
-        static DispatcherDelegate()
-        {
+        static DispatcherDelegate() {
             DisableProcessingCountField = typeof(Dispatcher).GetField("_disableProcessingCount", BindingFlags.Instance | BindingFlags.GetField | BindingFlags.NonPublic);
         }
 
@@ -59,23 +58,19 @@ namespace SharpPad
         //     }
         // }
 
-        public void Invoke(Action action, DispatcherPriority priority)
-        {
+        public void Invoke(Action action, DispatcherPriority priority) {
             this.dispatcher.Invoke(action, priority);
         }
 
-        public T Invoke<T>(Func<T> function, DispatcherPriority priority)
-        {
+        public T Invoke<T>(Func<T> function, DispatcherPriority priority) {
             return this.dispatcher.Invoke(function, priority);
         }
 
-        public Task InvokeAsync(Action action, DispatcherPriority priority, CancellationToken token = default)
-        {
+        public Task InvokeAsync(Action action, DispatcherPriority priority, CancellationToken token = default) {
             return this.dispatcher.InvokeAsync(action, priority, token).Task;
         }
 
-        public Task<T> InvokeAsync<T>(Func<T> function, DispatcherPriority priority, CancellationToken token = default)
-        {
+        public Task<T> InvokeAsync<T>(Func<T> function, DispatcherPriority priority, CancellationToken token = default) {
             return this.dispatcher.InvokeAsync(function, priority, token).Task;
         }
 

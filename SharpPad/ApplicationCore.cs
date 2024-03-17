@@ -32,14 +32,11 @@ using SharpPad.Services.WPF.Files;
 using SharpPad.Services.WPF.Messages;
 using SharpPad.Tasks;
 
-namespace SharpPad
-{
+namespace SharpPad {
     /// <summary>
     /// An application instance for SharpPad
     /// </summary>
-    public class
-        ApplicationCore
-    {
+    public class ApplicationCore {
         private readonly ServiceManager serviceManager;
 
         public IServiceManager Services => this.serviceManager;
@@ -67,8 +64,7 @@ namespace SharpPad
 
         public IDispatcher Dispatcher { get; }
 
-        private ApplicationCore()
-        {
+        private ApplicationCore() {
             this.Dispatcher = new DispatcherDelegate(Application.Current.Dispatcher);
             this.serviceManager = new ServiceManager();
             this.serviceManager.Register<IMessageDialogService>(new WPFMessageDialogService());
@@ -77,20 +73,16 @@ namespace SharpPad
             this.serviceManager.Register<TaskManager>(new TaskManager());
         }
 
-        public void OnApplicationLoaded(Notepad notepad, string[] args)
-        {
+        public void OnApplicationLoaded(Notepad notepad, string[] args) {
             this.Nodepad = notepad;
-            if (args.Length > 0 && File.Exists(args[0]))
-            {
+            if (args.Length > 0 && File.Exists(args[0])) {
                 OpenFilesCommand.OpenFile(notepad, args[0]);
             }
-            else
-            {
+            else {
                 this.LoadDefaultNotepad();
             }
 
-            TaskManager.Instance.RunTask(async () =>
-            {
+            TaskManager.Instance.RunTask(async () => {
                 IActivityProgress prog = TaskManager.Instance.CurrentTask.Progress;
                 prog.Text = "Dummy task";
                 const int duration = 1;
@@ -99,8 +91,7 @@ namespace SharpPad
                 const double progressPerUpdate = 1.0 / updates;
                 TimeSpan delayTime = TimeSpan.FromSeconds(interval);
 
-                for (int i = 0; i < updates; i++)
-                {
+                for (int i = 0; i < updates; i++) {
                     await Task.Delay(delayTime);
                     prog.OnProgress(progressPerUpdate);
                 }
@@ -109,15 +100,13 @@ namespace SharpPad
 
         public void OnApplicationExiting() { }
 
-        private void LoadDefaultNotepad()
-        {
-            this.Nodepad.AddDocument(new NotepadDocument() {DocumentName = "New Document 1", Document = { Text = ""}, IsModified = false});
-            this.Nodepad.AddDocument(new NotepadDocument() {DocumentName = "New Document 2", Document = { Text = "some text here"}, IsModified = false});
-            this.Nodepad.AddDocument(new NotepadDocument() {DocumentName = "New Document 3", Document = { Text = "some more text 111"}, IsModified = false});
+        private void LoadDefaultNotepad() {
+            this.Nodepad.AddNewEditor(new NotepadDocument() {DocumentName = "New Document 1", Document = {Text = ""}, IsModified = false});
+            this.Nodepad.AddNewEditor(new NotepadDocument() {DocumentName = "New Document 2", Document = {Text = "some text here"}, IsModified = false});
+            this.Nodepad.AddNewEditor(new NotepadDocument() {DocumentName = "New Document 3", Document = {Text = "some more text 111"}, IsModified = false});
         }
 
-        public void RegisterActions(CommandManager manager)
-        {
+        public void RegisterActions(CommandManager manager) {
             // general commands
             manager.Register("NewFile", new NewFileCommand());
             manager.Register("OpenFile", new OpenFilesCommand());
@@ -151,9 +140,13 @@ namespace SharpPad
             manager.Register("ConvertLeadingSpacesToTabsInEditor", new ConvertLeadingSpacesToTabsCommand());
             manager.Register("IndentSelectionInEditor", new IndentSelectionCommand());
 
+            // find
+            manager.Register("ShowFindPanel", new FindCommand());
+            manager.Register("ToggleFindMatchCase", new ToggleMatchCaseCommand());
+            manager.Register("NextFindResult", new NextResultCommand());
+
             AppLogger.Instance.PushHeader($"Registered {CommandManager.Instance.Count} commands", false);
-            foreach (KeyValuePair<string, Command> pair in CommandManager.Instance.Commands)
-            {
+            foreach (KeyValuePair<string, Command> pair in CommandManager.Instance.Commands) {
                 AppLogger.Instance.WriteLine($"{pair.Key}: {pair.Value.GetType()}");
             }
 

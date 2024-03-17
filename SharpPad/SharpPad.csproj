@@ -79,6 +79,7 @@
     <Compile Include="AdvancedMenuService\RegularMenuService\AdvancedMenuItem.cs" />
     <Compile Include="AdvancedMenuService\StandAlone\CommandMenuItem.cs" />
     <Compile Include="ApplicationCore.cs" />
+    <Compile Include="AsyncDemo.cs" />
     <Compile Include="CommandSystem\AsyncCommand.cs" />
     <Compile Include="CommandSystem\CommandGroup.cs" />
     <Compile Include="CommandSystem\SimpleCommandGroup.cs" />
@@ -122,14 +123,19 @@
     <Compile Include="IServiceManager.cs" />
     <Compile Include="Notepads\Commands\DocumentCommand.cs" />
     <Compile Include="Notepads\Commands\EditorCommand.cs" />
+    <Compile Include="Notepads\Commands\FindModelCommand.cs" />
     <Compile Include="Notepads\Commands\NotepadCommand.cs" />
     <Compile Include="Notepads\Commands\CloseDocumentCommand.cs" />
     <Compile Include="Notepads\Contexts\EditMenuContextGenerator.cs" />
     <Compile Include="Notepads\Contexts\NotepadTabContextGenerator.cs" />
+    <Compile Include="Notepads\Controls\FindAndReplaceControl.cs" />
+    <Compile Include="Notepads\Controls\INotepadEditorUI.cs" />
     <Compile Include="Notepads\Controls\INotepadTabUI.cs" />
-    <Compile Include="Notepads\Controls\NotepadEditorPanel.cs" />
+    <Compile Include="Notepads\Controls\NotepadEditorControl.cs" />
     <Compile Include="Notepads\Controls\NotepadTabControl.cs" />
     <Compile Include="Notepads\Controls\NotepadTabItem.cs" />
+    <Compile Include="Notepads\FindAndReplaceModel.cs" />
+    <Compile Include="Notepads\NotepadEditor.cs" />
     <Compile Include="Notepads\Notepad.cs" />
     <Compile Include="Notepads\NotepadDocument.cs" />
     <Compile Include="Notepads\NotepadDropRegistry.cs" />
@@ -237,6 +243,7 @@
     <Compile Include="Utils\Arrays.cs" />
     <Compile Include="Utils\AsyncLock.cs" />
     <Compile Include="Utils\AudioUtils.cs" />
+    <Compile Include="Utils\BinarySearch.cs" />
     <Compile Include="Utils\Bits.cs" />
     <Compile Include="Utils\BoolBox.cs" />
     <Compile Include="Utils\CASLock.cs" />

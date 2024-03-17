@@ -21,10 +21,8 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SharpPad.Utils
-{
-    public class PrecisionTimer : IDisposable
-    {
+namespace SharpPad.Utils {
+    public class PrecisionTimer : IDisposable {
         private const long MILLIS_PER_THREAD_SPLICE = 16; // 16.4
 
         private static readonly long THREAD_SPLICE_IN_TICKS = (long) (16.4d * Time.TICK_PER_MILLIS);
@@ -35,13 +33,10 @@ namespace SharpPad.Utils
 
         public Action TickCallback { get; set; }
 
-        public long Interval
-        {
+        public long Interval {
             get => this.intervalMillis;
-            set
-            {
-                if (value <= 0)
-                {
+            set {
+                if (value <= 0) {
                     throw new ArgumentOutOfRangeException(nameof(value), "Value must be bigger than 0");
                 }
 
@@ -59,40 +54,31 @@ namespace SharpPad.Utils
 
         public PrecisionTimer() { }
 
-        public void Start(bool usePrecisionMode)
-        {
+        public void Start(bool usePrecisionMode) {
             this.isRunning = true;
             this.SetupTask(usePrecisionMode);
         }
 
-        public async Task StopAsync()
-        {
+        public async Task StopAsync() {
             this.isRunning = false;
-            if (this.task != null)
-            {
-                try
-                {
-                    if (!this.task.IsCanceled && !this.task.IsCompleted)
-                    {
+            if (this.task != null) {
+                try {
+                    if (!this.task.IsCanceled && !this.task.IsCompleted) {
                         await this.task;
                     }
                 }
-                catch
-                {
+                catch {
                     /* ignored */
                 }
 
                 this.task = null;
             }
 
-            if (this.osTimer != null)
-            {
-                try
-                {
+            if (this.osTimer != null) {
+                try {
                     this.osTimer.Dispose();
                 }
-                catch
-                {
+                catch {
                     /* ignored */
                 }
 
@@ -100,36 +86,28 @@ namespace SharpPad.Utils
             }
         }
 
-        public async Task RestartAsync(bool usePrecisionMode)
-        {
+        public async Task RestartAsync(bool usePrecisionMode) {
             await this.StopAsync();
             this.Start(usePrecisionMode);
         }
 
-        private void SetupTask(bool usePrecisionMode)
-        {
+        private void SetupTask(bool usePrecisionMode) {
             this.nextTickTime = Time.GetSystemTicks();
             this.isRunning = true;
-            if (usePrecisionMode)
-            {
+            if (usePrecisionMode) {
                 this.task = Task.Factory.StartNew(this.TaskMain, TaskCreationOptions.LongRunning);
             }
-            else
-            {
-                this.osTimer = new Timer((s) =>
-                {
-                    if (this.isRunning)
-                    {
+            else {
+                this.osTimer = new Timer((s) => {
+                    if (this.isRunning) {
                         this.OnTimerTick();
                     }
                 }, null, 0, 1);
             }
         }
 
-        private void TaskMain()
-        {
-            do
-            {
+        private void TaskMain() {
+            do {
                 long target = this.nextTickTime;
                 while ((target - Time.GetSystemTicks()) > THREAD_SPLICE_IN_TICKS)
                     Thread.Sleep(1);
@@ -138,8 +116,7 @@ namespace SharpPad.Utils
 
                 // CPU intensive wait
                 long time = Time.GetSystemTicks();
-                while (time < target)
-                {
+                while (time < target) {
                     Thread.SpinWait(8);
                     time = Time.GetSystemTicks();
                 }
@@ -151,30 +128,24 @@ namespace SharpPad.Utils
             } while (true);
         }
 
-        private void OnTimerTick()
-        {
+        private void OnTimerTick() {
             long currentTime = Time.GetSystemTicks();
-            while (currentTime >= this.nextTickTime)
-            {
+            while (currentTime >= this.nextTickTime) {
                 this.nextTickTime += this.intervalTicks;
                 long a = Time.GetSystemTicks();
                 this.TickCallback?.Invoke();
                 long b = Time.GetSystemTicks() - a;
-                if (b >= this.nextTickTime)
-                {
+                if (b >= this.nextTickTime) {
                     break;
                 }
             }
         }
 
-        public void Dispose()
-        {
-            try
-            {
+        public void Dispose() {
+            try {
                 this.task?.Dispose();
             }
-            catch
-            {
+            catch {
                 /* ignored */
             }
 

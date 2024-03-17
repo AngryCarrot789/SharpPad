@@ -17,10 +17,8 @@
 // along with SharpPad. If not, see <https://www.gnu.org/licenses/>.
 //
 
-namespace SharpPad.Themes.Generator
-{
-    public class ThemeGenerator
-    {
+namespace SharpPad.Themes.Generator {
+    public class ThemeGenerator {
         // The easiest way to allow user-modifiable themes will probably be
         // to generate an XAML file
     }

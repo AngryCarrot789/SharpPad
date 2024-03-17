@@ -20,7 +20,6 @@
 using SharpPad.Interactivity.Contexts;
 using SharpPad.Shortcuts.Managing;
 
-namespace SharpPad.Shortcuts.Events
-{
+namespace SharpPad.Shortcuts.Events {
     public delegate bool ShortcutActivatedEventHandler(ShortcutInputManager inputManager, GroupedShortcut shortcut, IContextData context);
 }

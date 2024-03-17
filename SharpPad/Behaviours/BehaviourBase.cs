@@ -23,14 +23,12 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
 
-namespace SharpPad.Behaviours
-{
+namespace SharpPad.Behaviours {
     /// <summary>
     /// The base class for behaviours, which handles all the standard functionality.
     /// This class should typically not be inherited directly, instead, use <see cref="Behaviour{T}"/>
     /// </summary>
-    public abstract class BehaviourBase : Freezable, IBehaviour
-    {
+    public abstract class BehaviourBase : Freezable, IBehaviour {
         private static readonly Dictionary<Type, bool> HasVisualParentChangedOverridden;
         private static readonly Type[] VPCArgs = new Type[] {typeof(DependencyObject)};
 
@@ -44,13 +42,11 @@ namespace SharpPad.Behaviours
         /// </summary>
         public BehaviourCollection Collection { get; private set; }
 
-        protected BehaviourBase()
-        {
+        protected BehaviourBase() {
             this.CanProcessVisualParentChanged = GetHasVisualParentChangedHandler(this.GetType());
         }
 
-        static BehaviourBase()
-        {
+        static BehaviourBase() {
             HasVisualParentChangedOverridden = new Dictionary<Type, bool>();
         }
 
@@ -64,8 +60,7 @@ namespace SharpPad.Behaviours
         /// </summary>
         protected abstract void OnDetatched();
 
-        public void Attach(BehaviourCollection collection)
-        {
+        public void Attach(BehaviourCollection collection) {
             if (this.element != null)
                 throw new InvalidOperationException("Already attached to another element: " + this.element);
             if (collection.Owner == null)
@@ -78,12 +73,10 @@ namespace SharpPad.Behaviours
             if (this.CanProcessVisualParentChanged)
                 collection.RegisterVAC(this);
 
-            try
-            {
+            try {
                 this.OnAttached();
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 if (this.CanProcessVisualParentChanged)
                     collection.UnregisterVAC();
                 this.element = null;
@@ -92,24 +85,20 @@ namespace SharpPad.Behaviours
             }
         }
 
-        public void Detatch()
-        {
+        public void Detatch() {
             if (this.element == null)
                 throw new InvalidOperationException("Cannot detach from nothing; we are not attached");
 
             if (this.CanProcessVisualParentChanged)
                 this.Collection.UnregisterVAC();
 
-            try
-            {
+            try {
                 this.OnDetatched();
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 throw new Exception("Failed to call " + nameof(this.OnDetatched), e);
             }
-            finally
-            {
+            finally {
                 this.element = null;
             }
         }
@@ -125,8 +114,7 @@ namespace SharpPad.Behaviours
         /// <param name="oldParent">Our element's previous parent</param>
         protected virtual void OnVisualParentChanged(DependencyObject oldParent) { }
 
-        protected override Freezable CreateInstanceCore()
-        {
+        protected override Freezable CreateInstanceCore() {
             return (Freezable) Activator.CreateInstance(this.GetType());
         }
 
@@ -134,27 +122,22 @@ namespace SharpPad.Behaviours
 
         protected abstract bool CanAttachToType(DependencyObject target);
 
-        internal static void InternalProcessVisualParentChanged(BehaviourBase behaviour, DependencyObject oldParent)
-        {
+        internal static void InternalProcessVisualParentChanged(BehaviourBase behaviour, DependencyObject oldParent) {
             if (behaviour.CanProcessVisualParentChanged)
                 behaviour.OnVisualParentChanged(oldParent);
         }
 
-        private static bool GetHasVisualParentChangedHandler(Type type)
-        {
-            if (!HasVisualParentChangedOverridden.TryGetValue(type, out bool value))
-            {
+        private static bool GetHasVisualParentChangedHandler(Type type) {
+            if (!HasVisualParentChangedOverridden.TryGetValue(type, out bool value)) {
                 HasVisualParentChangedOverridden[type] = value = CalculateHasVisualParentChangedHandler(type);
             }
 
             return value;
         }
 
-        private static bool CalculateHasVisualParentChangedHandler(Type type)
-        {
+        private static bool CalculateHasVisualParentChangedHandler(Type type) {
             MethodInfo method = type.GetMethod(nameof(OnVisualParentChanged), BindingFlags.Instance | BindingFlags.NonPublic, null, CallingConventions.HasThis, VPCArgs, null);
-            if (!ReferenceEquals(method, null))
-            {
+            if (!ReferenceEquals(method, null)) {
                 MethodInfo baseMethod = method.GetBaseDefinition();
                 return baseMethod.DeclaringType != method.DeclaringType;
             }

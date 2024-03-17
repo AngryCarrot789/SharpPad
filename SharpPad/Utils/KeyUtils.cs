@@ -20,14 +20,10 @@
 using System;
 using System.Windows.Input;
 
-namespace SharpPad.Utils
-{
-    public static class KeyUtils
-    {
-        public static Key ParseKey(string input)
-        {
-            if (string.IsNullOrWhiteSpace(input))
-            {
+namespace SharpPad.Utils {
+    public static class KeyUtils {
+        public static Key ParseKey(string input) {
+            if (string.IsNullOrWhiteSpace(input)) {
                 return Key.None;
             }
 
@@ -35,8 +31,7 @@ namespace SharpPad.Utils
             // 'a' == 97 | 'z' == 122
 
             char first = input[0]; // Parse D0-D9
-            if (input.Length == 1)
-            {
+            if (input.Length == 1) {
                 // Parse 0-9
                 if (first >= '0' && first <= '9')
                     return (Key) (first - '0') + (int) Key.D0;
@@ -51,13 +46,11 @@ namespace SharpPad.Utils
             }
 
             // Parse D0-D9
-            if (input.Length == 2 && (first == 'D' || first == 'd') && input[1] >= '0' && input[1] <= '9')
-            {
+            if (input.Length == 2 && (first == 'D' || first == 'd') && input[1] >= '0' && input[1] <= '9') {
                 return (Key) (input[1] - '0') + (int) Key.D0;
             }
 
-            switch (input.ToLower())
-            {
+            switch (input.ToLower()) {
                 case "del": return Key.Delete;
                 case "esc": return Key.Escape;
                 case "ret":
@@ -86,15 +79,12 @@ namespace SharpPad.Utils
             return Enum.TryParse(input, out Key key) ? key : Key.None;
         }
 
-        public static string KeyToString(Key key)
-        {
-            if (key >= Key.A && key <= Key.Z)
-            {
+        public static string KeyToString(Key key) {
+            if (key >= Key.A && key <= Key.Z) {
                 return ((char) ('a' + (key - Key.A))).ToString();
             }
 
-            switch (key)
-            {
+            switch (key) {
                 case Key.D0: return "0";
                 case Key.D1: return "1";
                 case Key.D2: return "2";

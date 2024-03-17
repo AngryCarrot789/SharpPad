@@ -21,8 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace SharpPad.RBC
-{
+namespace SharpPad.RBC {
     /// <summary>
     /// The base class for the RBE (REghZy Binary Element... i know right what a sexy acronym)
     /// <para>
@@ -34,8 +33,7 @@ namespace SharpPad.RBC
     /// minecraft does (for some reason...? lists maintain their order so the dev should know the right types)
     /// </para>
     /// </summary>
-    public abstract class RBEBase
-    {
+    public abstract class RBEBase {
         private static readonly Dictionary<Type, RBEType> TypeToIdTable;
 
         /// <summary>
@@ -43,10 +41,8 @@ namespace SharpPad.RBC
         /// </summary>
         public abstract RBEType Type { get; }
 
-        static RBEBase()
-        {
-            TypeToIdTable = new Dictionary<Type, RBEType>
-            {
+        static RBEBase() {
+            TypeToIdTable = new Dictionary<Type, RBEType> {
                 {typeof(RBEDictionary), RBEType.Dictionary},
                 {typeof(RBEList), RBEType.List},
                 {typeof(RBEByte), RBEType.Byte},
@@ -91,8 +87,7 @@ namespace SharpPad.RBC
         /// <param name="packData">
         /// The dictionary which maps a key index to the actual string key (used by dictionary based elements, like <see cref="RBEDictionary"/>)
         /// </param>
-        protected virtual void ReadPacked(BinaryReader reader, Dictionary<int, string> packData)
-        {
+        protected virtual void ReadPacked(BinaryReader reader, Dictionary<int, string> packData) {
             this.Read(reader);
         }
 
@@ -105,8 +100,7 @@ namespace SharpPad.RBC
         /// A pre-computed dictionary which maps all string keys to an index which should
         /// be written instead of the actual key (used by dictionary based elements, like <see cref="RBEDictionary"/>)
         /// </param>
-        protected virtual void WritePacked(BinaryWriter writer, Dictionary<string, int> dictionary)
-        {
+        protected virtual void WritePacked(BinaryWriter writer, Dictionary<string, int> dictionary) {
             this.Write(writer);
         }
 
@@ -124,8 +118,7 @@ namespace SharpPad.RBC
         /// <returns>A new element which contains no references (at all) to the instance that was originally cloned</returns>
         public abstract RBEBase Clone();
 
-        public override string ToString()
-        {
+        public override string ToString() {
             return TryGetIdByType(this.GetType(), out RBEType type) ? type.ToString() : this.GetType().ToString();
         }
 
@@ -134,38 +127,32 @@ namespace SharpPad.RBC
         /// </summary>
         /// <param name="reader">Binary data source</param>
         /// <returns></returns>
-        public static RBEBase ReadIdAndElement(BinaryReader reader)
-        {
+        public static RBEBase ReadIdAndElement(BinaryReader reader) {
             byte id = reader.ReadByte();
             RBEBase element = CreateById((RBEType) id);
             element.Read(reader);
             return element;
         }
 
-        public static void WriteIdAndElement(BinaryWriter writer, RBEBase rbe)
-        {
+        public static void WriteIdAndElement(BinaryWriter writer, RBEBase rbe) {
             writer.Write((byte) rbe.Type);
             rbe.Write(writer);
         }
 
-        public static RBEBase ReadIdAndElementPacked(BinaryReader reader, Dictionary<int, string> dictionary)
-        {
+        public static RBEBase ReadIdAndElementPacked(BinaryReader reader, Dictionary<int, string> dictionary) {
             byte id = reader.ReadByte();
             RBEBase element = CreateById((RBEType) id);
             element.ReadPacked(reader, dictionary);
             return element;
         }
 
-        public static void WriteIdAndElementPacked(BinaryWriter writer, RBEBase rbe, Dictionary<string, int> dictionary)
-        {
+        public static void WriteIdAndElementPacked(BinaryWriter writer, RBEBase rbe, Dictionary<string, int> dictionary) {
             writer.Write((byte) rbe.Type);
             rbe.WritePacked(writer, dictionary);
         }
 
-        public static RBEBase CreateById(RBEType id)
-        {
-            switch (id)
-            {
+        public static RBEBase CreateById(RBEType id) {
+            switch (id) {
                 case RBEType.Dictionary: return new RBEDictionary();
                 case RBEType.List: return new RBEList();
                 case RBEType.Byte: return new RBEByte();
@@ -191,10 +178,8 @@ namespace SharpPad.RBC
 
         public static bool TryGetIdByType(Type type, out RBEType rbeType) => TypeToIdTable.TryGetValue(type, out rbeType);
 
-        public static Type GetTypeById(RBEType rbeType)
-        {
-            switch (rbeType)
-            {
+        public static Type GetTypeById(RBEType rbeType) {
+            switch (rbeType) {
                 case RBEType.Dictionary: return typeof(RBEDictionary);
                 case RBEType.List: return typeof(RBEList);
                 case RBEType.Byte: return typeof(RBEByte);
@@ -218,8 +203,7 @@ namespace SharpPad.RBC
             }
         }
 
-        protected static string GetReadableTypeName(Type type)
-        {
+        protected static string GetReadableTypeName(Type type) {
             return TryGetIdByType(type, out RBEType rbeType) ? rbeType.ToString() : type.Name;
         }
     }

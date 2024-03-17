@@ -21,87 +21,94 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace SharpPad.Notepads
-{
-    public delegate void NotepadEventHandler(Notepad notepad);
-
-    public delegate void NotepadActiveDocumentChangedEventHandler(Notepad notepad, NotepadDocument oldDocument, NotepadDocument newDocument);
-
-    public delegate void NotepadDocumentIndexEventHandler(Notepad notepad, NotepadDocument document, int oldIndex, int newIndex);
+namespace SharpPad.Notepads {
+    public delegate void NotepadActiveEditorChangedEventHandler(Notepad sender, NotepadEditor oldEditor, NotepadEditor newEditor);
+    public delegate void NotepadEditorIndexMovedEventHandler(Notepad notepad, NotepadEditor editor, int oldIndex, int newIndex);
 
     /// <summary>
     /// The class for a single notepad window
     /// </summary>
-    public class Notepad
-    {
-        private readonly List<NotepadDocument> documents;
-        private NotepadDocument activeDocument;
+    public class Notepad {
+        private readonly List<NotepadEditor> editors;
+        private NotepadEditor activeEditor;
 
-        public ReadOnlyCollection<NotepadDocument> Documents { get; }
+        /// <summary>
+        /// Gets the read-only collection that backs the list of editors currently open in this notepad object
+        /// </summary>
+        public ReadOnlyCollection<NotepadEditor> Editors { get; }
 
-        public NotepadDocument ActiveDocument
-        {
-            get => this.activeDocument;
-            set
-            {
-                NotepadDocument doc = this.activeDocument;
+        public NotepadEditor ActiveEditor {
+            get => this.activeEditor;
+            set {
+                NotepadEditor doc = this.activeEditor;
                 if (doc == value)
                     return;
-                this.activeDocument = value;
-                this.ActiveDocumentChanged?.Invoke(this, doc, value);
+                this.activeEditor = value;
+                this.ActiveEditorChanged?.Invoke(this, doc, value);
             }
         }
 
         /// <summary>
-        /// An event called when a document is added to, removed from or moved within a notepad.
+        /// An event called when an editor is added to, removed from or moved within a notepad.
         /// <para>
         /// When adding, oldIndex will be -1 and newIndex will be valid. When removing, oldIndex
         /// will be valid and newIndex will be -1. When moving, oldIndex and newIndex will be valid
         /// </para>
         /// </summary>
-        public event NotepadDocumentIndexEventHandler DocumentIndexChanged;
+        public event NotepadEditorIndexMovedEventHandler EditorIndexChanged;
 
-        public event NotepadActiveDocumentChangedEventHandler ActiveDocumentChanged;
+        /// <summary>
+        /// An event fired when the active editor (aka selected notepad tab) changes
+        /// </summary>
+        public event NotepadActiveEditorChangedEventHandler ActiveEditorChanged;
 
-        public Notepad()
-        {
-            this.documents = new List<NotepadDocument>();
-            this.Documents = this.documents.AsReadOnly();
+        public Notepad() {
+            this.editors = new List<NotepadEditor>();
+            this.Editors = this.editors.AsReadOnly();
         }
 
-        public void AddDocument(NotepadDocument document) => this.InsertDocument(this.documents.Count, document);
-
-        public void InsertDocument(int index, NotepadDocument document)
-        {
-            if (document == null)
-                throw new ArgumentNullException(nameof(document));
-            if (NotepadDocument.IsOwnedBy(document, this))
-                throw new InvalidOperationException("Document already added");
-            this.documents.Insert(index, document);
-            NotepadDocument.AddOwner(document, this);
-            this.DocumentIndexChanged?.Invoke(this, document, -1, index);
-
-            if (this.documents.Count == 1)
-                this.ActiveDocument = document;
+        public NotepadEditor AddNewEditor(NotepadDocument document) {
+            NotepadEditor editor = new NotepadEditor(document);
+            this.InsertEditor(this.editors.Count, editor);
+            return editor;
         }
 
-        public bool RemoveDocument(NotepadDocument document)
-        {
-            if (document == null)
-                throw new ArgumentNullException(nameof(document));
-            int index = this.documents.IndexOf(document);
+        public void AddEditor(NotepadEditor editor) => this.InsertEditor(this.editors.Count, editor);
+
+        public void InsertEditor(int index, NotepadEditor editor) {
+            if (editor == null)
+                throw new ArgumentNullException(nameof(editor));
+            if (editor.IsOwnedBy(this))
+                throw new InvalidOperationException("editor already added");
+
+            this.editors.Insert(index, editor);
+            NotepadEditor.InternalAddViewerUnsafe(editor, this);
+            this.EditorIndexChanged?.Invoke(this, editor, -1, index);
+
+            if (this.editors.Count == 1)
+                this.ActiveEditor = editor;
+        }
+
+        public bool RemoveEditor(NotepadEditor editor) {
+            if (editor == null)
+                throw new ArgumentNullException(nameof(editor));
+
+            int index = this.editors.IndexOf(editor);
             if (index == -1)
                 return false;
-            this.RemoveDocumentAt(index);
+
+            this.RemoveEditorAt(index);
             return true;
         }
 
-        public void RemoveDocumentAt(int index)
-        {
-            NotepadDocument document = this.documents[index];
-            NotepadDocument.RemoveOwner(document, this);
-            this.documents.RemoveAt(index);
-            this.DocumentIndexChanged?.Invoke(this, document, index, -1);
+        public void RemoveEditorAt(int index) {
+            NotepadEditor editor = this.editors[index];
+            if (!editor.IsOwnedBy(this))
+                throw new Exception("Fatal error: editor in this notepad was not owned by this notepad instance");
+
+            NotepadEditor.InternalRemoveViewerUnsafe(editor, this);
+            this.editors.RemoveAt(index);
+            this.EditorIndexChanged?.Invoke(this, editor, index, -1);
         }
     }
 }

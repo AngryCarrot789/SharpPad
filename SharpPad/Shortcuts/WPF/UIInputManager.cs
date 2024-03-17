@@ -28,13 +28,11 @@ using SharpPad.Utils;
 using SharpPad.Utils.Visuals;
 using CommandManager = SharpPad.CommandSystem.CommandManager;
 
-namespace SharpPad.Shortcuts.WPF
-{
+namespace SharpPad.Shortcuts.WPF {
     /// <summary>
     /// A class which manages the WPF inputs and global focus scopes. This class also dispatches input events to the shortcut system
     /// </summary>
-    public class UIInputManager : INotifyPropertyChanged
-    {
+    public class UIInputManager : INotifyPropertyChanged {
         public delegate void FocusedPathChangedEventHandler(string oldPath, string newPath);
 
         public static UIInputManager Instance { get; } = new UIInputManager();
@@ -54,11 +52,9 @@ namespace SharpPad.Shortcuts.WPF
 
         private string focusedPath;
 
-        public string FocusedPath
-        {
+        public string FocusedPath {
             get => this.focusedPath;
-            private set
-            {
+            private set {
                 this.focusedPath = value;
                 this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.FocusedPath)));
             }
@@ -66,14 +62,12 @@ namespace SharpPad.Shortcuts.WPF
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private UIInputManager()
-        {
+        private UIInputManager() {
             if (Instance != null)
                 throw new InvalidOperationException();
         }
 
-        static UIInputManager()
-        {
+        static UIInputManager() {
             // !!!
             Application.Current.Dispatcher.VerifyAccess();
 
@@ -123,17 +117,14 @@ namespace SharpPad.Shortcuts.WPF
         public static void SetCanProcessTextBoxMouseStroke(DependencyObject element, bool value) => element.SetValue(CanProcessTextBoxMouseStrokeProperty, value.Box());
         public static bool GetCanProcessTextBoxMouseStroke(DependencyObject element) => (bool) element.GetValue(CanProcessTextBoxMouseStrokeProperty);
 
-        public static void RaiseFocusGroupPathChanged(string oldGroup, string newGroup)
-        {
+        public static void RaiseFocusGroupPathChanged(string oldGroup, string newGroup) {
             OnFocusedPathChanged?.Invoke(oldGroup, newGroup);
         }
 
-        public static void ProcessFocusGroupChange(DependencyObject obj)
-        {
+        public static void ProcessFocusGroupChange(DependencyObject obj) {
             string oldPath = Instance.FocusedPath;
             string newPath = GetFocusPath(obj);
-            if (oldPath != newPath)
-            {
+            if (oldPath != newPath) {
                 Instance.FocusedPath = newPath;
                 RaiseFocusGroupPathChanged(oldPath, newPath);
                 UpdateFocusGroup(obj, newPath);
@@ -147,11 +138,9 @@ namespace SharpPad.Shortcuts.WPF
         /// </summary>
         /// <param name="target">Target/focused element which now has focus</param>
         /// <param name="newPath"></param>
-        public static void UpdateFocusGroup(DependencyObject target, string newPath)
-        {
+        public static void UpdateFocusGroup(DependencyObject target, string newPath) {
             object lastFocused = CurrentlyFocusedObject.Target;
-            if (lastFocused != null)
-            {
+            if (lastFocused != null) {
                 CurrentlyFocusedObject.Target = null;
                 SetIsPathFocused((DependencyObject) lastFocused, false);
             }
@@ -164,29 +153,25 @@ namespace SharpPad.Shortcuts.WPF
             //     root = VisualTreeUtils.FindInheritedPropertyDefinition(FocusGroupPathProperty, root);
             // } while (root != null && !GetHasAdvancedFocusVisual(root) && (root = VisualTreeHelper.GetParent(root)) != null);
 
-            if (root != null)
-            {
+            if (root != null) {
                 CurrentlyFocusedObject.Target = root;
                 SetIsPathFocused(root, true);
                 // if (root is UIElement element && element.Focusable && !element.IsFocused) {
                 //     element.Focus();
                 // }
             }
-            else
-            {
+            else {
                 Debug.WriteLine("Failed to find root control that owns the FocusPathProperty of '" + GetFocusPath(target) + "'");
             }
         }
 
         #region Input Event Handlers
 
-        private static void OnPreProcessInput(object sender, PreProcessInputEventArgs args)
-        {
+        private static void OnPreProcessInput(object sender, PreProcessInputEventArgs args) {
             // Don't use args.Cancel(), because there is a problem with KeyEventArgs where WM_CHAR
             // gets sent to the window anyway. Handling the input event stops this happening.
             // Not sure if Cancel() is okay for mouse btn/wheel events
-            switch (args.StagingItem.Input)
-            {
+            switch (args.StagingItem.Input) {
                 case KeyboardFocusChangedEventArgs e:
                     OnApplicationPreKeyboardPreFocusChanged(e, args);
                     break;
@@ -205,13 +190,10 @@ namespace SharpPad.Shortcuts.WPF
             }
         }
 
-        private static void OnPostProcessInput(object sender, ProcessInputEventArgs args)
-        {
-            if (args.StagingItem.Input is KeyboardFocusChangedEventArgs e)
-            {
+        private static void OnPostProcessInput(object sender, ProcessInputEventArgs args) {
+            if (args.StagingItem.Input is KeyboardFocusChangedEventArgs e) {
                 ContextCapturingMenu.OnKeyboardFocusChanged(sender, e, args);
-                CommandManager.Instance.OnApplicationFocusChanged(() =>
-                {
+                CommandManager.Instance.OnApplicationFocusChanged(() => {
                     if (Keyboard.FocusedElement is DependencyObject obj)
                         return DataManager.GetFullContextData(obj);
                     return EmptyContext.Instance;
@@ -227,19 +209,15 @@ namespace SharpPad.Shortcuts.WPF
              */
         }
 
-        private static void OnApplicationPreKeyboardPreFocusChanged(KeyboardFocusChangedEventArgs e, PreProcessInputEventArgs args)
-        {
-            if (e.Device is KeyboardDevice keyboard && keyboard.Target is DependencyObject focused)
-            {
+        private static void OnApplicationPreKeyboardPreFocusChanged(KeyboardFocusChangedEventArgs e, PreProcessInputEventArgs args) {
+            if (e.Device is KeyboardDevice keyboard && keyboard.Target is DependencyObject focused) {
                 ProcessFocusGroupChange(focused);
             }
         }
 
-        private static bool OnApplicationKeyEvent(KeyEventArgs e, PreProcessInputEventArgs inputArgs)
-        {
+        private static bool OnApplicationKeyEvent(KeyEventArgs e, PreProcessInputEventArgs inputArgs) {
             Key key = e.Key == Key.System ? e.SystemKey : e.Key;
-            if (key == Key.DeadCharProcessed || key == Key.None)
-            {
+            if (key == Key.DeadCharProcessed || key == Key.None) {
                 return false;
             }
 
@@ -250,46 +228,36 @@ namespace SharpPad.Shortcuts.WPF
                 return false;
 
             WPFShortcutInputManager processor = (WPFShortcutInputManager) window.GetValue(ShortcutProcessorProperty);
-            if (processor == null)
-            {
+            if (processor == null) {
                 window.SetValue(ShortcutProcessorPropertyKey, processor = new WPFShortcutInputManager(WPFShortcutManager.WPFInstance));
             }
-            else if (processor.isProcessingKey)
-            {
+            else if (processor.isProcessingKey) {
                 return false;
             }
 
             InputDevice recentInput = inputArgs.InputManager.MostRecentInputDevice;
             DependencyObject focusedObject = null;
-            if (recentInput is KeyboardDevice keyboard)
-            {
-                if (keyboard.FocusedElement is DependencyObject obj && obj != window)
-                {
+            if (recentInput is KeyboardDevice keyboard) {
+                if (keyboard.FocusedElement is DependencyObject obj && obj != window) {
                     focusedObject = obj;
                 }
             }
 
-            if (focusedObject == null)
-            {
-                if (recentInput is MouseDevice mouse)
-                {
-                    if (mouse.Target is DependencyObject obj && obj != window)
-                    {
+            if (focusedObject == null) {
+                if (recentInput is MouseDevice mouse) {
+                    if (mouse.Target is DependencyObject obj && obj != window) {
                         focusedObject = obj;
                     }
                 }
-                else
-                {
+                else {
                     mouse = inputArgs.InputManager.PrimaryMouseDevice;
-                    if (mouse.Target is DependencyObject obj && obj != window)
-                    {
+                    if (mouse.Target is DependencyObject obj && obj != window) {
                         focusedObject = obj;
                     }
                 }
             }
 
-            if (focusedObject != null)
-            {
+            if (focusedObject != null) {
                 bool isPreview = e.RoutedEvent == Keyboard.PreviewKeyDownEvent || e.RoutedEvent == Keyboard.PreviewKeyUpEvent;
                 processor.OnInputSourceKeyEvent(processor, focusedObject, e, key, e.IsUp, isPreview);
                 if (processor.isProcessingKey)
@@ -300,8 +268,7 @@ namespace SharpPad.Shortcuts.WPF
             return false;
         }
 
-        private static bool OnApplicationMouseButtonEvent(MouseButtonEventArgs e)
-        {
+        private static bool OnApplicationMouseButtonEvent(MouseButtonEventArgs e) {
             if (!(e.Device is MouseDevice mouse) || !(mouse.Target is DependencyObject target))
                 return false;
 
@@ -310,31 +277,25 @@ namespace SharpPad.Shortcuts.WPF
                 return false;
 
             bool isPreview, isDown;
-            if (e.RoutedEvent == Mouse.PreviewMouseDownEvent)
-            {
+            if (e.RoutedEvent == Mouse.PreviewMouseDownEvent) {
                 isPreview = isDown = true;
             }
-            else if (e.RoutedEvent == Mouse.PreviewMouseUpEvent)
-            {
+            else if (e.RoutedEvent == Mouse.PreviewMouseUpEvent) {
                 isPreview = true;
                 isDown = false;
             }
-            else if (e.RoutedEvent == Mouse.MouseDownEvent)
-            {
+            else if (e.RoutedEvent == Mouse.MouseDownEvent) {
                 isPreview = false;
                 isDown = true;
             }
-            else if (e.RoutedEvent == Mouse.MouseUpEvent)
-            {
+            else if (e.RoutedEvent == Mouse.MouseUpEvent) {
                 isPreview = isDown = false;
             }
-            else
-            {
+            else {
                 return false;
             }
 
-            if (isPreview)
-            {
+            if (isPreview) {
                 ProcessFocusGroupChange(target);
             }
 
@@ -342,12 +303,10 @@ namespace SharpPad.Shortcuts.WPF
                 return false;
 
             WPFShortcutInputManager processor = (WPFShortcutInputManager) window.GetValue(ShortcutProcessorProperty);
-            if (processor == null)
-            {
+            if (processor == null) {
                 window.SetValue(ShortcutProcessorPropertyKey, processor = new WPFShortcutInputManager(WPFShortcutManager.WPFInstance));
             }
-            else if (processor.isProcessingMouse)
-            {
+            else if (processor.isProcessingMouse) {
                 return false;
             }
 
@@ -358,8 +317,7 @@ namespace SharpPad.Shortcuts.WPF
             return e.Handled;
         }
 
-        private static bool OnApplicationMouseWheelEvent(MouseWheelEventArgs e)
-        {
+        private static bool OnApplicationMouseWheelEvent(MouseWheelEventArgs e) {
             if (e.Delta == 0 || !(e.Device is MouseDevice mouse) || !(mouse.Target is DependencyObject target))
                 return false;
 
@@ -368,32 +326,26 @@ namespace SharpPad.Shortcuts.WPF
                 return false;
 
             bool isPreview;
-            if (e.RoutedEvent == Mouse.PreviewMouseWheelEvent)
-            {
+            if (e.RoutedEvent == Mouse.PreviewMouseWheelEvent) {
                 isPreview = true;
                 ProcessFocusGroupChange(target);
             }
-            else if (e.RoutedEvent == Mouse.MouseWheelEvent)
-            {
+            else if (e.RoutedEvent == Mouse.MouseWheelEvent) {
                 isPreview = false;
             }
-            else
-            {
+            else {
                 return false;
             }
 
-            if (!WPFShortcutInputManager.CanProcessEventType(target, isPreview) || !WPFShortcutInputManager.CanProcessMouseEvent(target, e))
-            {
+            if (!WPFShortcutInputManager.CanProcessEventType(target, isPreview) || !WPFShortcutInputManager.CanProcessMouseEvent(target, e)) {
                 return false;
             }
 
             WPFShortcutInputManager processor = (WPFShortcutInputManager) window.GetValue(ShortcutProcessorProperty);
-            if (processor == null)
-            {
+            if (processor == null) {
                 window.SetValue(ShortcutProcessorPropertyKey, processor = new WPFShortcutInputManager(WPFShortcutManager.WPFInstance));
             }
-            else if (processor.isProcessingMouse)
-            {
+            else if (processor.isProcessingMouse) {
                 return false;
             }
 

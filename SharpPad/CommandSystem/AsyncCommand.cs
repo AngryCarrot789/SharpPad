@@ -22,14 +22,12 @@ using System.Threading.Tasks;
 using SharpPad.Logger;
 using SharpPad.Utils;
 
-namespace SharpPad.CommandSystem
-{
+namespace SharpPad.CommandSystem {
     /// <summary>
     /// A command that has an async execute method, and tracks the completion of the task returned and
     /// only allows the command to be executed once the previous task becomes completed
     /// </summary>
-    public abstract class AsyncCommand : Command
-    {
+    public abstract class AsyncCommand : Command {
         protected readonly bool allowMultipleExecutions;
         private bool isExecuting;
 
@@ -41,13 +39,11 @@ namespace SharpPad.CommandSystem
         /// and the task has not completed, e.g. downloading a file.
         /// False to disallow execution while the previous task is still running. This is the default value
         /// </param>
-        protected AsyncCommand(bool allowMultipleExecutions = false)
-        {
+        protected AsyncCommand(bool allowMultipleExecutions = false) {
             this.allowMultipleExecutions = allowMultipleExecutions;
         }
 
-        public sealed override Executability CanExecute(CommandEventArgs e)
-        {
+        public sealed override Executability CanExecute(CommandEventArgs e) {
             Executability result = this.CanExecuteOverride(e);
 
             // Prevent ValidButCannotExecute being used first
@@ -57,15 +53,12 @@ namespace SharpPad.CommandSystem
             return this.isExecuting ? Executability.ValidButCannotExecute : result;
         }
 
-        protected virtual Executability CanExecuteOverride(CommandEventArgs e)
-        {
+        protected virtual Executability CanExecuteOverride(CommandEventArgs e) {
             return Executability.Valid;
         }
 
-        protected sealed override void Execute(CommandEventArgs e)
-        {
-            if (!this.allowMultipleExecutions && this.isExecuting)
-            {
+        protected sealed override void Execute(CommandEventArgs e) {
+            if (!this.allowMultipleExecutions && this.isExecuting) {
                 if (e.IsUserInitiated)
                     IoC.MessageService.ShowMessage("Already running", "This command is already running");
                 return;
@@ -74,23 +67,19 @@ namespace SharpPad.CommandSystem
             this.ExecuteCore(e);
         }
 
-        private async void ExecuteCore(CommandEventArgs args)
-        {
+        private async void ExecuteCore(CommandEventArgs args) {
             this.isExecuting = true;
-            try
-            {
+            try {
                 await (this.ExecuteAsync(args) ?? Task.CompletedTask);
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 // we need to handle the exception here, because otherwise the application
                 // would never catch it, and therefore the exception would be lost forever
                 string msg = e.GetToString();
                 AppLogger.Instance.WriteLine(msg);
                 IoC.MessageService.ShowMessage("Command Error", "An exception occurred while executing command", msg);
             }
-            finally
-            {
+            finally {
                 this.isExecuting = false;
             }
         }

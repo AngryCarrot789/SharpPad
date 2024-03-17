@@ -21,13 +21,11 @@ using System.Collections.Generic;
 using SharpPad.Shortcuts.Inputs;
 using SharpPad.Shortcuts.Usage;
 
-namespace SharpPad.Shortcuts
-{
+namespace SharpPad.Shortcuts {
     /// <summary>
     /// An interface for shortcuts that accept keyboard inputs
     /// </summary>
-    public interface IKeyboardShortcut : IShortcut
-    {
+    public interface IKeyboardShortcut : IShortcut {
         /// <summary>
         /// All of the Key Strokes that this shortcut contains
         /// </summary>

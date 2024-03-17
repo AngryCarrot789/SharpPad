@@ -23,13 +23,11 @@ using System.Windows.Threading;
 using SharpPad.Utils;
 using SharpPad.Views;
 
-namespace SharpPad.Tasks
-{
+namespace SharpPad.Tasks {
     /// <summary>
     /// Interaction logic for ActivityDialog.xaml
     /// </summary>
-    public partial class ActivityDialog : WindowEx
-    {
+    public partial class ActivityDialog : WindowEx {
         public static readonly DependencyProperty ActivityProgressProperty =
             DependencyProperty.Register(
                 "ActivityProgress",
@@ -37,27 +35,22 @@ namespace SharpPad.Tasks
                 typeof(ActivityDialog),
                 new PropertyMetadata(null, (d, e) => ((ActivityDialog) d).OnProgressTrackerChanged((IActivityProgress) e.OldValue, (IActivityProgress) e.NewValue)));
 
-        public IActivityProgress ActivityProgress
-        {
+        public IActivityProgress ActivityProgress {
             get => (IActivityProgress) this.GetValue(ActivityProgressProperty);
             set => this.SetValue(ActivityProgressProperty, value);
         }
 
-        public ActivityDialog()
-        {
+        public ActivityDialog() {
             this.InitializeComponent();
             this.CalculateOwnerAndSetCentered();
         }
 
-        public static ActivityDialog ShowAsNonModal(IActivityProgress tracker)
-        {
+        public static ActivityDialog ShowAsNonModal(IActivityProgress tracker) {
             if (tracker == null)
                 throw new ArgumentNullException(nameof(tracker));
 
-            return IoC.Dispatcher.Invoke(() =>
-            {
-                ActivityDialog dialog = new ActivityDialog()
-                {
+            return IoC.Dispatcher.Invoke(() => {
+                ActivityDialog dialog = new ActivityDialog() {
                     ActivityProgress = tracker
                 };
 
@@ -66,18 +59,15 @@ namespace SharpPad.Tasks
             });
         }
 
-        private void OnProgressTrackerChanged(IActivityProgress oldProgress, IActivityProgress newProgress)
-        {
-            if (oldProgress != null)
-            {
+        private void OnProgressTrackerChanged(IActivityProgress oldProgress, IActivityProgress newProgress) {
+            if (oldProgress != null) {
                 oldProgress.IsIndeterminateChanged -= this.OnIsIndeterminateChanged;
                 oldProgress.CompletionValueChanged -= this.OnCompletionValueChanged;
                 oldProgress.HeaderTextChanged -= this.OnHeaderTextChanged;
                 oldProgress.TextChanged -= this.OnTextChanged;
             }
 
-            if (newProgress != null)
-            {
+            if (newProgress != null) {
                 newProgress.IsIndeterminateChanged += this.OnIsIndeterminateChanged;
                 newProgress.CompletionValueChanged += this.OnCompletionValueChanged;
                 newProgress.HeaderTextChanged += this.OnHeaderTextChanged;
@@ -98,23 +88,19 @@ namespace SharpPad.Tasks
 
         private void OnTextChanged(IActivityProgress tracker) => this.Dispatcher.Invoke(this.SetDescriptionText, DispatcherPriority.Render);
 
-        private void SetIsIndeterminate()
-        {
+        private void SetIsIndeterminate() {
             this.PART_ProgressBar.IsIndeterminate = this.ActivityProgress?.IsIndeterminate ?? false;
         }
 
-        private void SetCompletionValue()
-        {
+        private void SetCompletionValue() {
             this.PART_ProgressBar.Value = Maths.Clamp(this.ActivityProgress?.TotalCompletion ?? 0.0, 0.0, 1.0);
         }
 
-        private void SetHeaderText()
-        {
+        private void SetHeaderText() {
             this.Title = this.ActivityProgress?.HeaderText ?? "";
         }
 
-        private void SetDescriptionText()
-        {
+        private void SetDescriptionText() {
             this.PART_Message.Text = this.ActivityProgress?.Text ?? "";
         }
     }

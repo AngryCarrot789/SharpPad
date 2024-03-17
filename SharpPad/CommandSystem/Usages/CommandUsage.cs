@@ -24,8 +24,7 @@ using SharpPad.Interactivity.Contexts;
 using SharpPad.Utils;
 using SharpPad.Utils.RDA;
 
-namespace SharpPad.CommandSystem.Usages
-{
+namespace SharpPad.CommandSystem.Usages {
     /// <summary>
     /// A command usage is a ui-place-specific usage of a command, e.g. a push or toggle button, a menu or context item.
     /// These accept a connected <see cref="DependencyObject"/>, in which events can be attached and detached in order to
@@ -35,8 +34,7 @@ namespace SharpPad.CommandSystem.Usages
     /// executability state to be re-queried from the command based on the new contextual data
     /// </para>
     /// </summary>
-    public abstract class CommandUsage
-    {
+    public abstract class CommandUsage {
         // Since its invoke method is only called from the main thread,
         // there's no need for the extended version
         private RapidDispatchAction delayedContextUpdate;
@@ -48,8 +46,7 @@ namespace SharpPad.CommandSystem.Usages
 
         public DependencyObject Control { get; private set; }
 
-        protected CommandUsage(string commandId)
-        {
+        protected CommandUsage(string commandId) {
             Validate.NotNullOrWhiteSpaces(commandId, nameof(commandId));
             this.CommandId = commandId;
         }
@@ -65,8 +62,7 @@ namespace SharpPad.CommandSystem.Usages
         /// </summary>
         /// <param name="control">Control to connect to</param>
         /// <exception cref="ArgumentNullException">Control is null</exception>
-        public void Connect(DependencyObject control)
-        {
+        public void Connect(DependencyObject control) {
             this.Control = control ?? throw new ArgumentNullException(nameof(control));
             DataManager.AddInheritedContextInvalidatedHandler(control, this.OnInheritedContextChanged);
             this.OnConnected();
@@ -76,8 +72,7 @@ namespace SharpPad.CommandSystem.Usages
         /// Disconnects from this control
         /// </summary>
         /// <exception cref="InvalidCastException">Not connected</exception>
-        public void Disconnect()
-        {
+        public void Disconnect() {
             if (this.Control == null)
                 throw new InvalidCastException("Not connected");
 
@@ -86,8 +81,7 @@ namespace SharpPad.CommandSystem.Usages
             this.Control = null;
         }
 
-        private void OnInheritedContextChanged(object sender, RoutedEventArgs e)
-        {
+        private void OnInheritedContextChanged(object sender, RoutedEventArgs e) {
             this.OnContextChanged();
         }
 
@@ -95,14 +89,12 @@ namespace SharpPad.CommandSystem.Usages
 
         protected virtual void OnDisconnected() => this.OnContextChanged();
 
-        protected virtual void OnContextChanged()
-        {
+        protected virtual void OnContextChanged() {
             RapidDispatchAction guard = this.delayedContextUpdate ?? (this.delayedContextUpdate = new RapidDispatchAction(this.UpdateCanExecute, DispatcherPriority.Loaded, "UpdateCanExecute"));
             guard.InvokeAsync();
         }
 
-        protected virtual void UpdateCanExecute()
-        {
+        protected virtual void UpdateCanExecute() {
             IContextData ctx = this.GetContextData();
             this.OnUpdateForCanExecuteState(ctx != null ? CommandManager.Instance.CanExecute(this.CommandId, ctx) : Executability.Invalid);
         }

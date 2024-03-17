@@ -17,10 +17,8 @@
 // along with SharpPad. If not, see <https://www.gnu.org/licenses/>.
 // 
 
-namespace SharpPad.Utils
-{
-    public enum ShellIconSize
-    {
+namespace SharpPad.Utils {
+    public enum ShellIconSize {
         Small,
         Normal,
         Large

@@ -23,8 +23,7 @@ using System.Windows;
 using System.Windows.Media;
 using SharpPad.Utils.Visuals;
 
-namespace SharpPad.Interactivity.Contexts
-{
+namespace SharpPad.Interactivity.Contexts {
     /// <summary>
     /// A class that is used to store and extract contextual information from WPF components.
     /// <para>
@@ -34,8 +33,7 @@ namespace SharpPad.Interactivity.Contexts
     /// allowing listeners to do anything they want (e.g. re-query command executability based on available context)
     /// </para>
     /// </summary>
-    public static class DataManager
-    {
+    public static class DataManager {
         private static readonly Action<Visual> AddVisualAncestorChangedHandler;
 
         private static readonly Action<Visual> RemoveVisualAncestorChangedHandler;
@@ -86,20 +84,17 @@ namespace SharpPad.Interactivity.Contexts
                 typeof(RoutedEventHandler),
                 typeof(DataManager));
 
-        static DataManager()
-        {
+        static DataManager() {
             VisualAncestorChangedEventInterface.CreateInterface(OnAncestorChanged, out AddVisualAncestorChangedHandler, out RemoveVisualAncestorChangedHandler);
         }
 
-        public static void AddInheritedContextInvalidatedHandler(DependencyObject target, RoutedEventHandler handler)
-        {
+        public static void AddInheritedContextInvalidatedHandler(DependencyObject target, RoutedEventHandler handler) {
             if (!(target is IInputElement input))
                 throw new ArgumentException("Target is not an instance of " + nameof(IInputElement));
             input.AddHandler(InheritedContextInvalidatedEvent, handler);
         }
 
-        public static void RemoveInheritedContextInvalidatedHandler(DependencyObject target, RoutedEventHandler handler)
-        {
+        public static void RemoveInheritedContextInvalidatedHandler(DependencyObject target, RoutedEventHandler handler) {
             if (!(target is IInputElement input))
                 throw new ArgumentException("Target is not an instance of " + nameof(IInputElement));
             input.RemoveHandler(InheritedContextInvalidatedEvent, handler);
@@ -114,8 +109,7 @@ namespace SharpPad.Interactivity.Contexts
         /// </para>
         /// </summary>
         /// <param name="element">The element to invalidate, along with its visual tree</param>
-        public static void InvalidateInheritedContext(DependencyObject element)
-        {
+        public static void InvalidateInheritedContext(DependencyObject element) {
             // WalkVisualTreeForParentContextInvalidated(element, new RoutedEventArgs(InheritedContextInvalidatedEvent, element));
 
             // This takes something like 2ms when element is EditorWindow and the default project is loaded.
@@ -128,16 +122,14 @@ namespace SharpPad.Interactivity.Contexts
         /// <summary>
         /// Clears the <see cref="ContextDataProperty"/> value for the specific dependency object
         /// </summary>
-        public static void ClearContextData(DependencyObject element)
-        {
+        public static void ClearContextData(DependencyObject element) {
             element.ClearValue(ContextDataProperty);
         }
 
         /// <summary>
         /// Sets or replaces the context data for the specific dependency object
         /// </summary>
-        public static void SetContextData(DependencyObject element, IContextData value)
-        {
+        public static void SetContextData(DependencyObject element, IContextData value) {
             element.SetValue(ContextDataProperty, value);
         }
 
@@ -146,14 +138,11 @@ namespace SharpPad.Interactivity.Contexts
         /// </summary>
         /// <param name="element"></param>
         /// <param name="value"></param>
-        public static void MergeContextData(DependencyObject element, IContextData value)
-        {
-            if (element.GetValue(ContextDataProperty) is ContextData currData)
-            {
+        public static void MergeContextData(DependencyObject element, IContextData value) {
+            if (element.GetValue(ContextDataProperty) is ContextData currData) {
                 element.SetValue(ContextDataProperty, ContextData.Merge(currData, value as ContextData ?? new ContextData(value)));
             }
-            else
-            {
+            else {
                 SetContextData(element, value);
             }
         }
@@ -161,8 +150,7 @@ namespace SharpPad.Interactivity.Contexts
         /// <summary>
         /// Gets the context data for the specific dependency object
         /// </summary>
-        public static IContextData GetContextData(DependencyObject element)
-        {
+        public static IContextData GetContextData(DependencyObject element) {
             return (IContextData) element.GetValue(ContextDataProperty);
         }
 
@@ -179,11 +167,9 @@ namespace SharpPad.Interactivity.Contexts
         /// </summary>
         /// <param name="component">The target object</param>
         /// <returns>The fully inherited and merged context data. Will always be non-null</returns>
-        public static IContextData GetFullContextData(DependencyObject component)
-        {
+        public static IContextData GetFullContextData(DependencyObject component) {
             IContextData value = (IContextData) component.GetValue(InheritedContextDataProperty);
-            if (value == null)
-            {
+            if (value == null) {
                 component.SetValue(InheritedContextDataPropertyKey, value = EvaluateContextDataRaw(component));
             }
 
@@ -201,8 +187,7 @@ namespace SharpPad.Interactivity.Contexts
         /// </summary>
         /// <param name="obj">The element to get the full context of</param>
         /// <returns>The context</returns>
-        public static IContextData EvaluateContextDataRaw(DependencyObject obj)
-        {
+        public static IContextData EvaluateContextDataRaw(DependencyObject obj) {
             ContextData ctx = new ContextData();
 
             // I thought about using TreeLevel, then thought reflection was too slow, so then I profiled the code...
@@ -217,18 +202,15 @@ namespace SharpPad.Interactivity.Contexts
 
             // Accumulate visual tree bottom-to-top. Visual tree will contain the reverse tree
             List<DependencyObject> visualTree = new List<DependencyObject>(32);
-            for (DependencyObject dp = obj; dp != null; dp = VisualTreeUtils.GetParent(dp))
-            {
+            for (DependencyObject dp = obj; dp != null; dp = VisualTreeUtils.GetParent(dp)) {
                 visualTree.Add(dp);
             }
 
             // Scan top-down in order to allow deeper objects' entries to override higher up entries
-            for (int i = visualTree.Count - 1; i >= 0; i--)
-            {
+            for (int i = visualTree.Count - 1; i >= 0; i--) {
                 DependencyObject dp = visualTree[i];
                 object localEntry = dp.ReadLocalValue(ContextDataProperty);
-                if (localEntry != DependencyProperty.UnsetValue && localEntry is IContextData dpCtx)
-                {
+                if (localEntry != DependencyProperty.UnsetValue && localEntry is IContextData dpCtx) {
                     ctx.Merge(dpCtx);
                 }
             }
@@ -236,31 +218,25 @@ namespace SharpPad.Interactivity.Contexts
             return ctx;
         }
 
-        private static void OnAncestorChanged(object sender, DependencyObject element, DependencyObject oldParent)
-        {
+        private static void OnAncestorChanged(object sender, DependencyObject element, DependencyObject oldParent) {
             if (ReferenceEquals(sender, element))
                 InvalidateInheritedContext(element);
         }
 
-        private static void OnDataContextChanged(DependencyObject element, DependencyPropertyChangedEventArgs e)
-        {
-            if (e.NewValue != null)
-            {
-                if (e.OldValue == null && element is Visual visual)
-                {
+        private static void OnDataContextChanged(DependencyObject element, DependencyPropertyChangedEventArgs e) {
+            if (e.NewValue != null) {
+                if (e.OldValue == null && element is Visual visual) {
                     AddVisualAncestorChangedHandler(visual);
                 }
             }
-            else if (e.OldValue != null && element is Visual visual)
-            {
+            else if (e.OldValue != null && element is Visual visual) {
                 RemoveVisualAncestorChangedHandler(visual);
             }
 
             InvalidateInheritedContext(element);
         }
 
-        private static void InvalidateInheritedContextAndChildren(DependencyObject obj)
-        {
+        private static void InvalidateInheritedContextAndChildren(DependencyObject obj) {
             // SetValue is around 2x faster than ClearValue, and either way, ClearValue isn't
             // very useful here since WPF inheritance isn't used, and the value will most
             // likely be re-calculated very near in the future possibly via dispatcher on background priority
@@ -270,11 +246,9 @@ namespace SharpPad.Interactivity.Contexts
         }
 
         // Minimize stack usage as much as possible by using 'as' cast
-        private static void RaiseContextInvalidatedForVisualTree(DependencyObject target, RoutedEventArgs args)
-        {
+        private static void RaiseContextInvalidatedForVisualTree(DependencyObject target, RoutedEventArgs args) {
             (target as IInputElement)?.RaiseEvent(args);
-            for (int i = 0, count = VisualTreeHelper.GetChildrenCount(target); i < count; i++)
-            {
+            for (int i = 0, count = VisualTreeHelper.GetChildrenCount(target); i < count; i++) {
                 RaiseContextInvalidatedForVisualTree(VisualTreeHelper.GetChild(target, i), args);
             }
         }

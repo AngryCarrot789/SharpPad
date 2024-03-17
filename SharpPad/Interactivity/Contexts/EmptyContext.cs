@@ -20,13 +20,11 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace SharpPad.Interactivity.Contexts
-{
+namespace SharpPad.Interactivity.Contexts {
     /// <summary>
     /// An implementation of <see cref="IContextData"/> that is completely empty
     /// </summary>
-    public sealed class EmptyContext : IContextData
-    {
+    public sealed class EmptyContext : IContextData {
         public static readonly IReadOnlyDictionary<string, object> EmptyDictionary = new ReadOnlyDictionary<string, object>(new Dictionary<string, object>());
 
         /// <summary>
@@ -38,8 +36,7 @@ namespace SharpPad.Interactivity.Contexts
 
         public EmptyContext() { }
 
-        bool IContextData.TryGetContext(string key, out object value)
-        {
+        bool IContextData.TryGetContext(string key, out object value) {
             value = default;
             return false;
         }

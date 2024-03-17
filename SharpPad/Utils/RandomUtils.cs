@@ -19,23 +19,19 @@
 
 using System;
 
-namespace SharpPad.Utils
-{
-    public static class RandomUtils
-    {
+namespace SharpPad.Utils {
+    public static class RandomUtils {
         private static readonly Random RANDOM = new Random();
         private static readonly Action<char[], int, int> RandomLettersFunc = RandomLetters;
         private static readonly Action<char[], int, int> RandomLettersAndNumbersFunc = RandomLettersAndNumbers;
 
-        public static string RandomLetters(int count)
-        {
+        public static string RandomLetters(int count) {
             char[] chars = new char[count];
             RandomLetters(RANDOM, chars, 0, count);
             return new string(chars);
         }
 
-        public static string RandomLettersAndNumbers(int count)
-        {
+        public static string RandomLettersAndNumbers(int count) {
             char[] chars = new char[count];
             RandomLettersAndNumbers(RANDOM, chars, 0, count);
             return new string(chars);
@@ -47,18 +43,14 @@ namespace SharpPad.Utils
 
         public static void RandomLetters(Random random, char[] chars) => RandomLetters(random, chars, 0, chars.Length);
 
-        public static void RandomLetters(Random random, char[] chars, int offset, int count)
-        {
-            for (int i = 0; i < count; i++)
-            {
+        public static void RandomLetters(Random random, char[] chars, int offset, int count) {
+            for (int i = 0; i < count; i++) {
                 chars[offset + i] = (char) random.Next('a', 'z' + 1);
             }
         }
 
-        public static unsafe void RandomLetters(Random random, char* ptr, int offset, int count)
-        {
-            for (int i = 0; i < count; i++)
-            {
+        public static unsafe void RandomLetters(Random random, char* ptr, int offset, int count) {
+            for (int i = 0; i < count; i++) {
                 ptr[offset + i] = (char) random.Next('a', 'z' + 1);
             }
         }
@@ -69,10 +61,8 @@ namespace SharpPad.Utils
 
         public static void RandomLettersAndNumbers(Random random, char[] chars) => RandomLettersAndNumbers(random, chars, 0, chars.Length);
 
-        public static void RandomLettersAndNumbers(Random random, char[] chars, int offset, int count)
-        {
-            for (int i = 0; i < count; i++)
-            {
+        public static void RandomLettersAndNumbers(Random random, char[] chars, int offset, int count) {
+            for (int i = 0; i < count; i++) {
                 int rnd = random.Next(0, 36);
                 chars[offset + i] = (char) (rnd > 25 ? '0' + (rnd - 26) : 'a' + rnd);
             }
@@ -84,8 +74,7 @@ namespace SharpPad.Utils
         /// <param name="count">The number of chars to generate</param>
         /// <param name="canAccept">A predicate to determine whether the string can be accepted</param>
         /// <returns>The accepted string</returns>
-        public static string RandomLettersWhere(int count, Predicate<string> canAccept)
-        {
+        public static string RandomLettersWhere(int count, Predicate<string> canAccept) {
             return RandomLettersWhere(count, canAccept, RandomLettersFunc);
         }
 
@@ -95,27 +84,22 @@ namespace SharpPad.Utils
         /// <param name="count">The number of chars to generate</param>
         /// <param name="canAccept">A predicate to determine whether the string can be accepted</param>
         /// <returns>The accepted string</returns>
-        public static string RandomPrefixedLettersWhere(string prefix, int count, Predicate<string> canAccept)
-        {
+        public static string RandomPrefixedLettersWhere(string prefix, int count, Predicate<string> canAccept) {
             return RandomPrefixedLettersWhere(prefix, count, canAccept, RandomLettersFunc);
         }
 
-        public static string RandomPrefixedLettersAndNumbersWhere(string prefix, int count, Predicate<string> canAccept)
-        {
+        public static string RandomPrefixedLettersAndNumbersWhere(string prefix, int count, Predicate<string> canAccept) {
             return RandomPrefixedLettersWhere(prefix, count, canAccept, RandomLettersAndNumbersFunc);
         }
 
-        public static string RandomLettersAndNumbersWhere(int count, Predicate<string> canAccept)
-        {
+        public static string RandomLettersAndNumbersWhere(int count, Predicate<string> canAccept) {
             return RandomLettersWhere(count, canAccept, RandomLettersAndNumbersFunc);
         }
 
-        private static string RandomLettersWhere(int count, Predicate<string> canAccept, Action<char[], int, int> random)
-        {
+        private static string RandomLettersWhere(int count, Predicate<string> canAccept, Action<char[], int, int> random) {
             string str;
             char[] chars = new char[count];
-            do
-            {
+            do {
                 random(chars, 0, count);
                 str = new string(chars);
             } while (!canAccept(str));
@@ -123,14 +107,12 @@ namespace SharpPad.Utils
             return str;
         }
 
-        private static string RandomPrefixedLettersWhere(string prefix, int count, Predicate<string> canAccept, Action<char[], int, int> random)
-        {
+        private static string RandomPrefixedLettersWhere(string prefix, int count, Predicate<string> canAccept, Action<char[], int, int> random) {
             string str;
             int len = prefix.Length;
             char[] chars = new char[len + count];
             prefix.CopyTo(0, chars, 0, len);
-            do
-            {
+            do {
                 random(chars, len, count);
                 str = new string(chars);
             } while (!canAccept(str));

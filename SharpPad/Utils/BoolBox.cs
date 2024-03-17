@@ -19,10 +19,8 @@
 
 using System.Runtime.CompilerServices;
 
-namespace SharpPad.Utils
-{
-    public static class BoolBox
-    {
+namespace SharpPad.Utils {
+    public static class BoolBox {
         public static readonly object True = true;
         public static readonly object False = false;
         public static readonly object NullableTrue = (bool?) true;

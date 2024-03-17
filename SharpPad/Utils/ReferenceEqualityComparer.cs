@@ -19,14 +19,11 @@
 
 using System.Collections.Generic;
 
-namespace SharpPad.Utils
-{
-    public class ReferenceEqualityComparer<T> : IEqualityComparer<T> where T : class
-    {
+namespace SharpPad.Utils {
+    public class ReferenceEqualityComparer<T> : IEqualityComparer<T> where T : class {
         private static ReferenceEqualityComparer<T> instance;
 
-        public static ReferenceEqualityComparer<T> Default
-        {
+        public static ReferenceEqualityComparer<T> Default {
             get => instance ?? (instance = new ReferenceEqualityComparer<T>());
         }
 

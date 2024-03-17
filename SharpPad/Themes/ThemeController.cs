@@ -21,17 +21,13 @@ using System;
 using System.Windows;
 using System.Windows.Media;
 
-namespace SharpPad.Themes
-{
-    public class ThemeController
-    {
+namespace SharpPad.Themes {
+    public class ThemeController {
         public static ThemeController Instance { get; } = new ThemeController();
 
-        public static void SetTheme(ThemeType theme)
-        {
+        public static void SetTheme(ThemeType theme) {
             string themeName = theme.GetName();
-            if (string.IsNullOrEmpty(themeName))
-            {
+            if (string.IsNullOrEmpty(themeName)) {
                 return;
             }
 
@@ -42,8 +38,7 @@ namespace SharpPad.Themes
             RefreshControlsDictionary();
         }
 
-        public static void RefreshControlsDictionary()
-        {
+        public static void RefreshControlsDictionary() {
             ResourceDictionary resources = Application.Current.Resources;
             ResourceDictionary resource = resources.MergedDictionaries[2];
             resources.MergedDictionaries.RemoveAt(2);
@@ -55,20 +50,17 @@ namespace SharpPad.Themes
         public static SolidColorBrush GetBrush(string name) => GetResource(name) is SolidColorBrush brush ? brush : new SolidColorBrush(Colors.White);
         public static ThemeType CurrentTheme { get; set; }
 
-        public static ResourceDictionary ThemeDictionary
-        {
+        public static ResourceDictionary ThemeDictionary {
             get => Application.Current.Resources.MergedDictionaries[0];
             set => Application.Current.Resources.MergedDictionaries[0] = value;
         }
 
-        public static ResourceDictionary ControlColours
-        {
+        public static ResourceDictionary ControlColours {
             get => Application.Current.Resources.MergedDictionaries[1];
             set => Application.Current.Resources.MergedDictionaries[1] = value;
         }
 
-        public static ResourceDictionary I18NText
-        {
+        public static ResourceDictionary I18NText {
             get => Application.Current.Resources.MergedDictionaries[3];
             set => Application.Current.Resources.MergedDictionaries[3] = value;
         }

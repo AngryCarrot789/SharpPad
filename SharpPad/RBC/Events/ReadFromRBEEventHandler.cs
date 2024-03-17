@@ -17,7 +17,6 @@
 // along with SharpPad. If not, see <https://www.gnu.org/licenses/>.
 //
 
-namespace SharpPad.RBC.Events
-{
+namespace SharpPad.RBC.Events {
     public delegate void ReadFromRBEEventHandler(object sender, RBEDictionary data);
 }

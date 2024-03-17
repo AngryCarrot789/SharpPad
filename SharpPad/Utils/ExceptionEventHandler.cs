@@ -19,8 +19,7 @@
 
 using System;
 
-namespace SharpPad.Utils
-{
+namespace SharpPad.Utils {
     /// <summary>
     /// An event raised when an exception is caught
     /// <param name="sender">The object that raised this event</param>
@@ -31,15 +30,13 @@ namespace SharpPad.Utils
     /// <summary>
     /// A class which stores event args for a <see cref="ExceptionEventHandler"/>
     /// </summary>
-    public class ExceptionEventArgs : EventArgs
-    {
+    public class ExceptionEventArgs : EventArgs {
         /// <summary>
         /// The exception that was caught. This will not be null
         /// </summary>
         public Exception Exception { get; }
 
-        public ExceptionEventArgs(Exception exception)
-        {
+        public ExceptionEventArgs(Exception exception) {
             this.Exception = exception ?? throw new ArgumentNullException(nameof(exception));
         }
     }

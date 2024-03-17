@@ -17,12 +17,9 @@
 // along with SharpPad. If not, see <https://www.gnu.org/licenses/>.
 // 
 
-namespace SharpPad.Utils
-{
-    public static class Periodic
-    {
-        public static long Add(long lhs, long rhs, long min, long max)
-        {
+namespace SharpPad.Utils {
+    public static class Periodic {
+        public static long Add(long lhs, long rhs, long min, long max) {
             long result = lhs + rhs;
             long range = max - min;
             while (result >= max)

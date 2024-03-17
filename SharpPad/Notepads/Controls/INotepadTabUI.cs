@@ -17,13 +17,16 @@
 // along with SharpPad. If not, see <https://www.gnu.org/licenses/>.
 //
 
-namespace SharpPad.Notepads.Controls
-{
+namespace SharpPad.Notepads.Controls {
     /// <summary>
     /// An interface for a UI component that represents a tab in a notepad panel
     /// </summary>
-    public interface INotepadTabUI
-    {
+    public interface INotepadTabUI {
+        /// <summary>
+        /// Gets or sets if the "find-in-file" panel is visible
+        /// </summary>
+        bool IsFindPanelOpen { get; set; }
+
         /// <summary>
         /// Brings this tab into the UI view so that the user can see it
         /// </summary>

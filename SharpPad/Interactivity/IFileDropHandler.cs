@@ -19,10 +19,8 @@
 
 using System.Threading.Tasks;
 
-namespace SharpPad.Interactivity
-{
-    public interface IFileDropNotifier
-    {
+namespace SharpPad.Interactivity {
+    public interface IFileDropNotifier {
         /// <summary>
         /// Ges the allow drop type(s) from the given dragged paths and input allowed drop types
         /// </summary>

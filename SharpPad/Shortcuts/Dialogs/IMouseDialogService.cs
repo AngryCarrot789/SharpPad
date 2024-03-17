@@ -19,10 +19,8 @@
 
 using SharpPad.Shortcuts.Inputs;
 
-namespace SharpPad.Shortcuts.Dialogs
-{
-    public interface IMouseDialogService
-    {
+namespace SharpPad.Shortcuts.Dialogs {
+    public interface IMouseDialogService {
         MouseStroke? ShowGetMouseStrokeDialog();
     }
 }

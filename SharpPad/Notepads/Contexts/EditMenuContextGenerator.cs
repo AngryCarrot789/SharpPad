@@ -21,14 +21,11 @@ using System.Collections.Generic;
 using SharpPad.AdvancedMenuService.ContextService;
 using SharpPad.Interactivity.Contexts;
 
-namespace SharpPad.Notepads.Contexts
-{
-    public class EditMenuContextGenerator : IContextGenerator
-    {
+namespace SharpPad.Notepads.Contexts {
+    public class EditMenuContextGenerator : IContextGenerator {
         public static EditMenuContextGenerator Instance { get; } = new EditMenuContextGenerator();
 
-        public void Generate(List<IContextEntry> list, IContextData context)
-        {
+        public void Generate(List<IContextEntry> list, IContextData context) {
             list.Add(new CommandContextEntry("UndoInEditor", "Undo"));
             list.Add(new CommandContextEntry("RedoInEditor", "Redo"));
             list.Add(SeparatorEntry.NewInstance);

@@ -19,13 +19,11 @@
 
 using System.Windows;
 
-namespace SharpPad.Controls
-{
+namespace SharpPad.Controls {
     /// <summary>
     /// An interface that represents a UI component that follows the connection-disconnection pattern
     /// </summary>
-    public interface IUIConnection<TParent, TModel> where TParent : DependencyObject where TModel : class
-    {
+    public interface IUIConnection<TParent, TModel> where TParent : DependencyObject where TModel : class {
         /// <summary>
         /// Gets the owner control for this object
         /// </summary>

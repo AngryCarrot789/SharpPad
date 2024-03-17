@@ -22,13 +22,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 
-namespace SharpPad
-{
+namespace SharpPad {
     /// <summary>
     /// Provides a way of queueing work on a thread, synchronously (blocking waiting for completion) or asynchronously (task representing the completion)
     /// </summary>
-    public interface IDispatcher
-    {
+    public interface IDispatcher {
         /// <summary>
         /// Whether or not the caller is on the application thread or not. When true, using any of the dispatcher functions is typically unnecessary
         /// </summary>
@@ -41,6 +39,11 @@ namespace SharpPad
         /// However, async invoke methods are allowed as they don't require pushing a dispatcher frame
         /// </summary>
         bool IsSuspended { get; }
+
+        /// <summary>
+        /// Gets the thread that owns this dispatcher
+        /// </summary>
+        Thread Thread { get; }
 
         /// <summary>
         /// Synchronously executes the given function on the UI thread. This will block the current thread until

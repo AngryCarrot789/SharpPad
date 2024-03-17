@@ -20,14 +20,10 @@
 using System;
 using SharpPad.Services.Messages;
 
-namespace SharpPad.Services.WPF.Messages
-{
-    public class WPFUserInputDialogService : IUserInputDialogService
-    {
-        public string ShowSingleInputDialog(string caption, string message, string defaultInput = null, Predicate<string> validate = null, bool allowEmptyString = false)
-        {
-            SingleInputDialog dialog = new SingleInputDialog()
-            {
+namespace SharpPad.Services.WPF.Messages {
+    public class WPFUserInputDialogService : IUserInputDialogService {
+        public string ShowSingleInputDialog(string caption, string message, string defaultInput = null, Predicate<string> validate = null, bool allowEmptyString = false) {
+            SingleInputDialog dialog = new SingleInputDialog() {
                 Title = caption ?? "Input value",
                 Message = message,
                 InputValue = defaultInput,

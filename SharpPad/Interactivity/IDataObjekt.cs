@@ -17,13 +17,11 @@
 // along with SharpPad. If not, see <https://www.gnu.org/licenses/>.
 //
 
-namespace SharpPad.Interactivity
-{
+namespace SharpPad.Interactivity {
     /// <summary>
     /// An interface for a native data object
     /// </summary>
-    public interface IDataObjekt
-    {
+    public interface IDataObjekt {
         object GetData(string format);
 
         object GetData(string format, bool autoConvert);

@@ -22,35 +22,29 @@ using System.Windows;
 using System.Windows.Controls.Primitives;
 using SharpPad.Interactivity.Contexts;
 
-namespace SharpPad.CommandSystem.Usages
-{
-    public class BasicButtonCommandUsage : CommandUsage
-    {
+namespace SharpPad.CommandSystem.Usages {
+    public class BasicButtonCommandUsage : CommandUsage {
         public BasicButtonCommandUsage(string commandId) : base(commandId) { }
 
-        protected override void OnConnected()
-        {
+        protected override void OnConnected() {
             base.OnConnected();
             if (!(this.Control is ButtonBase))
                 throw new InvalidOperationException("Cannot connect to non-button");
             ((ButtonBase) this.Control).Click += this.OnButtonClick;
         }
 
-        protected override void OnDisconnected()
-        {
+        protected override void OnDisconnected() {
             base.OnDisconnected();
             ((ButtonBase) this.Control).Click -= this.OnButtonClick;
         }
 
-        protected virtual void OnButtonClick(object sender, RoutedEventArgs e)
-        {
+        protected virtual void OnButtonClick(object sender, RoutedEventArgs e) {
             this.UpdateCanExecute();
             CommandManager.Instance.TryExecute(this.CommandId, () => DataManager.GetFullContextData(this.Control));
             this.UpdateCanExecute();
         }
 
-        protected override void OnUpdateForCanExecuteState(Executability state)
-        {
+        protected override void OnUpdateForCanExecuteState(Executability state) {
             ((ButtonBase) this.Control).IsEnabled = state == Executability.Valid;
         }
     }

@@ -19,10 +19,8 @@
 
 using SharpPad.Shortcuts.Inputs;
 
-namespace SharpPad.Shortcuts.Usage
-{
-    public interface IMouseShortcutUsage : IShortcutUsage
-    {
+namespace SharpPad.Shortcuts.Usage {
+    public interface IMouseShortcutUsage : IShortcutUsage {
         /// <summary>
         /// A reference to the shortcut that created this instance
         /// </summary>

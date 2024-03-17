@@ -53,6 +53,14 @@
                 <Shortcut Name="SelectLineShortcut" CommandId="SelectLineInEditor">
                     <KeyStroke Mods="CTRL+SHIFT" Key="A"/>
                 </Shortcut>
+                <Shortcut Name="ShowFindShortcut" CommandId="ShowFindPanel">
+                    <KeyStroke Mods="CTRL" Key="F"/>
+                </Shortcut>
+                <Group Name="FindPanel">
+                    <Shortcut Name="ToggleFindMatchCaseShortcut" CommandId="ToggleFindMatchCase">
+                        <KeyStroke Mods="ALT" Key="C"/>
+                    </Shortcut>
+                </Group>
             </Group>
 
             <Group Name="DocumentTab">

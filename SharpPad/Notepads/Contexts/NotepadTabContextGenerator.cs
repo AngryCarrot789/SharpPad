@@ -21,14 +21,11 @@ using System.Collections.Generic;
 using SharpPad.AdvancedMenuService.ContextService;
 using SharpPad.Interactivity.Contexts;
 
-namespace SharpPad.Notepads.Contexts
-{
-    public class NotepadTabContextGenerator : IContextGenerator
-    {
+namespace SharpPad.Notepads.Contexts {
+    public class NotepadTabContextGenerator : IContextGenerator {
         public static NotepadTabContextGenerator Instance { get; } = new NotepadTabContextGenerator();
 
-        public void Generate(List<IContextEntry> list, IContextData context)
-        {
+        public void Generate(List<IContextEntry> list, IContextData context) {
             if (!context.ContainsAll(DataKeys.DocumentKey, DataKeys.NotepadKey))
                 return;
 

@@ -21,8 +21,7 @@ using System;
 using System.Diagnostics;
 using SharpPad.Utils;
 
-namespace SharpPad.CommandSystem
-{
+namespace SharpPad.CommandSystem {
     /// <summary>
     /// A class that represents something that can be executed. Commands are given contextual
     /// information (see <see cref="CommandEventArgs.ContextData"/>) to do work.
@@ -36,8 +35,7 @@ namespace SharpPad.CommandSystem
     /// These commands can be executed through the <see cref="CommandManager.Execute(string,Command,SharpPad.Interactivity.Contexts.IContextData,bool)"/> function
     /// </para>
     /// </summary>
-    public abstract class Command
-    {
+    public abstract class Command {
         protected Command() { }
 
         // When focus changes, raise notification to update commands
@@ -64,34 +62,26 @@ namespace SharpPad.CommandSystem
         /// <param name="e">The command event args, containing info about the current context</param>
         protected abstract void Execute(CommandEventArgs e);
 
-        internal static void InternalExecute(string cmdId, Command command, CommandEventArgs e)
-        {
+        internal static void InternalExecute(string cmdId, Command command, CommandEventArgs e) {
             IoC.Dispatcher.VerifyAccess();
-            if (e.IsUserInitiated)
-            {
-                try
-                {
+            if (e.IsUserInitiated) {
+                try {
                     command.Execute(e);
                 }
-                catch (Exception ex) when (!Debugger.IsAttached)
-                {
+                catch (Exception ex) when (!Debugger.IsAttached) {
                     IoC.MessageService.ShowMessage("Command execution exception", $"An exception occurred while executing '{CmdToString(cmdId, command)}'", ex.GetToString());
                 }
             }
-            else
-            {
+            else {
                 command.Execute(e);
             }
         }
 
-        private static string CmdToString(string cmdId, Command cmd)
-        {
-            if (cmdId != null && !string.IsNullOrWhiteSpace(cmdId))
-            {
+        private static string CmdToString(string cmdId, Command cmd) {
+            if (cmdId != null && !string.IsNullOrWhiteSpace(cmdId)) {
                 return $"{cmdId} ({cmd.GetType()})";
             }
-            else
-            {
+            else {
                 return cmd.GetType().ToString();
             }
         }

@@ -21,10 +21,8 @@ using SharpPad.Services.Files;
 using SharpPad.Services.Messages;
 using SharpPad.Tasks;
 
-namespace SharpPad
-{
-    public static class IoC
-    {
+namespace SharpPad {
+    public static class IoC {
         /// <summary>
         /// Gets the application's message dialog service, for showing messages to the user
         /// </summary>

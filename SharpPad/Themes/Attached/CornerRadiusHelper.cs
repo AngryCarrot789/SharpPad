@@ -19,10 +19,8 @@
 
 using System.Windows;
 
-namespace SharpPad.Themes.Attached
-{
-    public static class CornerRadiusHelper
-    {
+namespace SharpPad.Themes.Attached {
+    public static class CornerRadiusHelper {
         public static readonly DependencyProperty ValueProperty = DependencyProperty.RegisterAttached("Value", typeof(CornerRadius), typeof(CornerRadiusHelper), new PropertyMetadata(new CornerRadius(0)));
 
         public static void SetValue(DependencyObject element, CornerRadius value) => element.SetValue(ValueProperty, value);
