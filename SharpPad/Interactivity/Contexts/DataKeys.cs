@@ -18,7 +18,6 @@
 //
 
 using System.Windows;
-using ICSharpCode.AvalonEdit;
 using SharpPad.Notepads;
 using SharpPad.Notepads.Controls;
 

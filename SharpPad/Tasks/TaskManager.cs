@@ -20,12 +20,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
-using System.Runtime.CompilerServices;
-using System.Runtime.Remoting.Messaging;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Threading;
 using SharpPad.Logger;
 using SharpPad.Utils;
 

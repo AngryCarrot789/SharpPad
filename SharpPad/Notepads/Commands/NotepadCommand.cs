@@ -20,8 +20,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Threading;
-using System.Windows.Forms;
 using System.Windows.Threading;
 using ICSharpCode.AvalonEdit.Document;
 using SharpPad.CommandSystem;

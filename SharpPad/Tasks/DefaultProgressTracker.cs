@@ -20,7 +20,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading;
 using System.Windows.Threading;
 using SharpPad.Utils;
 using SharpPad.Utils.RDA;

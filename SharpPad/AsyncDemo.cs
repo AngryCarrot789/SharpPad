@@ -23,7 +23,6 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Documents;
 
 namespace SharpPad {
     public class AsyncDemo {
