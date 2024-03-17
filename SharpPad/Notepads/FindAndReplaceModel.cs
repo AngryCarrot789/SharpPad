@@ -30,7 +30,7 @@ namespace SharpPad.Notepads {
     public delegate void FindAndReplaceEventHandler(FindAndReplaceModel model);
 
     public class FindAndReplaceModel {
-        private readonly RateLimitedDispatchAction queryChangedRlda;
+        private readonly RateLimitedDispatchAction invalidateSearchStateRlda;
         private readonly List<TextRange> results;
 
         private volatile string searchText;
@@ -151,7 +151,7 @@ namespace SharpPad.Notepads {
         public FindAndReplaceModel(NotepadDocument document) {
             this.currentResultIndex = -1;
             this.Document = document ?? throw new ArgumentNullException(nameof(document));
-            this.queryChangedRlda = RateLimitedDispatchAction.ForDispatcherAsync(this.OnSearchQueryChanged_AMT, TimeSpan.FromSeconds(0.25));
+            this.invalidateSearchStateRlda = RateLimitedDispatchAction.ForDispatcherAsync(this.OnSearchStateInvalidated, TimeSpan.FromSeconds(0.1));
             this.results = new List<TextRange>();
             this.criticalLock = new object();
             document.Document.Changed += this.OnDocumentModified;
@@ -228,10 +228,10 @@ namespace SharpPad.Notepads {
                 return;
             }
 
-            this.queryChangedRlda.InvokeAsync();
+            this.invalidateSearchStateRlda.InvokeAsync();
         }
 
-        private async Task OnSearchQueryChanged_AMT() {
+        private async Task OnSearchStateInvalidated() {
             this.ClearResults();
             if (string.IsNullOrEmpty(this.searchText)) {
                 return;
@@ -248,7 +248,7 @@ namespace SharpPad.Notepads {
 
                 lock (this.criticalLock) {
                     this.isActiveSearchInvalid = false;
-                    this.queryChangedRlda.ClearCriticalState();
+                    this.invalidateSearchStateRlda.ClearCriticalState();
                 }
 
                 // Keep searching in a loop. SearchImpl returns false when the document is modified externally,
@@ -274,7 +274,7 @@ namespace SharpPad.Notepads {
                         // But at a guess, this is maybe a sub-millisecond time window where the user
                         // would have to modify the document or search query riiight as the search is
                         // about to finish, and I'm fine with that being the case, it won't crash :)
-                        this.queryChangedRlda.ClearCriticalState();
+                        this.invalidateSearchStateRlda.ClearCriticalState();
                     }
                 }
             }, new DefaultProgressTracker(System.Windows.Threading.DispatcherPriority.Background));

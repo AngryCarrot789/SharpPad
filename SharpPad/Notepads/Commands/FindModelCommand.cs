@@ -48,6 +48,12 @@ namespace SharpPad.Notepads.Commands {
         protected override void Execute(CommandEventArgs e) {
             if (DataKeys.NotepadEditorKey.TryGetContext(e.ContextData, out NotepadEditor editor)) {
                 editor.IsFindPanelOpen = true;
+
+                string selection = editor.TextEditor?.SelectedText;
+                if (!string.IsNullOrEmpty(selection)) {
+                    editor.FindModel.SearchText = selection;
+                }
+
                 if (DataKeys.UINotepadEditorKey.TryGetContext(e.ContextData, out INotepadEditorUI ui)) {
                     ui.FocusFindSearchBox();
                 }

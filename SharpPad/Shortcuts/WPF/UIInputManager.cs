@@ -221,11 +221,13 @@ namespace SharpPad.Shortcuts.WPF {
                 return false;
             }
 
-            if (ShortcutUtils.IsModifierKey(key) && e.IsRepeat)
+            if (ShortcutUtils.IsModifierKey(key) && e.IsRepeat) {
                 return false;
+            }
 
-            if (!(e.InputSource.RootVisual is Window window))
+            if (!(e.InputSource.RootVisual is Window window)) {
                 return false;
+            }
 
             WPFShortcutInputManager processor = (WPFShortcutInputManager) window.GetValue(ShortcutProcessorProperty);
             if (processor == null) {
@@ -269,12 +271,14 @@ namespace SharpPad.Shortcuts.WPF {
         }
 
         private static bool OnApplicationMouseButtonEvent(MouseButtonEventArgs e) {
-            if (!(e.Device is MouseDevice mouse) || !(mouse.Target is DependencyObject target))
+            if (!(e.Device is MouseDevice mouse) || !(mouse.Target is DependencyObject target)) {
                 return false;
+            }
 
             // not even sure why I added this line...
-            if (!(Window.GetWindow(target) is Window window) || target == window)
+            if (!(Window.GetWindow(target) is Window window) || target == window) {
                 return false;
+            }
 
             bool isPreview, isDown;
             if (e.RoutedEvent == Mouse.PreviewMouseDownEvent) {
@@ -299,8 +303,9 @@ namespace SharpPad.Shortcuts.WPF {
                 ProcessFocusGroupChange(target);
             }
 
-            if (!WPFShortcutInputManager.CanProcessEventType(target, isPreview) || !WPFShortcutInputManager.CanProcessMouseEvent(target, e))
+            if (!WPFShortcutInputManager.CanProcessEventType(target, isPreview) || !WPFShortcutInputManager.CanProcessMouseEvent(target, e)) {
                 return false;
+            }
 
             WPFShortcutInputManager processor = (WPFShortcutInputManager) window.GetValue(ShortcutProcessorProperty);
             if (processor == null) {
@@ -318,12 +323,14 @@ namespace SharpPad.Shortcuts.WPF {
         }
 
         private static bool OnApplicationMouseWheelEvent(MouseWheelEventArgs e) {
-            if (e.Delta == 0 || !(e.Device is MouseDevice mouse) || !(mouse.Target is DependencyObject target))
+            if (e.Delta == 0 || !(e.Device is MouseDevice mouse) || !(mouse.Target is DependencyObject target)) {
                 return false;
+            }
 
             // not even sure why I added this line...
-            if (!(Window.GetWindow(target) is Window window) || target == window)
+            if (!(Window.GetWindow(target) is Window window) || target == window) {
                 return false;
+            }
 
             bool isPreview;
             if (e.RoutedEvent == Mouse.PreviewMouseWheelEvent) {

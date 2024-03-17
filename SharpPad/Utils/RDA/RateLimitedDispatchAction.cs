@@ -29,10 +29,10 @@ namespace SharpPad.Utils.RDA {
     /// that has to pass before the callback is scheduled, ensuring the callback is not executed too quickly
     /// </summary>
     public class RateLimitedDispatchAction : IDispatchAction {
-        private const int F_CONTINUE = 1;          // Keeps the task running
-        private const int F_RUNNING = 2;           // Whether or not the task is running
-        private const int F_EXECUTING = 4;         // Whether or not we're executing the callback
-        private const int F_CONTINUE_CRITICAL = 8; // InvokeAsync was called while executing
+        private const int S_CONTINUE = 1;          // Keeps the task running
+        private const int S_RUNNING = 2;           // Whether or not the task is running
+        private const int S_EXECUTING = 4;         // Whether or not we're executing the callback
+        private const int S_CONTINUE_CRITICAL = 8; // InvokeAsync was called while executing
 
         private readonly Func<Task> callback; // The non-null user callback method to run code
         private readonly object stateLock;    // Used to guard state modifications
@@ -97,18 +97,18 @@ namespace SharpPad.Utils.RDA {
         public void InvokeAsync() {
             lock (this.stateLock) {
                 int myState = this.state;
-                if ((myState & F_EXECUTING) == 0) {
+                if ((myState & S_EXECUTING) == 0) {
                     // We are not executing, so append CONTINUE to let the task continue running
-                    myState |= F_CONTINUE;
+                    myState |= S_CONTINUE;
                 }
                 else {
                     // The callback is currently being processed, so the critical condition is set
-                    myState |= F_CONTINUE_CRITICAL;
+                    myState |= S_CONTINUE_CRITICAL;
                 }
 
-                if ((myState & F_RUNNING) == 0) {
+                if ((myState & S_RUNNING) == 0) {
                     // We are not running, so start a new task and append RUNNING
-                    this.state = myState | F_RUNNING;
+                    this.state = myState | S_RUNNING;
                     Task.Run(this.TaskMain);
                 }
                 else {
@@ -132,14 +132,14 @@ namespace SharpPad.Utils.RDA {
 
                 int myState;
                 lock (this.stateLock) {
-                    if (((myState = this.state) & F_CONTINUE) == 0) {
-                        this.state = myState & ~F_RUNNING;
+                    if (((myState = this.state) & S_CONTINUE) == 0) {
+                        this.state = myState & ~S_RUNNING;
                         Interlocked.Exchange(ref this.lastExecutionTime, lastExecTime);
                         return;
                     }
                     else {
                         // Not sure if CONTINUE needs to be removed here... I don't think it does
-                        this.state = (myState & ~F_CONTINUE) | F_EXECUTING;
+                        this.state = (myState & ~S_CONTINUE) | S_EXECUTING;
                     }
                 }
 
@@ -161,20 +161,20 @@ namespace SharpPad.Utils.RDA {
                     // update (that occurred a few microseconds~ after the task completed)
                     // So hopefully, the usage of EXECUTING and CONTINUE_CRITICAL will help against that
                     lock (this.stateLock) {
-                        if (((myState = this.state) & F_CONTINUE_CRITICAL) != 0) {
+                        if (((myState = this.state) & S_CONTINUE_CRITICAL) != 0) {
                             // Critical condition is active, so: Remove CRITICAL and append CONTINUE
-                            myState = (myState & ~F_CONTINUE_CRITICAL) | F_CONTINUE;
+                            myState = (myState & ~S_CONTINUE_CRITICAL) | S_CONTINUE;
                         }
                         else {
                             // Critical condition not met, so just remove continue,
                             // allowing the task to possibly exit normally
-                            myState &= ~F_CONTINUE;
+                            myState &= ~S_CONTINUE;
                         }
 
                         // Remove EXECUTING flag, meaning the critical condition cannot be met,
                         // which is good since we just processed it.
                         // RUNNING will still be present
-                        this.state = myState & ~F_EXECUTING;
+                        this.state = myState & ~S_EXECUTING;
                     }
                 }
 
@@ -197,9 +197,9 @@ namespace SharpPad.Utils.RDA {
         public void ClearCriticalState() {
             lock (this.stateLock) {
                 int myState = this.state;
-                if ((myState & F_CONTINUE_CRITICAL) != 0) {
+                if ((myState & S_CONTINUE_CRITICAL) != 0) {
                     // Critical condition is active, so remove it, as if it was never activated
-                    myState &= ~F_CONTINUE_CRITICAL;
+                    myState &= ~S_CONTINUE_CRITICAL;
                 }
 
                 this.state = myState;

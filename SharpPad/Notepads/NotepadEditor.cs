@@ -17,8 +17,6 @@
 // along with SharpPad. If not, see <https://www.gnu.org/licenses/>.
 //
 
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using ICSharpCode.AvalonEdit;
 
 namespace SharpPad.Notepads {
@@ -91,6 +89,13 @@ namespace SharpPad.Notepads {
                     return;
                 this.isFindPanelOpen = value;
                 this.IsFindPanelOpenChanged?.Invoke(this);
+
+                if (value) {
+                    this.findModel?.UpdateSearch();
+                }
+                else {
+                    this.findModel?.ClearResults();
+                }
             }
         }
 

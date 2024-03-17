@@ -23,16 +23,16 @@ using System.Windows.Threading;
 
 namespace SharpPad.Utils.RDA {
     public abstract class RapidDispatchActionExBase {
-        private const int STATE_NOT_SCHEDULED = 0;
-        private const int STATE_RUNNING = 1;
-        private const int STATE_SCHEDULED = 2;
-        private const int STATE_RESCHEDULED = 3;
+        private const int S_NOT_SCHEDULED = 0;
+        private const int S_RUNNING = 1;
+        private const int S_SCHEDULED = 2;
+        private const int S_RESCHEDULED = 3;
 
         // allows debugger breakpoint to match this. Field, so the debugger knows
         // there are no possible side effects (hopefully??? Am I thinking too hard?)
         private readonly string debugId;
 
-        private volatile int state; // The current state
+        private volatile int myState; // The current state
         private readonly object stateLock; // A guard when reading/writing the state
 
         private readonly Action doExecuteCallback;
@@ -65,9 +65,9 @@ namespace SharpPad.Utils.RDA {
         private async void DoExecuteAsync() {
             Exception exception = null;
 
-            int myState;
+            int state;
             lock (this.stateLock)
-                this.state = STATE_RUNNING;
+                this.myState = S_RUNNING;
 
             try {
                 await this.ExecuteCore();
@@ -77,21 +77,21 @@ namespace SharpPad.Utils.RDA {
             }
             finally {
                 lock (this.stateLock) {
-                    switch (myState = this.state) {
+                    switch (state = this.myState) {
                         // standard case; we were running, now we are not
-                        case STATE_RUNNING:
-                            this.state = STATE_NOT_SCHEDULED;
+                        case S_RUNNING:
+                            this.myState = S_NOT_SCHEDULED;
                             break;
 
                         // InvokeAsync called while executing. We set the state to scheduled, then outside
                         // the finally block we do another comparison to actually do the scheduling
-                        case STATE_RESCHEDULED:
-                            this.state = STATE_SCHEDULED;
+                        case S_RESCHEDULED:
+                            this.myState = S_SCHEDULED;
                             break;
 
                         // this not-so-good oopsie can't really be handled easily, so it must just be ignored
                         default:
-                            this.state = STATE_NOT_SCHEDULED;
+                            this.myState = S_NOT_SCHEDULED;
                             break;
                     }
                 }
@@ -103,7 +103,7 @@ namespace SharpPad.Utils.RDA {
             // Schedule outside of the lock, because BeginInvoke is slightly expensive,
             // and we don't want to keep the lock acquired for a long time (clogging up
             // and thread that calls InvokeAsync)
-            if (myState == STATE_RESCHEDULED)
+            if (state == S_RESCHEDULED)
                 this.ScheduleExecute();
         }
 
@@ -111,18 +111,18 @@ namespace SharpPad.Utils.RDA {
 
         protected bool BeginInvoke(Action actionInLock = null) {
             lock (this.stateLock) {
-                switch (this.state) {
+                switch (this.myState) {
                     // Default state of the object: not scheduled
-                    case STATE_NOT_SCHEDULED:
-                        this.state = STATE_SCHEDULED;
+                    case S_NOT_SCHEDULED:
+                        this.myState = S_SCHEDULED;
                         break;
 
                     // The actual action passed to the constructor is currently in the middle of running,
                     // so we mark ourself as re-scheduled so that the finally block dispatches our action.
                     // There is a possibility that it HAS finished and the locker is being
                     // acquired, meaning we end up re-scheduling, which is fine though
-                    case STATE_RUNNING:
-                        this.state = STATE_RESCHEDULED;
+                    case S_RUNNING:
+                        this.myState = S_RESCHEDULED;
                         return true;
                     default: return false;
                 }
@@ -136,7 +136,23 @@ namespace SharpPad.Utils.RDA {
 
         protected abstract Task ExecuteCore();
 
-        // TODO: method to clear critical/rescheduled state, similar to RLDA
+        /// <summary>
+        /// Clears the rescheduled state.
+        /// <para>
+        /// This state is used to re-schedule the callback when the invoke method is called during execution of the callback.
+        /// </para>
+        /// <para>
+        /// By clearing the state, it means the callback won't be rescheduled. This is useful if you have code to handle
+        /// similar 're-scheduling' behaviour manually
+        /// </para>
+        /// </summary>
+        public void ClearRescheduledState() {
+            lock (this.stateLock) {
+                if (this.myState == S_RESCHEDULED) {
+                    this.myState = S_RUNNING;
+                }
+            }
+        }
     }
 
     /// <summary>
