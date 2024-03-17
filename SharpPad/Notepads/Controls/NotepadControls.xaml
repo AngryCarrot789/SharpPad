@@ -18,7 +18,7 @@
                 <ControlTemplate TargetType="{x:Type local:NotepadEditorControl}">
                     <DockPanel Background="Transparent">
                         <local:NotepadTabControl DockPanel.Dock="Top" x:Name="PART_TabControl"/>
-                        <Border Background="{DynamicResource ABrush.Tone3.Background.Static}"
+                        <Border Background="Transparent"
                                 BorderBrush="{DynamicResource PanelBorderBrush}"
                                 BorderThickness="0,1,0,0">
                             <DockPanel>
@@ -31,7 +31,7 @@
                                 </Border>
                                 <ae:TextEditor x:Name="PART_TextEditor"
                                                wpf:UIInputManager.FocusPath="Application/Notepad/Document"
-                                               Background="Transparent"
+                                               Background="{DynamicResource ABrush.Tone3.Background.Static}"
                                                BorderBrush="Transparent" BorderThickness="0"
                                                Foreground="{DynamicResource ABrush.Foreground.Static}"
                                                ShowLineNumbers="True"

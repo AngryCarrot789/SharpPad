@@ -19,6 +19,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
@@ -78,24 +79,24 @@ namespace SharpPad {
             if (args.Length > 0 && File.Exists(args[0])) {
                 OpenFilesCommand.OpenFile(notepad, args[0]);
             }
-            else {
+            else if (Debugger.IsAttached) {
                 this.LoadDefaultNotepad();
+
+                TaskManager.Instance.RunTask(async () => {
+                    IActivityProgress prog = TaskManager.Instance.CurrentTask.Progress;
+                    prog.Text = "Dummy task";
+                    const int duration = 1;
+                    const double interval = 0.1;
+                    const int updates = (int) (duration / interval);
+                    const double progressPerUpdate = 1.0 / updates;
+                    TimeSpan delayTime = TimeSpan.FromSeconds(interval);
+
+                    for (int i = 0; i < updates; i++) {
+                        await Task.Delay(delayTime);
+                        prog.OnProgress(progressPerUpdate);
+                    }
+                });
             }
-
-            TaskManager.Instance.RunTask(async () => {
-                IActivityProgress prog = TaskManager.Instance.CurrentTask.Progress;
-                prog.Text = "Dummy task";
-                const int duration = 1;
-                const double interval = 0.1;
-                const int updates = (int) (duration / interval);
-                const double progressPerUpdate = 1.0 / updates;
-                TimeSpan delayTime = TimeSpan.FromSeconds(interval);
-
-                for (int i = 0; i < updates; i++) {
-                    await Task.Delay(delayTime);
-                    prog.OnProgress(progressPerUpdate);
-                }
-            });
         }
 
         public void OnApplicationExiting() { }
