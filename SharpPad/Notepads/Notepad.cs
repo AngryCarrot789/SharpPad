@@ -78,11 +78,8 @@ namespace SharpPad.Notepads {
         public void InsertEditor(int index, NotepadEditor editor) {
             if (editor == null)
                 throw new ArgumentNullException(nameof(editor));
-            if (editor.IsOwnedBy(this))
-                throw new InvalidOperationException("editor already added");
 
             this.editors.Insert(index, editor);
-            NotepadEditor.InternalAddViewerUnsafe(editor, this);
             this.EditorIndexChanged?.Invoke(this, editor, -1, index);
 
             if (this.editors.Count == 1)
@@ -103,10 +100,6 @@ namespace SharpPad.Notepads {
 
         public void RemoveEditorAt(int index) {
             NotepadEditor editor = this.editors[index];
-            if (!editor.IsOwnedBy(this))
-                throw new Exception("Fatal error: editor in this notepad was not owned by this notepad instance");
-
-            NotepadEditor.InternalRemoveViewerUnsafe(editor, this);
             this.editors.RemoveAt(index);
             this.EditorIndexChanged?.Invoke(this, editor, index, -1);
         }

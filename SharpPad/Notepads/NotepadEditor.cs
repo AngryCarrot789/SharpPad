@@ -38,7 +38,6 @@ namespace SharpPad.Notepads {
     /// </para>
     /// </summary>
     public class NotepadEditor {
-        private readonly List<Notepad> owners;
         private FindAndReplaceModel findModel;
         private NotepadDocument document;
         private TextEditor textEditor;
@@ -95,12 +94,6 @@ namespace SharpPad.Notepads {
             }
         }
 
-
-        /// <summary>
-        /// Gets the read-only collection which contains all <see cref="Notepad"/> objects that are viewing this editor. Since <see cref="Notepad"/> has
-        /// </summary>
-        public ReadOnlyCollection<Notepad> Owners { get; }
-
         /// <summary>
         /// An event that gets raised when <see cref="Document"/> changes
         /// </summary>
@@ -112,7 +105,6 @@ namespace SharpPad.Notepads {
         /// Creates a notepad editor instance
         /// </summary>
         public NotepadEditor() {
-            this.Owners = new ReadOnlyCollection<Notepad>(this.owners = new List<Notepad>());
         }
 
         /// <summary>
@@ -130,15 +122,5 @@ namespace SharpPad.Notepads {
         /// <param name="notepad">The notepad</param>
         /// <returns>A bool</returns>
         public bool IsViewedBy(Notepad notepad) => notepad.ActiveEditor == this;
-
-        public bool IsOwnedBy(Notepad notepad) => this.owners.Contains(notepad);
-
-        internal static void InternalAddViewerUnsafe(NotepadEditor editor, Notepad notepad) {
-            editor.owners.Add(notepad);
-        }
-
-        internal static void InternalRemoveViewerUnsafe(NotepadEditor editor, Notepad notepad) {
-            editor.owners.Remove(notepad);
-        }
     }
 }
