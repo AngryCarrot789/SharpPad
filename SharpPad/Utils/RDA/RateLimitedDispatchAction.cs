@@ -49,11 +49,6 @@ namespace SharpPad.Utils.RDA {
             set => Interlocked.Exchange(ref this.minIntervalTicks, value.Ticks);
         }
 
-        /// <summary>
-        /// An event raised when the callback function throws an unhandled exception
-        /// </summary>
-        public event ExceptionEventHandler CallbackException;
-
         public RateLimitedDispatchAction(Func<Task> callback) : this(callback, TimeSpan.FromMilliseconds(250)) { }
 
         public RateLimitedDispatchAction(Func<Task> callback, TimeSpan minimumInterval) {
@@ -72,9 +67,17 @@ namespace SharpPad.Utils.RDA {
             Validate.NotNull(callback, nameof(callback));
             Validate.NotNull(dispatcher, nameof(dispatcher));
             return new RateLimitedDispatchAction(async () => {
-                // We first await InvokeAsync, then we await either the task that callback gave
-                // or Task.Completed just in case the callback returns a null task for some reason
-                await (await dispatcher.InvokeAsync(callback, priority) ?? Task.CompletedTask);
+                try {
+                    DispatcherOperation<Task> operation = dispatcher.InvokeAsync(callback, priority);
+                    Task task = await operation;
+                    await (task ?? Task.CompletedTask);
+                }
+                catch (Exception e) {
+                    dispatcher.BeginInvoke(new Action(() => {
+                        throw new Exception("Exception while awaiting operation", e);
+                    }));
+                }
+
             }, minInterval);
         }
 
@@ -144,7 +147,7 @@ namespace SharpPad.Utils.RDA {
                     await (this.callback.Invoke() ?? Task.CompletedTask);
                 }
                 catch (Exception e) {
-                    this.CallbackException?.Invoke(this, new ExceptionEventArgs(e));
+                    Application.Current.Dispatcher.BeginInvoke(new Action(() => throw new Exception("Exception while awaiting operation", e)));
                 }
                 finally {
                     // This sets CONTINUE to false, indicating that there is no more work required.

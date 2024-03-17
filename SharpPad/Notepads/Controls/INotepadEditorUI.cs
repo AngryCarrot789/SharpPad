@@ -19,8 +19,10 @@
 
 namespace SharpPad.Notepads.Controls {
     /// <summary>
-    /// An interface that represents the UI for a text editor for a document
+    /// An interface that represents the UI for a text editor. There may only be one instance
+    /// per window. This interface is different from <see cref="NotepadEditor"/>
     /// </summary>
     public interface INotepadEditorUI {
+        void FocusFindSearchBox();
     }
 }

@@ -20,6 +20,7 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Threading;
 using ICSharpCode.AvalonEdit;
 using SharpPad.Interactivity;
@@ -57,7 +58,8 @@ namespace SharpPad.Notepads.Controls {
         // controls
         private NotepadTabControl PART_TabControl;
         private TextEditor PART_TextEditor;
-        private FindAndReplaceControl PART_FindAndReplacePanel;
+        private Border PART_FindAndReplacePanel;
+        private FindAndReplaceControl PART_FindAndReplaceControl;
 
         // shit
         private NotepadEditor activeEditor;
@@ -77,10 +79,11 @@ namespace SharpPad.Notepads.Controls {
 
         public override void OnApplyTemplate() {
             base.OnApplyTemplate();
+            TemplateUtils.GetTemplateChild(this, nameof(this.PART_TabControl), out this.PART_TabControl);
+            TemplateUtils.GetTemplateChild(this, nameof(this.PART_TextEditor), out this.PART_TextEditor);
+            TemplateUtils.GetTemplateChild(this, nameof(this.PART_FindAndReplacePanel), out this.PART_FindAndReplacePanel);
+            TemplateUtils.GetTemplateChild(this, nameof(this.PART_FindAndReplaceControl), out this.PART_FindAndReplaceControl);
 
-            this.PART_TabControl = this.GetTemplateChild(nameof(this.PART_TabControl)) as NotepadTabControl ?? throw new Exception("Missing " + nameof(this.PART_TabControl));
-            this.PART_TextEditor = this.GetTemplateChild(nameof(this.PART_TextEditor)) as TextEditor ?? throw new Exception("Missing " + nameof(this.PART_TextEditor));
-            this.PART_FindAndReplacePanel = this.GetTemplateChild(nameof(this.PART_FindAndReplacePanel)) as FindAndReplaceControl ?? throw new Exception("Missing " + nameof(this.PART_FindAndReplacePanel));
             this.PART_FindAndReplacePanel.Visibility = Visibility.Collapsed;
             if (this.activeEditor != null)
                 this.activeEditor.TextEditor = this.PART_TextEditor;
@@ -95,10 +98,12 @@ namespace SharpPad.Notepads.Controls {
                 newNotepad.ActiveEditorChanged += this.OnActiveEditorChanged;
             }
 
-            DataManager.SetContextData(this, this.contextData.Set(DataKeys.NotepadKey, newNotepad).Clone());
+            using (DataManager.SuspendMergedContextInvalidation(this)) {
+                DataManager.SetContextData(this, this.contextData.Set(DataKeys.NotepadKey, newNotepad).Clone());
 
-            this.PART_TabControl.Notepad = newNotepad;
-            this.SetActiveEditor(newNotepad?.ActiveEditor);
+                this.PART_TabControl.Notepad = newNotepad;
+                this.SetActiveEditor(newNotepad?.ActiveEditor);
+            }
         }
 
         private void OnActiveEditorChanged(object sender, NotepadEditor oldEditor, NotepadEditor newEditor) {
@@ -106,34 +111,41 @@ namespace SharpPad.Notepads.Controls {
         }
 
         public void SetActiveEditor(NotepadEditor editor) {
-            if (this.activeEditor != null) {
-                this.activeEditor.DocumentChanged -= this.OnActiveEditorDocumentChanged;
-                this.SetFindModel(null);
-                this.activeEditor.TextEditor = null;
-                this.activeEditor = null;
-            }
+            using (DataManager.SuspendMergedContextInvalidation(this)) {
+                if (this.activeEditor != null) {
+                    this.activeEditor.DocumentChanged -= this.OnActiveEditorDocumentChanged;
+                    this.activeEditor.IsFindPanelOpenChanged -= this.OnIsFindPanelOpenChanged;
+                    this.SetFindModel(null);
+                    this.activeEditor.TextEditor = null;
+                    this.activeEditor = null;
+                }
 
-            if (editor != null) {
-                if (editor.TextEditor != null)
-                    throw new InvalidOperationException("Editor is already associated with another control");
+                if (editor != null) {
+                    if (editor.TextEditor != null)
+                        throw new InvalidOperationException("Editor is already associated with another control");
 
-                this.activeEditor = editor;
-                if (this.PART_TextEditor != null)
-                    editor.TextEditor = this.PART_TextEditor;
-                editor.DocumentChanged += this.OnActiveEditorDocumentChanged;
-                this.SetVisibility(Visibility.Visible);
-                this.SetActiveDocument(editor.Document);
-                this.SetFindModel(editor.FindModel);
-            }
-            else {
-                this.SetVisibility(Visibility.Collapsed);
-                this.SetActiveDocument(null);
-                this.PART_TextEditor.Document = null;
-                this.PART_TextEditor.IsEnabled = false;
-            }
+                    this.activeEditor = editor;
+                    if (this.PART_TextEditor != null)
+                        editor.TextEditor = this.PART_TextEditor;
+                    editor.DocumentChanged += this.OnActiveEditorDocumentChanged;
+                    editor.IsFindPanelOpenChanged += this.OnIsFindPanelOpenChanged;
+                    this.SetVisibility(Visibility.Visible);
+                    this.SetActiveDocument(editor.Document);
+                    if (editor.IsFindPanelOpen)
+                        this.SetFindModel(editor.FindModel, false);
+                }
+                else {
+                    this.SetVisibility(Visibility.Collapsed);
+                    this.SetActiveDocument(null);
+                    this.PART_TextEditor.Document = null;
+                    this.PART_TextEditor.IsEnabled = false;
+                }
 
-            DataManager.SetContextData(this, this.contextData.Set(DataKeys.EditorKey, editor).Clone());
+                DataManager.SetContextData(this, this.contextData.Set(DataKeys.NotepadEditorKey, editor).Clone());
+            }
         }
+
+        private void OnIsFindPanelOpenChanged(NotepadEditor editor) => this.SetFindModel(editor.IsFindPanelOpen ? editor.FindModel : null);
 
         private void OnActiveEditorDocumentChanged(NotepadEditor editor, NotepadDocument olddoc, NotepadDocument newDoc) {
             this.SetActiveDocument(newDoc);
@@ -159,29 +171,69 @@ namespace SharpPad.Notepads.Controls {
             DataManager.SetContextData(this, this.contextData.Set(DataKeys.DocumentKey, document).Clone());
         }
 
-        private void SetFindModel(FindAndReplaceModel model) {
+        private void SetFindModel(FindAndReplaceModel model, bool focusTextBox = true) {
             if (this.activeFindModel != null) {
                 this.activeFindModel.SearchResultsChanged -= this.OnSearchResultsChanged;
+                this.activeFindModel.CurrentResultIndexChanged -= this.OnCurrentResultIndexChanged;
             }
 
             if ((this.activeFindModel = model) != null) {
-                this.activeFindModel.SearchResultsChanged += this.OnSearchResultsChanged;
+                model.SearchResultsChanged += this.OnSearchResultsChanged;
+                model.CurrentResultIndexChanged += this.OnCurrentResultIndexChanged;
                 this.PART_FindAndReplacePanel.Visibility = Visibility.Visible;
-                this.PART_FindAndReplacePanel.FindModel = model;
+                this.PART_FindAndReplaceControl.FindModel = model;
+                if (focusTextBox) {
+                    this.PART_FindAndReplaceControl.FocusSearchText();
+                }
             }
             else {
-                this.PART_FindAndReplacePanel.FindModel = null;
+                this.PART_FindAndReplaceControl.FindModel = null;
                 this.PART_FindAndReplacePanel.Visibility = Visibility.Collapsed;
+                this.PART_TextEditor.Focus();
+            }
+
+            if (this.contextData.TryReplace(DataKeys.FindModelKey, model))
+                DataManager.SetContextData(this, this.contextData.Clone());
+        }
+
+        private void OnCurrentResultIndexChanged(FindAndReplaceModel model) {
+            if (this.PART_TextEditor.IsFocused || this.PART_TextEditor.TextArea.IsFocused) {
+                return;
+            }
+
+            int index = model.CurrentResultIndex;
+            if (index < 0)
+                index = 0;
+
+            if (index < model.Results.Count) {
+                TextRange range = model.Results[index];
+                this.MoveToSearchResult(range);
+            }
+            else {
+                this.PART_TextEditor.SelectionLength = 0;
             }
         }
 
         private void OnSearchResultsChanged(FindAndReplaceModel model) {
-            int currentOffset = this.PART_TextEditor.CaretOffset;
+            if (this.PART_TextEditor.IsFocused || this.PART_TextEditor.TextArea.IsFocused) {
+                return;
+            }
+
+            int selection = this.PART_TextEditor.SelectionLength;
+            int currentOffset = this.PART_TextEditor.CaretOffset - selection;
             int index = BinarySearch.IndexOf(model.Results, currentOffset, (e) => e.Index);
             if (index < 0)
                 index = ~index;
 
-            TextRange range = model.Results[index];
+            if (index < model.Results.Count) {
+                model.CurrentResultIndex = index;
+            }
+            else {
+                this.PART_TextEditor.SelectionLength = 0;
+            }
+        }
+
+        private void MoveToSearchResult(TextRange range) {
             this.PART_TextEditor.Select(range.Index, range.Length);
 
             TextViewPosition caret = this.PART_TextEditor.TextArea.Caret.Position;
@@ -251,5 +303,7 @@ namespace SharpPad.Notepads.Controls {
         }
 
         #endregion
+
+        public void FocusFindSearchBox() => this.PART_FindAndReplaceControl?.FocusSearchText();
     }
 }

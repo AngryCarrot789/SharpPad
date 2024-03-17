@@ -17,9 +17,12 @@
 // along with SharpPad. If not, see <https://www.gnu.org/licenses/>.
 //
 
+using ICSharpCode.AvalonEdit.Snippets;
 using SharpPad.CommandSystem;
+using SharpPad.CommandSystem.Usages;
 using SharpPad.Interactivity.Contexts;
 using SharpPad.Notepads.Controls;
+using SharpPad.Utils;
 
 namespace SharpPad.Notepads.Commands {
     public abstract class FindModelCommand : Command {
@@ -40,24 +43,65 @@ namespace SharpPad.Notepads.Commands {
         protected abstract void ExecuteCore(FindAndReplaceModel model, CommandEventArgs e);
     }
 
-    public class FindCommand : Command {
-        protected override void Execute(CommandEventArgs e) {
-            if (!DataKeys.UINotepadEditorKey.TryGetContext(e.ContextData, out INotepadEditorUI notepad))
-                return;
+    public class ShowFindCommand : Command {
+        public override Executability CanExecute(CommandEventArgs e) {
+            return e.ContextData.ContainsKey(DataKeys.NotepadEditorKey) ? Executability.Valid : Executability.Invalid;
+        }
 
-            // notepad.IsFindPanelOpen = true;
+        protected override void Execute(CommandEventArgs e) {
+            if (DataKeys.NotepadEditorKey.TryGetContext(e.ContextData, out NotepadEditor editor)) {
+                editor.IsFindPanelOpen = true;
+                if (DataKeys.UINotepadEditorKey.TryGetContext(e.ContextData, out INotepadEditorUI ui)) {
+                    ui.FocusFindSearchBox();
+                }
+            }
+        }
+    }
+
+    public class HideFindCommand : Command {
+        public override Executability CanExecute(CommandEventArgs e) {
+            return e.ContextData.ContainsKey(DataKeys.NotepadEditorKey) ? Executability.Valid : Executability.Invalid;
+        }
+
+        protected override void Execute(CommandEventArgs e) {
+            if (DataKeys.NotepadEditorKey.TryGetContext(e.ContextData, out NotepadEditor editor)) {
+                editor.IsFindPanelOpen = false;
+            }
         }
     }
 
     public class ToggleMatchCaseCommand : FindModelCommand {
         protected override void ExecuteCore(FindAndReplaceModel model, CommandEventArgs e) {
-            model.MatchCases = !model.MatchCases;
+            model.IsMatchCases = !model.IsMatchCases;
+        }
+    }
+
+    public class ToggleWordSearchCommand : FindModelCommand {
+        public override Executability CanExecuteCore(FindAndReplaceModel model, CommandEventArgs e) {
+            return model.IsRegexSearch ? Executability.ValidButCannotExecute : Executability.Valid;
+        }
+
+        protected override void ExecuteCore(FindAndReplaceModel model, CommandEventArgs e) {
+            if (!model.IsRegexSearch)
+                model.IsWordSearch = !model.IsWordSearch;
+        }
+    }
+
+    public class ToggleRegexSearchCommand : FindModelCommand {
+        protected override void ExecuteCore(FindAndReplaceModel model, CommandEventArgs e) {
+            model.IsRegexSearch = !model.IsRegexSearch;
         }
     }
 
     public class NextResultCommand : FindModelCommand {
         protected override void ExecuteCore(FindAndReplaceModel model, CommandEventArgs e) {
             model.MoveToNextResult();
+        }
+    }
+
+    public class PrevResultCommand : FindModelCommand {
+        protected override void ExecuteCore(FindAndReplaceModel model, CommandEventArgs e) {
+            model.MoveToPrevResult();
         }
     }
 }

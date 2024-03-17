@@ -30,7 +30,7 @@ namespace SharpPad.Notepads.Commands {
         protected virtual bool CanHaveNullTextEditor => false;
 
         public sealed override Executability CanExecute(CommandEventArgs e) {
-            if (!DataKeys.EditorKey.TryGetContext(e.ContextData, out NotepadEditor editor))
+            if (!DataKeys.NotepadEditorKey.TryGetContext(e.ContextData, out NotepadEditor editor))
                 return Executability.Invalid;
 
             if (editor.Document == null || (!this.CanHaveNullTextEditor && editor.TextEditor == null))
@@ -40,7 +40,7 @@ namespace SharpPad.Notepads.Commands {
         }
 
         protected sealed override void Execute(CommandEventArgs e) {
-            if (!DataKeys.EditorKey.TryGetContext(e.ContextData, out NotepadEditor editor))
+            if (!DataKeys.NotepadEditorKey.TryGetContext(e.ContextData, out NotepadEditor editor))
                 return;
 
             if (editor.Document == null || (!this.CanHaveNullTextEditor && editor.TextEditor == null))

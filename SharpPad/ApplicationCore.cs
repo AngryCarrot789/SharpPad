@@ -141,9 +141,13 @@ namespace SharpPad {
             manager.Register("IndentSelectionInEditor", new IndentSelectionCommand());
 
             // find
-            manager.Register("ShowFindPanel", new FindCommand());
+            manager.Register("ShowFindPanel", new ShowFindCommand());
+            manager.Register("HideFindPanel", new HideFindCommand());
             manager.Register("ToggleFindMatchCase", new ToggleMatchCaseCommand());
+            manager.Register("ToggleFindWordSearch", new ToggleWordSearchCommand());
+            manager.Register("ToggleFindRegexSearch", new ToggleRegexSearchCommand());
             manager.Register("NextFindResult", new NextResultCommand());
+            manager.Register("PrevFindResult", new PrevResultCommand());
 
             AppLogger.Instance.PushHeader($"Registered {CommandManager.Instance.Count} commands", false);
             foreach (KeyValuePair<string, Command> pair in CommandManager.Instance.Commands) {

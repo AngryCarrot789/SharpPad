@@ -41,6 +41,8 @@ namespace SharpPad.CommandSystem.Usages {
         protected virtual void OnButtonClick(object sender, RoutedEventArgs e) {
             this.UpdateCanExecute();
             CommandManager.Instance.TryExecute(this.CommandId, () => DataManager.GetFullContextData(this.Control));
+
+            // We update after running, just in case the command is async which affects the CanExecute method
             this.UpdateCanExecute();
         }
 

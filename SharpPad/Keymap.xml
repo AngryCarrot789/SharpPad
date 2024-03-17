@@ -56,9 +56,15 @@
                 <Shortcut Name="ShowFindShortcut" CommandId="ShowFindPanel">
                     <KeyStroke Mods="CTRL" Key="F"/>
                 </Shortcut>
+
                 <Group Name="FindPanel">
                     <Shortcut Name="ToggleFindMatchCaseShortcut" CommandId="ToggleFindMatchCase">
                         <KeyStroke Mods="ALT" Key="C"/>
+                    </Shortcut>
+
+                    <!-- Not used by the search/replace text boxes. They use the KeyStrokeCommandBehaviour instead -->
+                    <Shortcut Name="ClosePanelShortcut" CommandId="HideFindPanel">
+                        <KeyStroke Key="Escape"/>
                     </Shortcut>
                 </Group>
             </Group>

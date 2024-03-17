@@ -80,11 +80,14 @@
     <Compile Include="AdvancedMenuService\StandAlone\CommandMenuItem.cs" />
     <Compile Include="ApplicationCore.cs" />
     <Compile Include="AsyncDemo.cs" />
+    <Compile Include="Behaviours\Standard\KeyStrokeCommandBehaviour.cs" />
     <Compile Include="CommandSystem\AsyncCommand.cs" />
     <Compile Include="CommandSystem\CommandGroup.cs" />
     <Compile Include="CommandSystem\SimpleCommandGroup.cs" />
     <Compile Include="CommandSystem\Usages\BasicButtonCommandUsage.cs" />
+    <Compile Include="CommandSystem\Usages\BaseToggleButtonCommandUsage.cs" />
     <Compile Include="CommandSystem\Usages\CommandSourceCommandUsage.cs" />
+    <Compile Include="CommandSystem\Usages\CommandUsageModelHelper.cs" />
     <Compile Include="Controls\Bindings\AccessorAutoEventPropertyBinder.cs" />
     <Compile Include="Controls\Bindings\BaseBinder.cs" />
     <Compile Include="Controls\Bindings\Binders.cs" />
@@ -124,6 +127,7 @@
     <Compile Include="Notepads\Commands\DocumentCommand.cs" />
     <Compile Include="Notepads\Commands\EditorCommand.cs" />
     <Compile Include="Notepads\Commands\FindModelCommand.cs" />
+    <Compile Include="Notepads\Commands\FindModelCommandUsage.cs" />
     <Compile Include="Notepads\Commands\NotepadCommand.cs" />
     <Compile Include="Notepads\Commands\CloseDocumentCommand.cs" />
     <Compile Include="Notepads\Contexts\EditMenuContextGenerator.cs" />
@@ -323,6 +327,7 @@
     <Compile Include="Utils\SingletonList.cs" />
     <Compile Include="Utils\StringJoiner.cs" />
     <Compile Include="Utils\StringUtils.cs" />
+    <Compile Include="Utils\TemplateUtils.cs" />
     <Compile Include="Utils\TextIncrement.cs" />
     <Compile Include="Utils\TextPointerUtils.cs" />
     <Compile Include="Utils\TextRange.cs" />
@@ -560,6 +565,7 @@
     <Resource Include="Resources\Fonts\Oxanium\OFL.txt" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="CommandSystem\WPF" />
     <Folder Include="Notepads\Selections\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

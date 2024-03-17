@@ -22,6 +22,7 @@ using System.Collections.ObjectModel;
 using ICSharpCode.AvalonEdit;
 
 namespace SharpPad.Notepads {
+    public delegate void NotepadEditorEventHandler(NotepadEditor editor);
     public delegate void ActiveDocumentChangedEventHandler(NotepadEditor editor, NotepadDocument oldDoc, NotepadDocument newDoc);
     public delegate void TextEditorChangedEventHandler(NotepadEditor editor, TextEditor oldEditor, TextEditor newEditor);
 
@@ -41,6 +42,7 @@ namespace SharpPad.Notepads {
         private FindAndReplaceModel findModel;
         private NotepadDocument document;
         private TextEditor textEditor;
+        private bool isFindPanelOpen;
 
         /// <summary>
         /// Gets or sets the document that this editor is presenting
@@ -83,6 +85,17 @@ namespace SharpPad.Notepads {
             }
         }
 
+        public bool IsFindPanelOpen {
+            get => this.isFindPanelOpen;
+            set {
+                if (this.isFindPanelOpen == value)
+                    return;
+                this.isFindPanelOpen = value;
+                this.IsFindPanelOpenChanged?.Invoke(this);
+            }
+        }
+
+
         /// <summary>
         /// Gets the read-only collection which contains all <see cref="Notepad"/> objects that are viewing this editor. Since <see cref="Notepad"/> has
         /// </summary>
@@ -93,6 +106,7 @@ namespace SharpPad.Notepads {
         /// </summary>
         public event ActiveDocumentChangedEventHandler DocumentChanged;
         public event TextEditorChangedEventHandler TextEditorChanged;
+        public event NotepadEditorEventHandler IsFindPanelOpenChanged;
 
         /// <summary>
         /// Creates a notepad editor instance

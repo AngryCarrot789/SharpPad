@@ -60,7 +60,7 @@ namespace SharpPad.Notepads.Controls {
         }
 
         public void OnConnected() {
-            DataManager.SetContextData(this, this.contextData.Set(DataKeys.EditorKey, this.Editor).Clone());
+            DataManager.SetContextData(this, this.contextData.Set(DataKeys.NotepadEditorKey, this.Editor).Clone());
             this.Editor.DocumentChanged += this.OnActiveDocumentChanged;
             this.OnDocumentChanged(this.Editor.Document);
         }

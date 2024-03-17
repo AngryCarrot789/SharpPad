@@ -19,8 +19,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
+using SharpPad.Utils;
 using SharpPad.Utils.Visuals;
 
 namespace SharpPad.Interactivity.Contexts {
@@ -35,9 +37,8 @@ namespace SharpPad.Interactivity.Contexts {
     /// </summary>
     public static class DataManager {
         private static readonly Action<Visual> AddVisualAncestorChangedHandler;
-
         private static readonly Action<Visual> RemoveVisualAncestorChangedHandler;
-        // private static int suspendInvalidationCount;
+        private static int totalSuspensionCount; // used for performance reasons
 
         /// <summary>
         /// The context data property, used to store contextual information relative to a specific dependency object.
@@ -84,6 +85,15 @@ namespace SharpPad.Interactivity.Contexts {
                 typeof(RoutedEventHandler),
                 typeof(DataManager));
 
+        private static readonly DependencyPropertyKey SuspendedInvalidationCountPropertyKey =
+            DependencyProperty.RegisterAttachedReadOnly(
+                "SuspendedInvalidationCount",
+                typeof(int),
+                typeof(DataManager),
+                new PropertyMetadata(0));
+
+        public static readonly DependencyProperty SuspendedInvalidationCountProperty = SuspendedInvalidationCountPropertyKey.DependencyProperty;
+
         static DataManager() {
             VisualAncestorChangedEventInterface.CreateInterface(OnAncestorChanged, out AddVisualAncestorChangedHandler, out RemoveVisualAncestorChangedHandler);
         }
@@ -110,6 +120,10 @@ namespace SharpPad.Interactivity.Contexts {
         /// </summary>
         /// <param name="element">The element to invalidate, along with its visual tree</param>
         public static void InvalidateInheritedContext(DependencyObject element) {
+            if (totalSuspensionCount > 0 && GetSuspendedInvalidationCount(element) > 0) {
+                return;
+            }
+
             // WalkVisualTreeForParentContextInvalidated(element, new RoutedEventArgs(InheritedContextInvalidatedEvent, element));
 
             // This takes something like 2ms when element is EditorWindow and the default project is loaded.
@@ -148,9 +162,10 @@ namespace SharpPad.Interactivity.Contexts {
         }
 
         /// <summary>
-        /// Gets the context data for the specific dependency object
+        /// Gets the local context data for the specific dependency object. The returned
+        /// value is the same as the value passed to <see cref="SetContextData"/>
         /// </summary>
-        public static IContextData GetContextData(DependencyObject element) {
+        public static IContextData GetLocalContextData(DependencyObject element) {
             return (IContextData) element.GetValue(ContextDataProperty);
         }
 
@@ -266,22 +281,59 @@ namespace SharpPad.Interactivity.Contexts {
         // May have to implement it if the performance of invalidating the visual tree
         // becomes a problem (e.g. context data changes many times during an operation)
 
-        // /// <summary>
-        // /// Can be used to suspend the automatic merged context invalidation of the
-        // /// visual tree when an element's context changes, for performance reasons.
-        // /// <para>
-        // /// Failure to dispose the returned reference will permanently disable merged context invalidation
-        // /// </para>
-        // /// </summary>
-        // /// <returns></returns>
-        // public static SuspendInvalidation SuspendMergedContextInvalidation() {
-        //     suspendInvalidationCount++;
-        //     return new SuspendInvalidation();
-        // }
-        // public struct SuspendInvalidation : IDisposable {
-        //     public void Dispose() {
-        //         suspendInvalidationCount--;
-        //     }
-        // }
+        /// <summary>
+        /// Can be used to suspend the automatic merged context invalidation of the visual tree when an element's context changes, for performance reasons.
+        /// <para>
+        /// Failure to dispose the returned reference will permanently disable merged context invalidation
+        /// </para>
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="autoInvalidateOnUnsuspended"></param>
+        /// <returns></returns>
+        public static IDisposable SuspendMergedContextInvalidation(DependencyObject obj, bool autoInvalidateOnUnsuspended = true) {
+            totalSuspensionCount++;
+            return new SuspendInvalidation(obj, autoInvalidateOnUnsuspended);
+        }
+
+        public static int GetSuspendedInvalidationCount(DependencyObject element) {
+            return (int) element.GetValue(SuspendedInvalidationCountProperty);
+        }
+
+        private class SuspendInvalidation : IDisposable {
+            private DependencyObject target;
+            private readonly bool autoInvalidateOnUnsuspended;
+
+            public SuspendInvalidation(DependencyObject target, bool autoInvalidateOnUnsuspended) {
+                this.target = target;
+                this.autoInvalidateOnUnsuspended = autoInvalidateOnUnsuspended;
+                target.SetValue(SuspendedInvalidationCountPropertyKey, (int) target.GetValue(SuspendedInvalidationCountProperty) + 1);
+            }
+
+            public void Dispose() {
+                DependencyObject dp = this.target;
+                if (dp == null) {
+                    return;
+                }
+
+                this.target = null;
+                totalSuspensionCount--;
+
+                int count = GetSuspendedInvalidationCount(dp);
+                if (count < 0) {
+                    Debugger.Break();
+                    return;
+                }
+
+                if (count == 1) {
+                    dp.SetValue(SuspendedInvalidationCountPropertyKey, SuspendedInvalidationCountProperty.DefaultMetadata.DefaultValue);
+                    if (this.autoInvalidateOnUnsuspended) {
+                        InvalidateInheritedContext(dp);
+                    }
+                }
+                else {
+                    dp.SetValue(SuspendedInvalidationCountPropertyKey, count - 1);
+                }
+            }
+        }
     }
 }

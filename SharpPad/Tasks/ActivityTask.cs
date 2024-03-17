@@ -64,8 +64,9 @@ namespace SharpPad.Tasks {
         public CancellationToken CancellationToken { get; }
 
         /// <summary>
-        /// Gets this activity's task, which can be used to await completion. This task is a proxy of the user task
-        /// function, and may throw an <see cref="OperationCanceledException"/> when awaited
+        /// Gets this activity's task, which can be used to await completion. This task is a proxy of
+        /// the user task function, and will not throw <see cref="OperationCanceledException"/> when
+        /// awaited if our <see cref="CancellationToken"/>'s is cancelled
         /// </summary>
         public Task Task { get; }
 
@@ -76,7 +77,7 @@ namespace SharpPad.Tasks {
             this.action = action ?? throw new ArgumentNullException(nameof(action));
             this.Progress = activityProgress ?? throw new ArgumentNullException(nameof(activityProgress));
             this.CancellationToken = cancellationToken;
-            this.Task = Task.Run(this.TaskMain, cancellationToken);
+            this.Task = Task.Run(this.TaskMain);
         }
 
         /// <summary>

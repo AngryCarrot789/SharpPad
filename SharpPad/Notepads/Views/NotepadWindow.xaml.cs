@@ -57,7 +57,7 @@ namespace SharpPad.Notepads.Views {
             this.updateCaretTextRDA = RateLimitedDispatchAction.ForDispatcherSync(() => {
                 Caret caret = this.PART_NotepadPanel.Editor?.TextArea?.Caret;
                 this.PART_CaretText.Text = $"{caret?.Line ?? 1}:{caret?.Column ?? 1}";
-            }, TimeSpan.FromSeconds(0.2));
+            }, TimeSpan.FromSeconds(0.1));
             this.Loaded += this.EditorWindow_Loaded;
 
             TaskManager taskManager = IoC.TaskManager;

@@ -26,7 +26,7 @@ namespace SharpPad.Interactivity.Contexts {
         public static readonly DataKey<Window> HostWindowKey = DataKey<Window>.Create("HostWindow");
         public static readonly DataKey<Notepad> NotepadKey = DataKey<Notepad>.Create("Notepad");
         public static readonly DataKey<NotepadDocument> DocumentKey = DataKey<NotepadDocument>.Create("Document");
-        public static readonly DataKey<NotepadEditor> EditorKey = DataKey<NotepadEditor>.Create("TextEditor");
+        public static readonly DataKey<NotepadEditor> NotepadEditorKey = DataKey<NotepadEditor>.Create("TextEditor");
         public static readonly DataKey<FindAndReplaceModel> FindModelKey = DataKey<FindAndReplaceModel>.Create("FindAndReplaceModel");
 
         public static readonly DataKey<INotepadTabUI> UINotepadTabKey = DataKey<INotepadTabUI>.Create("UINotepadTab");

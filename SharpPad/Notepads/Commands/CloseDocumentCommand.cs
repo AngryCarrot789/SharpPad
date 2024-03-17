@@ -30,7 +30,7 @@ namespace SharpPad.Notepads.Commands {
             if (!DataKeys.NotepadKey.TryGetContext(e.ContextData, out Notepad notepad))
                 return;
 
-            if (!DataKeys.EditorKey.TryGetContext(e.ContextData, out NotepadEditor editor))
+            if (!DataKeys.NotepadEditorKey.TryGetContext(e.ContextData, out NotepadEditor editor))
                 return;
 
             int index = notepad.Editors.IndexOf(editor);

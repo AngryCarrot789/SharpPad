@@ -47,17 +47,11 @@ namespace SharpPad.Tasks {
             this.locker = new object();
         }
 
-        public ActivityTask RunTask(Func<Task> action) {
-            return ActivityTask.InternalStartActivity(this, action, null, CancellationToken.None);
-        }
+        public ActivityTask RunTask(Func<Task> action) => this.RunTask(action, CancellationToken.None);
 
-        public ActivityTask RunTask(Func<Task> action, IActivityProgress progress) {
-            return ActivityTask.InternalStartActivity(this, action, progress, CancellationToken.None);
-        }
+        public ActivityTask RunTask(Func<Task> action, IActivityProgress progress) => this.RunTask(action, progress, CancellationToken.None);
 
-        public ActivityTask RunTask(Func<Task> action, CancellationToken token) {
-            return ActivityTask.InternalStartActivity(this, action, new DefaultProgressTracker(), token);
-        }
+        public ActivityTask RunTask(Func<Task> action, CancellationToken token) => this.RunTask(action, new DefaultProgressTracker(), token);
 
         public ActivityTask RunTask(Func<Task> action, IActivityProgress progress, CancellationToken cancellationToken) {
             return ActivityTask.InternalStartActivity(this, action, progress, cancellationToken);
@@ -69,9 +63,7 @@ namespace SharpPad.Tasks {
         /// <param name="task">The task associated with the current thread</param>
         /// <returns>True if this thread is running a task</returns>
         public bool TryGetCurrentTask(out ActivityTask task) {
-            lock (this.threadToTask) {
-                return (task = this.threadToTask.Value) != null;
-            }
+            return (task = this.threadToTask.Value) != null;
         }
 
         public ActivityTask CurrentTask => this.TryGetCurrentTask(out ActivityTask task) ? task : throw new InvalidOperationException("No task running on this thread");
@@ -93,24 +85,19 @@ namespace SharpPad.Tasks {
         }
 
         internal static Task InternalBeginActivateTask_BGT(TaskManager taskManager, ActivityTask task) {
-            lock (taskManager.threadToTask) {
-                taskManager.threadToTask.Value = task;
-            }
-
-            return IoC.Dispatcher.InvokeAsync(() => InternalOnTaskStarted_AMT(taskManager, task));
+            taskManager.threadToTask.Value = task;
+            return IoC.Dispatcher.InvokeAsync(() => InternalOnTaskStarted_MAT(taskManager, task));
         }
 
         internal static Task InternalOnTaskCompleted_BGT(TaskManager taskManager, ActivityTask task, int state) {
-            lock (taskManager.threadToTask) {
-                taskManager.threadToTask.Value = null;
-            }
+            taskManager.threadToTask.Value = null;
 
             // Before AsyncLocal, I was trying out a dispatcher for each task XD
             // Dispatcher.CurrentDispatcher.BeginInvokeShutdown(DispatcherPriority.Background);
-            return IoC.Dispatcher.InvokeAsync(() => InternalOnTaskCompleted_AMT(taskManager, task, state));
+            return IoC.Dispatcher.InvokeAsync(() => InternalOnTaskCompleted_MAT(taskManager, task, state));
         }
 
-        internal static void InternalOnTaskStarted_AMT(TaskManager taskManager, ActivityTask task) {
+        internal static void InternalOnTaskStarted_MAT(TaskManager taskManager, ActivityTask task) {
             lock (taskManager.locker) {
                 int index = taskManager.tasks.Count;
                 taskManager.tasks.Insert(index, task);
@@ -120,7 +107,7 @@ namespace SharpPad.Tasks {
             ActivityTask.InternalActivate(task);
         }
 
-        internal static void InternalOnTaskCompleted_AMT(TaskManager taskManager, ActivityTask task, int state) {
+        internal static void InternalOnTaskCompleted_MAT(TaskManager taskManager, ActivityTask task, int state) {
             ActivityTask.InternalComplete(task, state);
             lock (taskManager.locker) {
                 int index = taskManager.tasks.IndexOf(task);

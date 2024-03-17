@@ -20,6 +20,7 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 using SharpPad.Controls.Bindings;
 using SharpPad.Utils;
 
@@ -43,33 +44,66 @@ namespace SharpPad.Notepads.Controls {
 
         private readonly IBinder<FindAndReplaceModel> searchTextBinder = Binders.AccessorAEDP<FindAndReplaceModel, string>(TextBox.TextProperty, nameof(FindAndReplaceModel.SearchTextChanged), nameof(FindAndReplaceModel.SearchText));
         private TextBox PART_SearchTextBox;
+        private TextBlock PART_ResultCountTextBlock;
 
         public FindAndReplaceControl() {
         }
 
         public override void OnApplyTemplate() {
             base.OnApplyTemplate();
-            this.PART_SearchTextBox = this.GetTemplateChild(nameof(this.PART_SearchTextBox)) as TextBox ?? throw new Exception("Missing " + nameof(this.PART_SearchTextBox));
-
+            TemplateUtils.GetTemplateChild(this, nameof(this.PART_SearchTextBox), out this.PART_SearchTextBox);
+            TemplateUtils.GetTemplateChild(this, nameof(this.PART_ResultCountTextBlock), out this.PART_ResultCountTextBlock);
             this.searchTextBinder.AttachControl(this.PART_SearchTextBox);
+
+            this.UpdateSearchResultText();
         }
 
         private void OnFindModelChanged(FindAndReplaceModel oldValue, FindAndReplaceModel newValue) {
             if (oldValue != null) {
                 this.searchTextBinder.DetachModel();
-                oldValue.SearchResultsChanged -= this.OnSearchResultsChanged;
+                oldValue.SearchResultsChanged -= this.UpdateForSearchThingsChanged;
+                oldValue.CurrentResultIndexChanged -= this.UpdateForSearchThingsChanged;
             }
 
             if (newValue != null) {
                 this.searchTextBinder.AttachModel(newValue);
-                newValue.SearchResultsChanged += this.OnSearchResultsChanged;
+                newValue.SearchResultsChanged += this.UpdateForSearchThingsChanged;
+                newValue.CurrentResultIndexChanged += this.UpdateForSearchThingsChanged;
             }
 
             this.IsEnabled = newValue != null;
+            this.UpdateSearchResultText();
         }
 
-        private void OnSearchResultsChanged(FindAndReplaceModel model) {
-            // update text
+        private void UpdateForSearchThingsChanged(FindAndReplaceModel model) => this.UpdateSearchResultText();
+
+        private void UpdateSearchResultText() {
+            // The template may have not been applied by the time the find model changes
+            if (this.PART_ResultCountTextBlock == null) {
+                return;
+            }
+
+            FindAndReplaceModel model = this.FindModel;
+            if (model == null) {
+                return;
+            }
+
+            int count = model.Results.Count;
+
+            int index = model.CurrentResultIndex;
+            if (index == -1) {
+                this.PART_ResultCountTextBlock.Text = $"{count} Results";
+            }
+            else {
+                this.PART_ResultCountTextBlock.Text = $"{index + 1}/{count} Results";
+            }
+        }
+
+        public void FocusSearchText() {
+            this.Dispatcher.InvokeAsync(() => {
+                this.PART_SearchTextBox?.Focus();
+                this.PART_SearchTextBox?.SelectAll();
+            }, DispatcherPriority.Loaded);
         }
     }
 }

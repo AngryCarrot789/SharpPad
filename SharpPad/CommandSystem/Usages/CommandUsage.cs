@@ -90,6 +90,13 @@ namespace SharpPad.CommandSystem.Usages {
         protected virtual void OnDisconnected() => this.OnContextChanged();
 
         protected virtual void OnContextChanged() {
+            this.UpdateCanExecuteLater();
+        }
+
+        /// <summary>
+        /// Schedules the <see cref="UpdateCanExecute"/> method to be invoked later. This is called by <see cref="OnContextChanged"/>
+        /// </summary>
+        public void UpdateCanExecuteLater() {
             RapidDispatchAction guard = this.delayedContextUpdate ?? (this.delayedContextUpdate = new RapidDispatchAction(this.UpdateCanExecute, DispatcherPriority.Loaded, "UpdateCanExecute"));
             guard.InvokeAsync();
         }

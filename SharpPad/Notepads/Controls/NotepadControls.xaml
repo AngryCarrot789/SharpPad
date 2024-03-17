@@ -4,10 +4,14 @@
                     xmlns:wpf="clr-namespace:SharpPad.Shortcuts.WPF"
                     xmlns:u="clr-namespace:SharpPad.CommandSystem.Usages"
                     xmlns:ae="http://icsharpcode.net/sharpdevelop/avalonedit"
-                    xmlns:ap="clr-namespace:SharpPad.AttachedProperties">
+                    xmlns:ap="clr-namespace:SharpPad.AttachedProperties"
+                    xmlns:stdb="clr-namespace:SharpPad.Behaviours.Standard"
+                    xmlns:b="clr-namespace:SharpPad.Behaviours"
+                    xmlns:usage="clr-namespace:SharpPad.Notepads.Commands">
     <SolidColorBrush x:Key="DropBrush" Color="OrangeRed" Opacity="0.3"/>
 
     <Style TargetType="{x:Type local:NotepadEditorControl}">
+        <Setter Property="Focusable" Value="False"/>
         <Setter Property="AllowDrop" Value="True"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -18,11 +22,12 @@
                                 BorderBrush="{DynamicResource PanelBorderBrush}"
                                 BorderThickness="0,1,0,0">
                             <DockPanel>
-                                <Border Height="29" DockPanel.Dock="Bottom"
+                                <Border DockPanel.Dock="Bottom"
                                         Background="{DynamicResource ABrush.Tone4.Background.Static}"
                                         BorderBrush="{DynamicResource PanelBorderBrush}"
-                                        BorderThickness="0,1,0,0">
-                                    <local:FindAndReplaceControl x:Name="PART_FindAndReplacePanel"/>
+                                        BorderThickness="0,1,0,0"
+                                        x:Name="PART_FindAndReplacePanel" Height="28">
+                                    <local:FindAndReplaceControl x:Name="PART_FindAndReplaceControl"/>
                                 </Border>
                                 <ae:TextEditor x:Name="PART_TextEditor"
                                                wpf:UIInputManager.FocusPath="Application/Notepad/Document"
@@ -165,12 +170,14 @@
     </Style>
 
     <Style TargetType="{x:Type local:FindAndReplaceControl}">
+        <Setter Property="wpf:UIInputManager.FocusPath" Value="Application/Notepad/Document/FindPanel"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:FindAndReplaceControl}">
                     <DockPanel>
                         <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
-                            <Button Width="28" Content="X" Background="Transparent" BorderThickness="0"/>
+                            <Button Width="28" Content="X" Background="Transparent" BorderThickness="0"
+                                    u:CommandUsageManager.BasicButtonCommandId="HideFindPanel"/>
                         </StackPanel>
                         <Grid HorizontalAlignment="Stretch">
                             <Grid.ColumnDefinitions>
@@ -181,23 +188,35 @@
                                     Grid.Column="0">
                                 <DockPanel>
                                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
-                                        <Separator Style="{StaticResource VerticalSeparator}" Background="{DynamicResource PanelBorderBrush}" Margin="0"/>
-                                        <Button Width="28" Content="Cc" Background="Transparent" BorderThickness="0"
-                                                u:CommandUsageManager.BasicButtonCommandId="ToggleFindMatchCase" ToolTip="Go to last result"/>
-                                        <Button Width="28" Content="W" Background="Transparent" BorderThickness="0"
-                                                ToolTip="Go to next result"/>
-                                        <Button Width="28" Content=".*" Background="Transparent" BorderThickness="0"
-                                                ToolTip="Go to next result"/>
+                                        <Separator Style="{StaticResource VerticalSeparator}" Background="{DynamicResource ABrush.Tone2.Border.Static}" Margin="0,4"/>
+                                        <ToggleButton Width="28" Content="Cc" Background="Transparent" BorderThickness="0"
+                                                      u:CommandUsageManager.UsageClassType="{x:Type usage:ToggleMatchCaseCommandUsage}"
+                                                      ToolTip="Toggle case sensitivity"/>
+                                        <ToggleButton Width="28" Content="W" Background="Transparent" BorderThickness="0"
+                                                      u:CommandUsageManager.UsageClassType="{x:Type usage:ToggleWordSearchCommandUsage}"
+                                                      ToolTip="Toggle searching for words"/>
+                                        <ToggleButton Width="28" Content=".*" Background="Transparent" BorderThickness="0"
+                                                      u:CommandUsageManager.UsageClassType="{x:Type usage:ToggleRegexSearchCommandUsage}"
+                                                      ToolTip="Toggle regex search"/>
                                     </StackPanel>
-                                    <TextBox x:Name="PART_SearchTextBox" BorderThickness="0" Padding="2,0" Background="Transparent" VerticalContentAlignment="Center"/>
+                                    <TextBox x:Name="PART_SearchTextBox" BorderThickness="0" Padding="2,0"
+                                             Background="Transparent" VerticalContentAlignment="Center">
+                                        <b:BehaviourCollection.Behaviours>
+                                            <b:BehaviourCollection>
+                                                <stdb:KeyStrokeCommandBehaviour Key="Enter" CommandId="NextFindResult"/>
+                                                <stdb:KeyStrokeCommandBehaviour Key="Escape" CommandId="HideFindPanel"/>
+                                            </b:BehaviourCollection>
+                                        </b:BehaviourCollection.Behaviours>
+                                    </TextBox>
                                 </DockPanel>
                             </Border>
                             <Separator Style="{StaticResource VerticalSeparator}" Background="{DynamicResource PanelBorderBrush}" HorizontalAlignment="Right" Margin="0"/>
                             <StackPanel Orientation="Horizontal" Grid.Column="1">
                                 <Button Width="28" Content="←" FontSize="18" Background="Transparent" BorderThickness="0"
-                                        ToolTip="Go to last result"/>
+                                        ToolTip="Go to last result" u:CommandUsageManager.BasicButtonCommandId="PrevFindResult"/>
                                 <Button Width="28" Content="→" FontSize="18" Background="Transparent" BorderThickness="0"
                                         ToolTip="Go to next result" u:CommandUsageManager.BasicButtonCommandId="NextFindResult"/>
+                                <TextBlock x:Name="PART_ResultCountTextBlock" VerticalAlignment="Center" Padding="3,0"/>
                             </StackPanel>
                         </Grid>
                     </DockPanel>
