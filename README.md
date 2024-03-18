@@ -4,8 +4,8 @@ A notepad app that uses WPF, and AvalonEdit as a text editor.
 A lot of the code files are copied from my other project [FramePFX](https://github.com/AngryCarrot789/FramePFX), which
 has more details about how they work if you want to read more
 
-## Preview
-![](SharpPad_2024-03-17_17.42.06.png)
+## Preview `1.0.2`
+![](SharpPad_2024-03-18_01.24.33.png)
 
 ## Codebase
 - `Notepad`: there is one of these associated wh each notepad window. This contains a collection of `NotepadEditor` instances, and an `ActiveEditor` property (as in, selected tab/editor)
