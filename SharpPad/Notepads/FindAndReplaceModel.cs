@@ -78,7 +78,7 @@ namespace SharpPad.Notepads {
                     return;
                 this.isMatchCases = value;
                 this.IsMatchCasesChanged?.Invoke(this);
-                this.InvalidateSearchState();
+                this.InvalidateSearchStateForPossibleRegexChange();
             }
         }
 
@@ -246,7 +246,7 @@ namespace SharpPad.Notepads {
 
         private void OnEditorDocumentChanged(NotepadEditor editor, NotepadDocument olddoc, NotepadDocument newdoc) {
             this.SetDocument(newdoc);
-            this.InvalidateSearchStateForPossibleRegexChange();
+            this.InvalidateSearchState();
         }
 
         private void SetDocument(NotepadDocument document) {
@@ -268,6 +268,7 @@ namespace SharpPad.Notepads {
 
         private void InvalidateSearchStateForPossibleRegexChange() {
             lock (this.criticalLock) {
+                this.isActiveSearchInvalid = true;
                 if (this.isRegexSearch && !string.IsNullOrWhiteSpace(this.searchText)) {
                     // Check that the regex expression is valid
                     try {
@@ -320,10 +321,7 @@ namespace SharpPad.Notepads {
         }
 
         private void OnDocumentModified(object sender, DocumentChangeEventArgs e) {
-            lock (this.criticalLock) {
-                this.isActiveSearchInvalid = true;
-                this.UpdateSearch();
-            }
+            this.InvalidateSearchState();
         }
 
         public void Reset() {
