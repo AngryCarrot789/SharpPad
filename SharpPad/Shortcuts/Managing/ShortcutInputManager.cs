@@ -23,7 +23,6 @@ using System.Linq;
 using SharpPad.Interactivity.Contexts;
 using SharpPad.Shortcuts.Inputs;
 using SharpPad.Shortcuts.Usage;
-using SharpPad.Utils;
 
 namespace SharpPad.Shortcuts.Managing {
     /// <summary>
@@ -72,8 +71,8 @@ namespace SharpPad.Shortcuts.Managing {
 
         #region Shortcut Accumulation
 
-        private void AccumulateShortcuts(IInputStroke stroke, string focusedGroup, Predicate<GroupedShortcut> shortcutFilter = null, bool canProcessInputStates = true) {
-            GroupEvaulationArgs args = new GroupEvaulationArgs(stroke, this.cachedShortcutList, this.cachedInputStateList, shortcutFilter, canProcessInputStates);
+        private void AccumulateShortcuts(IInputStroke stroke, string focusedGroup, Predicate<GroupedShortcut> shortcutFilter = null, bool canProcessInputStates = true, bool canInherit = true) {
+            GroupEvaulationArgs args = new GroupEvaulationArgs(stroke, this.cachedShortcutList, this.cachedInputStateList, shortcutFilter, canProcessInputStates, canInherit);
             this.Manager.Root.EvaulateShortcutsAndInputStates(ref args, focusedGroup);
         }
 
@@ -100,9 +99,9 @@ namespace SharpPad.Shortcuts.Managing {
         // TODO: make non-async and allow progress manager to show async command progress.
         // A command should not stall the shortcut system
 
-        public bool OnKeyStroke(string focusedGroup, KeyStroke stroke, bool isRepeat) {
+        public bool OnKeyStroke(string focusedGroup, KeyStroke stroke, bool isRepeat, bool canInherit = true) {
             if (this.ActiveUsages.Count < 1) {
-                this.AccumulateShortcuts(stroke, focusedGroup, isRepeat ? RepeatedFilter : NotRepeatedFilter, !isRepeat);
+                this.AccumulateShortcuts(stroke, focusedGroup, isRepeat ? RepeatedFilter : NotRepeatedFilter, !isRepeat, canInherit);
                 this.ProcessInputStates();
                 if (this.cachedShortcutList.Count < 1)
                     return this.OnNoSuchShortcutForKeyStroke(focusedGroup, stroke);
@@ -213,11 +212,9 @@ namespace SharpPad.Shortcuts.Managing {
             }
         }
 
-        private static void ProcessStrokeCompleted() { }
-
-        public bool OnMouseStroke(string focusedGroup, MouseStroke stroke) {
+        public bool OnMouseStroke(string focusedGroup, MouseStroke stroke, bool canInherit = true) {
             if (this.ActiveUsages.Count < 1) {
-                this.AccumulateShortcuts(stroke, focusedGroup);
+                this.AccumulateShortcuts(stroke, focusedGroup, canInherit:canInherit);
                 this.ProcessInputStates();
                 if (this.cachedShortcutList.Count < 1) {
                     return this.OnNoSuchShortcutForMouseStroke(focusedGroup, stroke);

@@ -168,7 +168,7 @@ namespace SharpPad.Shortcuts.Managing {
                 group.CollectShortcutsInternal(ref args, focus);
             }
 
-            bool requireGlobal = !this.IsGlobal && !IsFocusPathInScope(this.FullPath, focus, this.Inherit);
+            bool requireGlobal = !this.IsGlobal && !IsFocusPathInScope(this.FullPath, focus, args.canInherit && this.Inherit);
             foreach (GroupedShortcut shortcut in this.shortcuts) {
                 if (args.filter != null && !args.filter(shortcut)) {
                     continue;
@@ -176,7 +176,7 @@ namespace SharpPad.Shortcuts.Managing {
 
                 if (requireGlobal && !shortcut.IsGlobal) {
                     // I actually can't remember if this.FullPath should be used here or shortcut.FullPath
-                    if (shortcut.IsInherited && IsFocusPathInScope(this.FullPath, focus, true)) {
+                    if ((shortcut.IsInherited && args.canInherit) && IsFocusPathInScope(this.FullPath, focus, true)) {
                         if (!allowDuplicateInheritedShortcuts && FindPrimaryStroke(args.shortcuts, shortcut.Shortcut.PrimaryStroke)) {
                             continue;
                         }

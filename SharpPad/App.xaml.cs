@@ -29,6 +29,7 @@ namespace SharpPad {
             // Pre init stuff
             ToolTipService.ShowDurationProperty.OverrideMetadata(typeof(DependencyObject), new FrameworkPropertyMetadata(int.MaxValue));
             ToolTipService.InitialShowDelayProperty.OverrideMetadata(typeof(DependencyObject), new FrameworkPropertyMetadata(400));
+            UIInputManager.IsInheritedFocusAllowedProperty.OverrideMetadata(typeof(TextBox), new PropertyMetadata(BoolBox.False));
 
             this.ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
@@ -104,7 +105,7 @@ namespace SharpPad {
                     }
                 }
                 catch (Exception ex) {
-                    IoC.MessageService.ShowMessage("Keymap", "Failed to read keymap file" + keymapFilePath + ":" + ex.GetToString());
+                    IoC.MessageService.ShowMessage("Keymap", "Failed to read keymap file" + keymapFilePath, ex.GetToString());
                 }
             }
             else {

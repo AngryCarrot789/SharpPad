@@ -96,13 +96,86 @@ namespace SharpPad.Notepads.Commands {
         }
     }
 
+    public class ToggleFindInSelectionCommand : FindModelCommand {
+        protected override void ExecuteCore(FindAndReplaceModel model, CommandEventArgs e) {
+            model.IsFindInSelection = !model.IsFindInSelection;
+        }
+    }
+
+    // public class NextResultCommand : EditorCommand {
+    //     protected override bool CanHaveNullTextEditor => true;
+    //
+    //     public override Executability CanExecute(NotepadEditor editor, TextEditor textEditor, TextDocument document, CommandEventArgs e) {
+    //         return editor.FindModel.Results.Count > 0 ? Executability.Valid : Executability.ValidButCannotExecute;
+    //     }
+    //
+    //     public override void Execute(NotepadEditor editor, TextEditor textEditor, TextDocument document, CommandEventArgs e) {
+    //         if (editor.FindModel.Results.Count > 0) {
+    //             if (textEditor != null) {
+    //                 int index = BinarySearch.IndexOf(editor.FindModel.Results, textEditor.CaretOffset, (x) => x.Index);
+    //                 if (index < 0)
+    //                     index = ~index;
+    //
+    //                 if (index < editor.FindModel.Results.Count) {
+    //                     editor.FindModel.CurrentResultIndex = index;
+    //                 }
+    //                 else {
+    //                     editor.FindModel.MoveToNextResult();
+    //                 }
+    //             }
+    //             else {
+    //                 editor.FindModel.MoveToNextResult();
+    //             }
+    //         }
+    //     }
+    // }
+    //
+    // This class is slightly unreliable in that sometimes it doesn't move to the previous result
+    // public class PrevResultCommand : EditorCommand {
+    //     protected override bool CanHaveNullTextEditor => true;
+    //
+    //     public override Executability CanExecute(NotepadEditor editor, TextEditor textEditor, TextDocument document, CommandEventArgs e) {
+    //         return editor.FindModel.Results.Count > 0 ? Executability.Valid : Executability.ValidButCannotExecute;
+    //     }
+    //
+    //     public override void Execute(NotepadEditor editor, TextEditor textEditor, TextDocument document, CommandEventArgs e) {
+    //         FindAndReplaceModel find = editor.FindModel;
+    //         if (find.Results.Count > 0) {
+    //             if (textEditor != null) {
+    //                 int caret = System.Math.Max(textEditor.CaretOffset - textEditor.SelectionLength - 1, 0);
+    //                 int index = BinarySearch.IndexOf(find.Results, caret, (x) => x.Index);
+    //                 if (index < 0)
+    //                     index = ~index;
+    //
+    //                 if (--index < find.Results.Count && index >= 0) {
+    //                     find.CurrentResultIndex = index;
+    //                 }
+    //                 else {
+    //                     find.MoveToPrevResult();
+    //                 }
+    //             }
+    //             else {
+    //                 find.MoveToPrevResult();
+    //             }
+    //         }
+    //     }
+    // }
+
     public class NextResultCommand : FindModelCommand {
+        public override Executability CanExecuteCore(FindAndReplaceModel model, CommandEventArgs e) {
+            return model.Results.Count > 0 ? Executability.Valid : Executability.ValidButCannotExecute;
+        }
+
         protected override void ExecuteCore(FindAndReplaceModel model, CommandEventArgs e) {
             model.MoveToNextResult();
         }
     }
 
     public class PrevResultCommand : FindModelCommand {
+        public override Executability CanExecuteCore(FindAndReplaceModel model, CommandEventArgs e) {
+            return model.Results.Count > 0 ? Executability.Valid : Executability.ValidButCannotExecute;
+        }
+
         protected override void ExecuteCore(FindAndReplaceModel model, CommandEventArgs e) {
             model.MoveToPrevResult();
         }

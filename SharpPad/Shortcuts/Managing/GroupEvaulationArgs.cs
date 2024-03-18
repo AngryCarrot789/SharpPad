@@ -28,13 +28,15 @@ namespace SharpPad.Shortcuts.Managing {
         public readonly List<(GroupedInputState, bool)> inputStates;
         public readonly Predicate<GroupedShortcut> filter;
         public readonly bool canProcessInputStates;
+        public readonly bool canInherit;
 
-        public GroupEvaulationArgs(IInputStroke stroke, List<GroupedShortcut> shortcuts, List<(GroupedInputState, bool)> inputStates, Predicate<GroupedShortcut> filter, bool canProcessInputStates) {
+        public GroupEvaulationArgs(IInputStroke stroke, List<GroupedShortcut> shortcuts, List<(GroupedInputState, bool)> inputStates, Predicate<GroupedShortcut> filter, bool canProcessInputStates, bool canInherit) {
             this.stroke = stroke;
             this.shortcuts = shortcuts;
             this.inputStates = inputStates;
             this.filter = filter;
             this.canProcessInputStates = canProcessInputStates;
+            this.canInherit = canInherit;
         }
     }
 }

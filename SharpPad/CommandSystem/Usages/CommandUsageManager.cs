@@ -34,13 +34,22 @@ namespace SharpPad.CommandSystem.Usages {
 
         public static string GetBasicButtonCommandId(DependencyObject element) => (string) element.GetValue(BasicButtonCommandIdProperty);
 
+        /// <summary>
+        /// Sets the command usage class type for this element
+        /// </summary>
         public static void SetUsageClassType(DependencyObject element, Type value) => element.SetValue(UsageClassTypeProperty, value);
 
+        /// <summary>
+        /// Gets the command usage class type for this element
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns></returns>
         public static Type GetUsageClassType(DependencyObject element) => (Type) element.GetValue(UsageClassTypeProperty);
 
         private static void OnBasicButtonCommandIdChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            if (d.GetValue(InternalCommandContextProperty) is CommandUsage oldContext)
+            if (d.GetValue(InternalCommandContextProperty) is CommandUsage oldContext) {
                 oldContext.Disconnect();
+            }
 
             if (e.NewValue is string cmdId) {
                 CommandUsage ctx = new BasicButtonCommandUsage(cmdId);
@@ -48,21 +57,22 @@ namespace SharpPad.CommandSystem.Usages {
                 ctx.Connect(d);
             }
             else {
-                d.ClearValue(InternalCommandContextProperty);
+                d.SetValue(InternalCommandContextProperty, null);
             }
         }
 
         private static void OnUsageClassTypeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            if (d.GetValue(InternalCommandContextProperty) is CommandUsage oldContext)
+            if (d.GetValue(InternalCommandContextProperty) is CommandUsage oldContext) {
                 oldContext.Disconnect();
+            }
 
             if (e.NewValue is Type newType) {
-                CommandUsage ctx = (CommandUsage) Activator.CreateInstance(newType);
-                d.SetValue(InternalCommandContextProperty, ctx);
-                ctx.Connect(d);
+                CommandUsage usage = (CommandUsage) Activator.CreateInstance(newType);
+                d.SetValue(InternalCommandContextProperty, usage);
+                usage.Connect(d);
             }
             else {
-                d.ClearValue(InternalCommandContextProperty);
+                d.SetValue(InternalCommandContextProperty, null);
             }
         }
 

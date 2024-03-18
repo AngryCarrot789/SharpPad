@@ -226,7 +226,6 @@
     </Compile>
     <Compile Include="Themes\Converters\ScrollViewerInnerBorderThicknessConverter.cs" />
     <Compile Include="Themes\Converters\TreeViewLineConverter.cs" />
-    <Compile Include="Themes\Generator\ThemeGenerator.cs" />
     <Compile Include="Themes\ThemeController.cs" />
     <Compile Include="Themes\ThemeType.cs" />
     <Compile Include="Utils\Accessing\ValueAccessor.cs" />
@@ -236,16 +235,8 @@
     <Compile Include="Utils\Bits.cs" />
     <Compile Include="Utils\BoolBox.cs" />
     <Compile Include="Utils\CastingList.cs" />
-    <Compile Include="Utils\Collections\DictionaryList.cs" />
     <Compile Include="Utils\Collections\InheritanceDictionary.cs" />
-    <Compile Include="Utils\Collections\InheritanceMultiMap.cs" />
     <Compile Include="Utils\Collections\ITypeEntry.cs" />
-    <Compile Include="Utils\Collections\ObservableList.cs" />
-    <Compile Include="Utils\Collections\OrderedList.cs" />
-    <Compile Include="Utils\Collections\PropertyMap.cs" />
-    <Compile Include="Utils\Collections\ReferenceDictionary.cs" />
-    <Compile Include="Utils\Collections\TypeMultiTable.cs" />
-    <Compile Include="Utils\Collections\WeakReferenceDictionary.cs" />
     <Compile Include="Utils\CollectionUtils.cs" />
     <Compile Include="Utils\Commands\AsyncRelayCommand.cs" />
     <Compile Include="Utils\Commands\BaseAsyncRelayCommand.cs" />
@@ -269,6 +260,7 @@
     <Compile Include="Utils\RDA\RateLimitedDispatchAction.cs" />
     <Compile Include="Utils\RDA\RapidDispatchAction.cs" />
     <Compile Include="Utils\RDA\RapidDispatchActionEx.cs" />
+    <Compile Include="Utils\RegexUtils.cs" />
     <Compile Include="Utils\RoundingMode.cs" />
     <Compile Include="Utils\SingletonEnumerator.cs" />
     <Compile Include="Utils\SingletonList.cs" />
@@ -276,18 +268,11 @@
     <Compile Include="Utils\StringUtils.cs" />
     <Compile Include="Utils\TemplateUtils.cs" />
     <Compile Include="Utils\TextRange.cs" />
-    <Compile Include="Utils\ThreadTimer.cs" />
     <Compile Include="Utils\Time.cs" />
     <Compile Include="Utils\TypeUtils.cs" />
     <Compile Include="Utils\Validate.cs" />
     <Compile Include="Utils\Visuals\VisualAncestorChangedEventInterface.cs" />
     <Compile Include="Utils\Visuals\VisualTreeUtils.cs" />
-    <Compile Include="Views\AppSplashScreen.xaml.cs">
-      <DependentUpon>AppSplashScreen.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Validators\DoubleRangeValidationRule.cs" />
-    <Compile Include="Views\Validators\IntRangeValidationRule.cs" />
-    <Compile Include="Views\Validators\NonEmptyStringValidationRule.cs" />
     <Compile Include="Views\WinDarkTheme.cs" />
     <Compile Include="Views\WindowEx.cs" />
     <Page Include="AdvancedMenuService\ContextService\Controls\ContextStyles.xaml">
@@ -347,7 +332,6 @@
     <Compile Include="Converters\FloatToDoubleConverter.cs" />
     <Compile Include="Converters\NullConverter.cs" />
     <Compile Include="Controls\CancellableThumb.cs" />
-    <Compile Include="Controls\GlyphGenerator.cs" />
     <Compile Include="Controls\GridSlotAutoSizer.cs" />
     <Compile Include="Controls\IUIConnection.cs" />
     <Compile Include="Controls\SpacedStackPanel.cs" />
@@ -432,10 +416,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Themes\Controls.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\AppSplashScreen.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

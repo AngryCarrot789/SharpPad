@@ -94,4 +94,60 @@ namespace SharpPad.Notepads.Commands {
 
         public override bool GetRealIsChecked() => this.Helper.Model?.IsRegexSearch ?? false;
     }
+
+    public class BaseSearchResultCommandUsage : BasicButtonCommandUsage {
+        public CommandUsageModelHelper<FindAndReplaceModel> Helper { get; }
+
+        public BaseSearchResultCommandUsage(string commandId) : base(commandId) {
+            this.Helper = new CommandUsageModelHelper<FindAndReplaceModel>();
+            this.Helper.Connected += h => {
+                h.Model.SearchResultsChanged += this.OnSearchResultsUpdated;
+            };
+
+            this.Helper.Disconnected += h => {
+                h.Model.SearchResultsChanged -= this.OnSearchResultsUpdated;
+            };
+        }
+
+        protected override void OnContextChanged() {
+            base.OnContextChanged();
+            this.Helper.OnContextChanged(DataKeys.FindModelKey, this);
+        }
+
+        private void OnSearchResultsUpdated(FindAndReplaceModel findAndReplaceModel) => this.UpdateCanExecuteLater();
+    }
+
+    public class ToggleFindInSelectionCommandUsage : BaseToggleButtonCommandUsage {
+        public CommandUsageModelHelper<FindAndReplaceModel> Helper { get; }
+
+        public ToggleFindInSelectionCommandUsage() : base("ToggleFindInSelection") {
+            this.Helper = new CommandUsageModelHelper<FindAndReplaceModel>();
+            this.Helper.Connected += h => {
+                h.Model.IsFindInSelectionChanged += this.OsInFindInSelectionChanged;
+            };
+
+            this.Helper.Disconnected += h => {
+                h.Model.IsFindInSelectionChanged -= this.OsInFindInSelectionChanged;
+            };
+        }
+
+        protected override void OnContextChanged() {
+            base.OnContextChanged();
+            this.Helper.OnContextChanged(DataKeys.FindModelKey, this);
+        }
+
+        private void OsInFindInSelectionChanged(FindAndReplaceModel findAndReplaceModel) => this.UpdateIsCheckedAndCanExecute();
+
+        public override bool GetRealIsChecked() => this.Helper.Model?.IsFindInSelection ?? false;
+    }
+
+    public class PrevFindResultCommandUsage : BaseSearchResultCommandUsage {
+        public PrevFindResultCommandUsage() : base("PrevFindResult") {
+        }
+    }
+
+    public class NextFindResultCommandUsage : BaseSearchResultCommandUsage {
+        public NextFindResultCommandUsage() : base("NextFindResult") {
+        }
+    }
 }

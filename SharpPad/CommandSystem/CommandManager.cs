@@ -27,7 +27,8 @@ namespace SharpPad.CommandSystem {
     public delegate void FocusChangedEventHandler(CommandManager manager, IContextData newFocus);
 
     /// <summary>
-    /// A class which manages registered commands and the execution of commands
+    /// A class which manages registered commands and the execution of commands.
+    /// Commands are registered at application startup, before any primary UI is loaded
     /// </summary>
     public class CommandManager {
         // using this just in case I soon add more data associated with commands

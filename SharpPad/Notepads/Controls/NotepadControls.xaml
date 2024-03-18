@@ -7,7 +7,9 @@
                     xmlns:ap="clr-namespace:SharpPad.AttachedProperties"
                     xmlns:stdb="clr-namespace:SharpPad.Behaviours.Standard"
                     xmlns:b="clr-namespace:SharpPad.Behaviours"
-                    xmlns:usage="clr-namespace:SharpPad.Notepads.Commands">
+                    xmlns:usage="clr-namespace:SharpPad.Notepads.Commands"
+                    xmlns:converters="clr-namespace:SharpPad.Converters"
+                    xmlns:themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2">
     <SolidColorBrush x:Key="DropBrush" Color="OrangeRed" Opacity="0.3"/>
 
     <Style TargetType="{x:Type local:NotepadEditorControl}">
@@ -165,6 +167,8 @@
         </Setter>
     </Style>
 
+    <converters:BoolToBrushConverter x:Key="RegexFaultBrushConverter" TrueValue="DarkRed" FalseValue="Transparent"/>
+
     <Style TargetType="{x:Type local:FindAndReplaceControl}">
         <Setter Property="wpf:UIInputManager.FocusPath" Value="Application/Notepad/Document/FindPanel"/>
         <Setter Property="Template">
@@ -196,12 +200,13 @@
                                                       ToolTip="Toggle regex search"/>
                                     </StackPanel>
                                     <TextBox x:Name="PART_SearchTextBox" BorderThickness="0" Padding="2,0"
-                                             Background="Transparent" VerticalContentAlignment="Center">
+                                             Background="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=IsRegexFaulted, Converter={StaticResource RegexFaultBrushConverter}}"
+                                             VerticalContentAlignment="Center"
+                                             wpf:UIInputManager.CanProcessTextBoxKeyStroke="True"
+                                             wpf:UIInputManager.CanProcessTextBoxKeyStrokeWithModifiers="True">
                                         <b:BehaviourCollection.Behaviours>
-                                            <b:BehaviourCollection>
-                                                <stdb:KeyStrokeCommandBehaviour Key="Enter" CommandId="NextFindResult"/>
-                                                <stdb:KeyStrokeCommandBehaviour Key="Escape" CommandId="HideFindPanel"/>
-                                            </b:BehaviourCollection>
+                                            <stdb:KeyStrokeCommandBehaviour Key="Enter" CommandId="NextFindResult"/>
+                                            <stdb:KeyStrokeCommandBehaviour Key="Escape" CommandId="HideFindPanel"/>
                                         </b:BehaviourCollection.Behaviours>
                                     </TextBox>
                                 </DockPanel>
@@ -209,11 +214,30 @@
                             <Separator Style="{StaticResource VerticalSeparator}" Background="{DynamicResource PanelBorderBrush}" HorizontalAlignment="Right" Margin="0"/>
                             <StackPanel Orientation="Horizontal" Grid.Column="1">
                                 <Button Width="28" Content="←" FontSize="18" Background="Transparent" BorderThickness="0"
-                                        ToolTip="Go to last result" u:CommandUsageManager.BasicButtonCommandId="PrevFindResult"/>
+                                        ToolTip="Go to last result" u:CommandUsageManager.UsageClassType="{x:Type usage:PrevFindResultCommandUsage}"/>
                                 <Button Width="28" Content="→" FontSize="18" Background="Transparent" BorderThickness="0"
-                                        ToolTip="Go to next result" u:CommandUsageManager.BasicButtonCommandId="NextFindResult"/>
+                                        ToolTip="Go to next result" u:CommandUsageManager.UsageClassType="{x:Type usage:NextFindResultCommandUsage}"/>
                                 <TextBlock x:Name="PART_ResultCountTextBlock" VerticalAlignment="Center" Padding="3,0"/>
+                                <ToggleButton Width="28" Content="S" FontSize="18" Background="Transparent" BorderThickness="0"
+                                              ToolTip="Toggle search in selection" u:CommandUsageManager.UsageClassType="{x:Type usage:ToggleFindInSelectionCommandUsage}"/>
                             </StackPanel>
+                            <!-- {DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}} -->
+                            <Popup x:Name="PART_RegexFaultPopup" AllowsTransparency="True" Margin="1" MaxWidth="800" StaysOpen="True"
+                                   IsOpen="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=IsRegexFaulted, Mode=OneWay}"
+                                   PopupAnimation="Fade"
+                                   PlacementTarget="{Binding ElementName=PART_SearchTextBox}">
+                                <themes:SystemDropShadowChrome x:Name="shadow" Color="Transparent" MaxHeight="60" MinWidth="{Binding ActualWidth, ElementName=PART_SearchTextBox}">
+                                    <Border Background="{DynamicResource Popup.Static.Background}"
+                                            BorderBrush="{DynamicResource Popup.Static.Border}"
+                                            BorderThickness="1" UseLayoutRounding="True" SnapsToDevicePixels="True">
+                                        <TextBlock Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=RegexFaultMessage, Mode=OneWay}" Padding="10,4"
+                                                   Foreground="{DynamicResource ABrush.Foreground.Static}"
+                                                   FontFamily="Segoe UI"
+                                                   FontSize="13"
+                                                   FontWeight="Normal"/>
+                                    </Border>
+                                </themes:SystemDropShadowChrome>
+                            </Popup>
                         </Grid>
                     </DockPanel>
                 </ControlTemplate>

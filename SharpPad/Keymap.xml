@@ -57,22 +57,29 @@
                     <KeyStroke Mods="CTRL" Key="F"/>
                 </Shortcut>
 
-                <Shortcut Name="GoToPrevResultShortcut" CommandId="PrevFindResult">
-                    <KeyStroke Key="F3"/>
-                </Shortcut>
-
-                <Shortcut Name="GoToNextResultShortcut" CommandId="NextFindResult">
-                    <KeyStroke Key="F4"/>
-                </Shortcut>
-
                 <Group Name="FindPanel">
                     <Shortcut Name="ToggleFindMatchCaseShortcut" CommandId="ToggleFindMatchCase">
                         <KeyStroke Mods="ALT" Key="C"/>
+                    </Shortcut>
+                    <Shortcut Name="ToggleFindWordSearchShortcut" CommandId="ToggleFindWordSearch">
+                        <KeyStroke Mods="ALT" Key="W"/>
+                    </Shortcut>
+                    <Shortcut Name="ToggleFindRegexSearchShortcut" CommandId="ToggleFindRegexSearch">
+                        <KeyStroke Mods="ALT" Key="R"/>
+                    </Shortcut>
+                    <Shortcut Name="ToggleFindInSelectionShortcut" CommandId="ToggleFindInSelection">
+                        <KeyStroke Mods="ALT" Key="S"/>
                     </Shortcut>
 
                     <!-- Not used by the search/replace text boxes. They use the KeyStrokeCommandBehaviour instead -->
                     <Shortcut Name="ClosePanelShortcut" CommandId="HideFindPanel">
                         <KeyStroke Key="Escape"/>
+                    </Shortcut>
+                    <Shortcut Name="GoToPrevResultShortcut" CommandId="PrevFindResult">
+                        <KeyStroke Key="F3"/>
+                    </Shortcut>
+                    <Shortcut Name="GoToNextResultShortcut" CommandId="NextFindResult">
+                        <KeyStroke Key="F4"/>
                     </Shortcut>
                 </Group>
             </Group>

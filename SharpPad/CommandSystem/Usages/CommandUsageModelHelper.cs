@@ -23,10 +23,13 @@ namespace SharpPad.CommandSystem.Usages {
     /// <summary>
     /// A class that is used to manage a model extracted from a <see cref="CommandUsage"/>'s available context data
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">The model type</typeparam>
     public class CommandUsageModelHelper<T> where T : class {
         public delegate void ModelUsageEventHandler(CommandUsageModelHelper<T> helper);
 
+        /// <summary>
+        /// Gets the current model object. Null when disconnected, Non-null when connected
+        /// </summary>
         public T Model { get; private set; }
 
         /// <summary>
@@ -50,6 +53,11 @@ namespace SharpPad.CommandSystem.Usages {
         public CommandUsageModelHelper() {
         }
 
+        /// <summary>
+        /// Forcefully sets the model property, and may call the disconnect and connect events
+        /// </summary>
+        /// <param name="usage">The owner command usage</param>
+        /// <param name="newModel">The new model</param>
         public void SetModel(CommandUsage usage, T newModel) {
             if (ReferenceEquals(this.Model, newModel)) {
                 return;
@@ -66,6 +74,14 @@ namespace SharpPad.CommandSystem.Usages {
             usage.UpdateCanExecuteLater();
         }
 
+        /// <summary>
+        /// Automatically queries the model object from the command usage's context data (if available),
+        /// and then calls <see cref="SetModel"/> with that model.
+        /// Does nothing if the found model is the same as the currently connected
+        /// model (including when we're disconnected and no model is found)
+        /// </summary>
+        /// <param name="dataKey"></param>
+        /// <param name="usage"></param>
         public void OnContextChanged(DataKey<T> dataKey, CommandUsage usage) {
             IContextData ctx = usage.GetContextData();
             if (ctx != null && dataKey.TryGetContext(ctx, out T newFindModel)) {

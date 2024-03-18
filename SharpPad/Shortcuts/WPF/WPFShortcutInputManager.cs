@@ -64,7 +64,7 @@ namespace SharpPad.Shortcuts.WPF {
                 this.BeginInputProcessing(focused);
                 ModifierKeys mods = ShortcutUtils.IsModifierKey(key) ? ModifierKeys.None : e.KeyboardDevice.Modifiers;
                 KeyStroke stroke = new KeyStroke((int) key, (int) mods, isRelease);
-                e.Handled = processor.OnKeyStroke(UIInputManager.Instance.FocusedPath, stroke, e.IsRepeat);
+                e.Handled = processor.OnKeyStroke(UIInputManager.Instance.FocusedPath, stroke, e.IsRepeat, UIInputManager.GetIsInheritedFocusAllowed(focused));
             }
             finally {
                 this.isProcessingKey = false;
@@ -77,7 +77,7 @@ namespace SharpPad.Shortcuts.WPF {
                 this.isProcessingMouse = true;
                 this.BeginInputProcessing(target);
                 MouseStroke stroke = new MouseStroke((int) e.ChangedButton, (int) Keyboard.Modifiers, isRelease, e.ClickCount);
-                e.Handled = this.OnMouseStroke(UIInputManager.Instance.FocusedPath, stroke);
+                e.Handled = this.OnMouseStroke(UIInputManager.Instance.FocusedPath, stroke, UIInputManager.GetIsInheritedFocusAllowed(target));
             }
             finally {
                 this.isProcessingMouse = false;
@@ -95,7 +95,7 @@ namespace SharpPad.Shortcuts.WPF {
                 this.isProcessingMouse = true;
                 this.BeginInputProcessing(target);
                 MouseStroke stroke = new MouseStroke(button, (int) Keyboard.Modifiers, false, 0, e.Delta);
-                e.Handled = this.OnMouseStroke(UIInputManager.Instance.FocusedPath, stroke);
+                e.Handled = this.OnMouseStroke(UIInputManager.Instance.FocusedPath, stroke, UIInputManager.GetIsInheritedFocusAllowed(target));
             }
             finally {
                 this.isProcessingMouse = false;

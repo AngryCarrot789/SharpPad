@@ -73,10 +73,8 @@
                 <MenuItem Header="Grey" Click="SetThemeClick" Uid="3"/>
                 <MenuItem Header="Red and Black" Click="SetThemeClick" Uid="4">
                     <bh:BehaviourCollection.Behaviours>
-                        <bh:BehaviourCollection>
-                            <bh:TestRedBackgroundBehaviour1/>
-                            <bh:TestBlueBackgroundBehaviour2/>
-                        </bh:BehaviourCollection>
+                        <bh:TestRedBackgroundBehaviour1/>
+                        <bh:TestBlueBackgroundBehaviour2/>
                     </bh:BehaviourCollection.Behaviours>
                 </MenuItem>
                 <MenuItem Header="Light Theme" Click="SetThemeClick" Uid="5"/>

@@ -45,6 +45,7 @@ namespace SharpPad.Shortcuts.WPF {
         public static readonly DependencyProperty CanProcessTextBoxKeyStrokeProperty = DependencyProperty.RegisterAttached("CanProcessTextBoxKeyStroke", typeof(bool), typeof(UIInputManager), new PropertyMetadata(BoolBox.False));
         public static readonly DependencyProperty CanProcessTextBoxKeyStrokeWithModifiersProperty = DependencyProperty.RegisterAttached("CanProcessTextBoxKeyStrokeWithModifiers", typeof(bool), typeof(UIInputManager), new PropertyMetadata(BoolBox.False));
         public static readonly DependencyProperty CanProcessTextBoxMouseStrokeProperty = DependencyProperty.RegisterAttached("CanProcessTextBoxMouseStroke", typeof(bool), typeof(UIInputManager), new PropertyMetadata(BoolBox.True));
+        public static readonly DependencyProperty IsInheritedFocusAllowedProperty = DependencyProperty.RegisterAttached("IsInheritedFocusAllowed", typeof(bool), typeof(UIInputManager), new PropertyMetadata(BoolBox.True));
 
         public static event FocusedPathChangedEventHandler OnFocusedPathChanged;
 
@@ -116,6 +117,10 @@ namespace SharpPad.Shortcuts.WPF {
         public static bool GetCanProcessTextBoxKeyStrokeWithModifiers(DependencyObject element) => (bool) element.GetValue(CanProcessTextBoxKeyStrokeWithModifiersProperty);
         public static void SetCanProcessTextBoxMouseStroke(DependencyObject element, bool value) => element.SetValue(CanProcessTextBoxMouseStrokeProperty, value.Box());
         public static bool GetCanProcessTextBoxMouseStroke(DependencyObject element) => (bool) element.GetValue(CanProcessTextBoxMouseStrokeProperty);
+
+        public static void SetIsInheritedFocusAllowed(DependencyObject element, bool value) => element.SetValue(IsInheritedFocusAllowedProperty, value);
+
+        public static bool GetIsInheritedFocusAllowed(DependencyObject element) => (bool) element.GetValue(IsInheritedFocusAllowedProperty);
 
         public static void RaiseFocusGroupPathChanged(string oldGroup, string newGroup) {
             OnFocusedPathChanged?.Invoke(oldGroup, newGroup);

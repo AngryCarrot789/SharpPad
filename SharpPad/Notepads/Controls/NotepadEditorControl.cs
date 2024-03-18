@@ -18,15 +18,10 @@
 //
 
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Threading;
 using ICSharpCode.AvalonEdit;
-using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
 using SharpPad.Interactivity;
 using SharpPad.Interactivity.Contexts;
@@ -79,8 +74,12 @@ namespace SharpPad.Notepads.Controls {
         private readonly SearchResultBackgroundRenderer searchColorizor;
         // private SearchResultColorizingTransformer findResultOutliner;
 
+        public bool IsVisibleInUI => this.activeEditor != null && this.Notepad is Notepad notepad && this.activeEditor.IsViewedBy(notepad);
+
+        public NotepadEditor ActiveEditor => this.activeEditor;
+
         public NotepadEditorControl() {
-            this.contextData = new ContextData().Set(DataKeys.UINotepadEditorKey, this);
+            DataManager.SetContextData(this, this.contextData = new ContextData().Set(DataKeys.UINotepadEditorKey, this).Clone());
             this.updateActiveEditorRda = new RapidDispatchAction<NotepadEditor>(this.SetActiveEditor, DispatcherPriority.Render);
             this.searchColorizor = new SearchResultBackgroundRenderer();
         }
@@ -92,12 +91,22 @@ namespace SharpPad.Notepads.Controls {
             TemplateUtils.GetTemplateChild(this, nameof(this.PART_FindAndReplacePanel), out this.PART_FindAndReplacePanel);
             TemplateUtils.GetTemplateChild(this, nameof(this.PART_FindAndReplaceControl), out this.PART_FindAndReplaceControl);
 
-            this.PART_TextEditor.TextArea.TextView.BackgroundRenderers.Add(this.searchColorizor);
+            this.PART_FindAndReplaceControl.Owner = this;
+            TextEditor editor = this.PART_TextEditor;
+
+            editor.Options = new TextEditorOptions() {
+            };
+
+            editor.TextArea.TextView.BackgroundRenderers.Add(this.searchColorizor);
+            editor.TextArea.SelectionCornerRadius = 0;
+            editor.TextArea.SelectionBorder = null;
+
+            // editor.TextArea.TextView.DefaultLineHeight
 
             // this.PART_TextEditor.TextArea.TextView.LineTransformers.Add(this.findResultOutliner = new SearchResultColorizingTransformer(this));
             this.PART_FindAndReplacePanel.Visibility = Visibility.Collapsed;
             if (this.activeEditor != null)
-                this.activeEditor.TextEditor = this.PART_TextEditor;
+                this.activeEditor.TextEditor = editor;
         }
 
         private void OnNotepadChanged(Notepad oldNotepad, Notepad newNotepad) {
@@ -126,7 +135,7 @@ namespace SharpPad.Notepads.Controls {
                 if (this.activeEditor != null) {
                     this.activeEditor.DocumentChanged -= this.OnActiveEditorDocumentChanged;
                     this.activeEditor.IsFindPanelOpenChanged -= this.OnIsFindPanelOpenChanged;
-                    this.SetVisibleFindModel(null);
+                    this.SetVisibleFindModel(null, false);
                     this.activeEditor.TextEditor = null;
                     this.activeEditor = null;
                 }
@@ -154,13 +163,15 @@ namespace SharpPad.Notepads.Controls {
 
                 DataManager.SetContextData(this, this.contextData.Set(DataKeys.NotepadEditorKey, editor).Clone());
             }
+
+            this.PART_FindAndReplaceControl.CoerceValue(FindAndReplaceControl.IsRegexFaultedProperty);
         }
 
-        private void OnIsFindPanelOpenChanged(NotepadEditor editor) => this.SetVisibleFindModel(editor.IsFindPanelOpen ? editor.FindModel : null);
+        private void OnIsFindPanelOpenChanged(NotepadEditor editor) => this.SetVisibleFindModel(editor.IsFindPanelOpen ? editor.FindModel : null, true);
 
         private void OnActiveEditorDocumentChanged(NotepadEditor editor, NotepadDocument olddoc, NotepadDocument newDoc) {
             this.SetActiveDocument(newDoc);
-            this.SetVisibleFindModel(editor.FindModel);
+            this.SetVisibleFindModel(editor.FindModel, false);
         }
 
         private void SetActiveDocument(NotepadDocument document) {
@@ -183,7 +194,7 @@ namespace SharpPad.Notepads.Controls {
         }
 
         // Sets the find model that is being present. Null hides the find panel, non-null shows it
-        private void SetVisibleFindModel(FindAndReplaceModel model, bool focusTextBox = true) {
+        private void SetVisibleFindModel(FindAndReplaceModel model, bool focusTextBox) {
             if (this.activeFindModel != null) {
                 this.activeFindModel.SearchResultsChanged -= this.OnSearchResultsChanged;
                 this.activeFindModel.CurrentResultIndexChanged -= this.OnCurrentResultIndexChanged;
@@ -241,8 +252,9 @@ namespace SharpPad.Notepads.Controls {
 
         private void OnSearchResultsChanged(FindAndReplaceModel model) {
             if (!this.PART_TextEditor.IsFocused && !this.PART_TextEditor.TextArea.IsFocused) {
+                int caret = this.PART_TextEditor.CaretOffset;
                 int selection = this.PART_TextEditor.SelectionLength;
-                int currentOffset = this.PART_TextEditor.CaretOffset - selection;
+                int currentOffset = caret - selection;
                 int index = BinarySearch.IndexOf(model.Results, currentOffset, (e) => e.Index);
                 if (index < 0)
                     index = ~index;
@@ -262,10 +274,8 @@ namespace SharpPad.Notepads.Controls {
         }
 
         private void UpdateSearchResultRender() {
-            if (this.searchColorizor != null) {
-                this.searchColorizor.OnSearchUpdated(this.activeFindModel?.Results);
-                this.PART_TextEditor.TextArea.TextView.InvalidateLayer(KnownLayer.Selection);
-            }
+            this.searchColorizor.OnSearchUpdated(this.activeFindModel?.Results);
+            this.PART_TextEditor?.TextArea.TextView.InvalidateLayer(KnownLayer.Selection);
         }
 
         private void MoveToSearchResult(TextRange range) {

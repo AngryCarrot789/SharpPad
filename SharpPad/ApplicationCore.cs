@@ -19,8 +19,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
@@ -150,6 +148,7 @@ namespace SharpPad {
             manager.Register("ToggleFindMatchCase", new ToggleMatchCaseCommand());
             manager.Register("ToggleFindWordSearch", new ToggleWordSearchCommand());
             manager.Register("ToggleFindRegexSearch", new ToggleRegexSearchCommand());
+            manager.Register("ToggleFindInSelection", new ToggleFindInSelectionCommand());
             manager.Register("NextFindResult", new NextResultCommand());
             manager.Register("PrevFindResult", new PrevResultCommand());
 

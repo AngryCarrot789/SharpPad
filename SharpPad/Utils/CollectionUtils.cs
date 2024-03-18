@@ -20,7 +20,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using SharpPad.Notepads;
 
 namespace SharpPad.Utils {
     public static class CollectionUtils {

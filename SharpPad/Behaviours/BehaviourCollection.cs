@@ -27,11 +27,13 @@ using SharpPad.Utils.Visuals;
 
 namespace SharpPad.Behaviours {
     public class BehaviourCollection : FreezableCollection<BehaviourBase> {
-        public static readonly DependencyProperty BehavioursProperty = DependencyProperty.RegisterAttached("Behaviours", typeof(BehaviourCollection), typeof(BehaviourCollection), new PropertyMetadata(null, OnBehavioursChanged));
-
+        // The property is private because it forces the XAML reader stuff to call the GetBehaviours method, which
+        // dynamically creates an instance of the collection, which is preferable over having to do it manually in XAML each time
+        private static readonly DependencyProperty BehavioursProperty = DependencyProperty.RegisterAttached("InternalBehaviours", typeof(BehaviourCollection), typeof(BehaviourCollection), new PropertyMetadata(null, OnBehavioursChanged));
         private static readonly Action<Visual> RemoveHandler;
         private static readonly Action<Visual> AddHandler;
-        private bool IsOwnerVisual;
+
+        private bool IsOwnerVisual => this.Owner is Visual;
 
         /// <summary>
         /// Gets the element that owns this collection
@@ -118,7 +120,6 @@ namespace SharpPad.Behaviours {
             if (element == null)
                 throw new ArgumentNullException(nameof(element));
             this.Owner = element;
-            this.IsOwnerVisual = element is Visual;
             this.DetatchAndTryAttachAll(this);
         }
 
@@ -127,7 +128,7 @@ namespace SharpPad.Behaviours {
                 throw new InvalidOperationException("Not attached: no owner");
 
             DetatchAll(this);
-            if (this.IsOwnerVisual && this.vacCount > 0) {
+            if (this.vacCount > 0) {
                 Debug.WriteLine("Expected VACCount to be zero when all items are detached");
                 Debugger.Break();
                 this.vacCount = 0;
@@ -135,15 +136,15 @@ namespace SharpPad.Behaviours {
             }
 
             this.Owner = null;
-            this.IsOwnerVisual = false;
-        }
-
-        public static void SetBehaviours(UIElement element, BehaviourCollection value) {
-            element.SetValue(BehavioursProperty, value);
         }
 
         public static BehaviourCollection GetBehaviours(UIElement element) {
-            return (BehaviourCollection) element.GetValue(BehavioursProperty);
+            BehaviourCollection value = (BehaviourCollection) element.GetValue(BehavioursProperty);
+            if (value == null) {
+                element.SetValue(BehavioursProperty, value = new BehaviourCollection());
+            }
+
+            return value;
         }
 
         private static void OnBehavioursChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
@@ -153,7 +154,8 @@ namespace SharpPad.Behaviours {
 
             if (e.NewValue is BehaviourCollection newCollection) {
                 if (newCollection.Owner != null)
-                    newCollection.Disconnect();
+                    throw new InvalidOperationException("New behaviour collection is already connected");
+
                 newCollection.Connect(d);
             }
         }

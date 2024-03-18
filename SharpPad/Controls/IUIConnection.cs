@@ -38,7 +38,7 @@ namespace SharpPad.Controls {
         /// Connects this UI object to the given owner and model. This should be called after the control is
         /// </summary>
         /// <param name="owner">The connected parent</param>
-        /// <param name="model">The connected model</param>
+        /// <param name="model">The connected model</param>/
         void Connect(TParent owner, TModel model);
 
         /// <summary>

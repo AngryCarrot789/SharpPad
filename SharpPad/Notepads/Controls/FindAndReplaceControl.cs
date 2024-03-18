@@ -30,6 +30,8 @@ namespace SharpPad.Notepads.Controls {
     public class FindAndReplaceControl : Control {
         public static readonly DependencyProperty FindModelProperty = DependencyProperty.Register("FindModel", typeof(FindAndReplaceModel), typeof(FindAndReplaceControl), new PropertyMetadata(default(FindAndReplaceModel), (d, e) => ((FindAndReplaceControl) d).OnFindModelChanged((FindAndReplaceModel) e.OldValue, (FindAndReplaceModel) e.NewValue)));
         public static readonly DependencyProperty IsActiveProperty = DependencyProperty.Register("IsActive", typeof(bool), typeof(FindAndReplaceControl), new PropertyMetadata(BoolBox.False));
+        public static readonly DependencyProperty IsRegexFaultedProperty = DependencyProperty.Register("IsRegexFaulted", typeof(bool), typeof(FindAndReplaceControl), new PropertyMetadata(BoolBox.False, null, OnCoerceIsRegexFaulted));
+        private static readonly DependencyProperty RegexFaultMessageProperty = DependencyProperty.Register("RegexFaultMessage", typeof(string), typeof(FindAndReplaceControl), new PropertyMetadata(default(string)));
 
         public FindAndReplaceModel FindModel {
             get => (FindAndReplaceModel) this.GetValue(FindModelProperty);
@@ -41,11 +43,42 @@ namespace SharpPad.Notepads.Controls {
             set => this.SetValue(IsActiveProperty, value.Box());
         }
 
+        public bool IsRegexFaulted {
+            get => (bool) this.GetValue(IsRegexFaultedProperty);
+            set => this.SetValue(IsRegexFaultedProperty, value.Box());
+        }
+
+        public string RegexFaultMessage {
+            get => (string) this.GetValue(RegexFaultMessageProperty);
+            set => this.SetValue(RegexFaultMessageProperty, value);
+        }
+
+        public NotepadEditorControl Owner { get; set; }
+
         private readonly IBinder<FindAndReplaceModel> searchTextBinder = Binders.AccessorAEDP<FindAndReplaceModel, string>(TextBox.TextProperty, nameof(FindAndReplaceModel.SearchTextChanged), nameof(FindAndReplaceModel.SearchText));
+        private readonly IBinder<FindAndReplaceModel> regexFaultStateBinder = Binders.AccessorAEDP<FindAndReplaceModel, bool>(IsRegexFaultedProperty, nameof(FindAndReplaceModel.IsRegexFaultedChanged), nameof(FindAndReplaceModel.IsRegexFaulted));
+        private readonly IBinder<FindAndReplaceModel> regexFaultTextBinder = Binders.AccessorAEDP<FindAndReplaceModel, string>(RegexFaultMessageProperty, nameof(FindAndReplaceModel.IsRegexFaultedChanged), nameof(FindAndReplaceModel.RegexFaultMessage));
         private TextBox PART_SearchTextBox;
         private TextBlock PART_ResultCountTextBlock;
 
         public FindAndReplaceControl() {
+            this.regexFaultStateBinder.AttachControl(this);
+            this.regexFaultTextBinder.AttachControl(this);
+        }
+
+        private static object OnCoerceIsRegexFaulted(DependencyObject d, object basevalue) {
+            FindAndReplaceControl control = (FindAndReplaceControl) d;
+            if (BoolBox.False.Equals(basevalue)) {
+                return basevalue;
+            }
+
+            // If there's no active editor or its FAR model isn't equal to ours, then don't show any fault
+            NotepadEditor editor = control.Owner?.ActiveEditor;
+            if (editor == null || editor.FindModel != control.FindModel) {
+                return BoolBox.False;
+            }
+
+            return basevalue;
         }
 
         public override void OnApplyTemplate() {
@@ -60,12 +93,16 @@ namespace SharpPad.Notepads.Controls {
         private void OnFindModelChanged(FindAndReplaceModel oldValue, FindAndReplaceModel newValue) {
             if (oldValue != null) {
                 this.searchTextBinder.DetachModel();
+                this.regexFaultStateBinder.DetachModel();
+                this.regexFaultTextBinder.DetachModel();
                 oldValue.SearchResultsChanged -= this.UpdateForSearchThingsChanged;
                 oldValue.CurrentResultIndexChanged -= this.UpdateForSearchThingsChanged;
             }
 
             if (newValue != null) {
                 this.searchTextBinder.AttachModel(newValue);
+                this.regexFaultStateBinder.AttachModel(newValue);
+                this.regexFaultTextBinder.AttachModel(newValue);
                 newValue.SearchResultsChanged += this.UpdateForSearchThingsChanged;
                 newValue.CurrentResultIndexChanged += this.UpdateForSearchThingsChanged;
             }

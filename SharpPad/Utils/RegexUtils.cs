@@ -1,4 +1,4 @@
-﻿//
+//
 // Copyright (c) 2023-2024 REghZy
 //
 // This file is part of SharpPad.
@@ -10,16 +10,27 @@
 //
 // SharpPad is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
 // along with SharpPad. If not, see <https://www.gnu.org/licenses/>.
 //
 
-namespace SharpPad.Themes.Generator {
-    public class ThemeGenerator {
-        // The easiest way to allow user-modifiable themes will probably be
-        // to generate an XAML file
+using System;
+using System.Text.RegularExpressions;
+
+namespace SharpPad.Utils {
+    public static class RegexUtils {
+        public static bool IsValidRegex(string pattern) {
+            try {
+                Regex.Match("", pattern);
+            }
+            catch (ArgumentException) {
+                return false;
+            }
+
+            return true;
+        }
     }
 }

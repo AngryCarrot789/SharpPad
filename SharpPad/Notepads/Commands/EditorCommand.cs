@@ -36,7 +36,7 @@ namespace SharpPad.Notepads.Commands {
             if (editor.Document == null || (!this.CanHaveNullTextEditor && editor.TextEditor == null))
                 return Executability.ValidButCannotExecute;
 
-            return editor.Document == null ? Executability.Invalid : this.CanExecute(editor, editor.TextEditor, editor.Document.Document, e);
+            return this.CanExecute(editor, editor.TextEditor, editor.Document.Document, e);
         }
 
         protected sealed override void Execute(CommandEventArgs e) {
