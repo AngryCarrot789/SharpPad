@@ -194,8 +194,8 @@
     <Thickness x:Key="MenuItem.TopLevelItem.Static.BorderThickness" Left="0" Top="0" Right="0" Bottom="0"/>
     <Thickness x:Key="MenuItem.SubLevelItem.Static.BorderThickness" Left="0" Top="1" Right="0" Bottom="1"/>
     <SolidColorBrush x:Key="MenuItem.Disabled.Background" Color="{DynamicResource AColour.Tone5.Background.MouseOver}"/>
-    <SolidColorBrush x:Key="Popup.Static.Background" Color="{DynamicResource AColour.Tone4.Background.Static}"/>
-    <SolidColorBrush x:Key="Popup.Static.Border" Color="{DynamicResource AColour.Tone6.Border.Static}"/>
+    <SolidColorBrush x:Key="Popup.Static.Background" Color="{DynamicResource AColour.Tone5.Background.Static}"/>
+    <SolidColorBrush x:Key="Popup.Static.Border" Color="{DynamicResource AColour.Tone7.Border.Static}"/>
     <SolidColorBrush x:Key="Popup.Static.Foreground" Color="{DynamicResource AColour.Foreground.Static}"/>
     <SolidColorBrush x:Key="Popup.Disabled.Background" Color="{DynamicResource AColour.Tone4.Background.Disabled}"/>
     <SolidColorBrush x:Key="Popup.Disabled.Border" Color="{DynamicResource AColour.Tone4.Border.Disabled}"/>

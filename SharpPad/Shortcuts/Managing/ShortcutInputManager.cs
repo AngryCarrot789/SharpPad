@@ -321,7 +321,10 @@ namespace SharpPad.Shortcuts.Managing {
 
         public void ProcessInputStatesForMouseUp(string focusedGroup, MouseStroke stroke) {
             this.AccumulateShortcuts(stroke, focusedGroup, BlockAllFilter);
-            ExceptionUtils.Assert(this.cachedShortcutList.Count == 0, "Expected the block all filter to work properly");
+            if (this.cachedShortcutList.Count > 0) {
+                throw new Exception("Expected the block all filter to work properly");
+            }
+
             this.ProcessInputStates();
         }
 

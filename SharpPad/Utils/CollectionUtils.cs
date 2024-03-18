@@ -20,6 +20,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using SharpPad.Notepads;
 
 namespace SharpPad.Utils {
     public static class CollectionUtils {
@@ -289,6 +290,27 @@ namespace SharpPad.Utils {
         public static void InsertSorted<T>(this IList<T> list, T value, Comparison<T> comparison) {
             int index = GetSortInsertionIndex(list, value, comparison);
             list.Insert(index, value);
+        }
+
+        /// <summary>
+        /// Gets either the next index or the previous index, ensuring it does not equal the given index, or returns -1 if the list is empty or has only 1 element
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="index"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        public static int GetNeighbourIndex<T>(IReadOnlyList<T> list, int index) {
+            int count = list.Count;
+            if (index < 0 || index >= count)
+                throw new IndexOutOfRangeException("Index was not within the bounds of the list");
+
+            // ABCD
+
+            if (count <= 1)
+                return -1;
+
+            return index == (count - 1) ? (index - 1) : (index + 1);
         }
     }
 }

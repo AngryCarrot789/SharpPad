@@ -19,6 +19,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
@@ -27,6 +28,7 @@ using SharpPad.CommandSystem;
 using SharpPad.Logger;
 using SharpPad.Notepads;
 using SharpPad.Notepads.Commands;
+using SharpPad.Properties;
 using SharpPad.Services.Files;
 using SharpPad.Services.Messages;
 using SharpPad.Services.WPF.Files;
@@ -79,9 +81,11 @@ namespace SharpPad {
             if (args.Length > 0 && File.Exists(args[0])) {
                 OpenFilesCommand.OpenFile(notepad, args[0]);
             }
-            else if (Debugger.IsAttached) {
-                this.LoadDefaultNotepad();
-
+            else {
+#if DEBUG
+                this.Nodepad.AddNewEditorForDocument(new NotepadDocument() {DocumentName = "New Document 1", Document = {Text = ""}, IsModified = false});
+                this.Nodepad.AddNewEditorForDocument(new NotepadDocument() {DocumentName = "New Document 2", Document = {Text = "some text here"}, IsModified = false});
+                this.Nodepad.AddNewEditorForDocument(new NotepadDocument() {DocumentName = "New Document 3", Document = {Text = "some more text 111"}, IsModified = false});
                 TaskManager.Instance.RunTask(async () => {
                     IActivityProgress prog = TaskManager.Instance.CurrentTask.Progress;
                     prog.Text = "Dummy task";
@@ -96,15 +100,14 @@ namespace SharpPad {
                         prog.OnProgress(progressPerUpdate);
                     }
                 });
+#else
+                this.Nodepad.AddNewEditorForDocument(new NotepadDocument() {DocumentName = "Document 1", Document = {Text = ""}, IsModified = false});
+#endif
             }
         }
 
-        public void OnApplicationExiting() { }
-
-        private void LoadDefaultNotepad() {
-            this.Nodepad.AddNewEditor(new NotepadDocument() {DocumentName = "New Document 1", Document = {Text = ""}, IsModified = false});
-            this.Nodepad.AddNewEditor(new NotepadDocument() {DocumentName = "New Document 2", Document = {Text = "some text here"}, IsModified = false});
-            this.Nodepad.AddNewEditor(new NotepadDocument() {DocumentName = "New Document 3", Document = {Text = "some more text 111"}, IsModified = false});
+        public void OnApplicationExiting() {
+            Settings.Default.Save();
         }
 
         public void RegisterActions(CommandManager manager) {

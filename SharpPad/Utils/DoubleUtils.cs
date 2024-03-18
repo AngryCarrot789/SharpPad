@@ -22,7 +22,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 
 namespace SharpPad.Utils {
-    public class DoubleUtils {
+    public static class DoubleUtils {
         internal const double DBL_EPSILON = 2.22044604925031E-16;
         internal const float FLT_MIN = 1.175494E-38f;
 
@@ -50,12 +50,12 @@ namespace SharpPad.Utils {
 
         public static bool AreClose(Size size1, Size size2) => AreClose(size1.Width, size2.Width) && AreClose(size1.Height, size2.Height);
 
-        public static bool AreClose(Vector vector1, Vector vector2) => DoubleUtils.AreClose(vector1.X, vector2.X) && DoubleUtils.AreClose(vector1.Y, vector2.Y);
+        public static bool AreClose(Vector vector1, Vector vector2) => AreClose(vector1.X, vector2.X) && AreClose(vector1.Y, vector2.Y);
 
         public static bool AreClose(Rect rect1, Rect rect2) {
             if (rect1.IsEmpty)
                 return rect2.IsEmpty;
-            return !rect2.IsEmpty && DoubleUtils.AreClose(rect1.X, rect2.X) && (DoubleUtils.AreClose(rect1.Y, rect2.Y) && AreClose(rect1.Height, rect2.Height)) && AreClose(rect1.Width, rect2.Width);
+            return !rect2.IsEmpty && AreClose(rect1.X, rect2.X) && (AreClose(rect1.Y, rect2.Y) && AreClose(rect1.Height, rect2.Height)) && AreClose(rect1.Width, rect2.Width);
         }
 
         public static bool IsBetweenZeroAndOne(double val) => GreaterThanOrClose(val, 0.0) && LessThanOrClose(val, 1.0);

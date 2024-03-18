@@ -12,15 +12,10 @@
                 <ResourceDictionary Source="Themes/Controls.xaml"/>
 
                 <!-- General styles that don't really rely on that many other styles -->
+                <ResourceDictionary Source="Shortcuts/WPF/ShortcutStyles.xaml"/>
                 <ResourceDictionary Source="Controls/GeneralControlStyles.xaml"/>
-                <ResourceDictionary Source="Controls/Dragger/NumberDraggerStyles.xaml"/>
                 <ResourceDictionary Source="AdvancedMenuService/ContextService/Controls/ContextStyles.xaml"/>
                 <ResourceDictionary Source="Tasks/ActivityStyles.xaml"/>
-
-                <!-- Multi-select tree -->
-                <ResourceDictionary Source="Controls/TreeViews/Themes/EditTextBox.xaml"/>
-                <ResourceDictionary Source="Controls/TreeViews/Themes/MultiSelectTreeView.Aero2.xaml"/>
-                <ResourceDictionary Source="Controls/TreeViews/Themes/MultiSelectTreeViewItem.Aero2.xaml"/>
 
                 <ResourceDictionary Source="Notepads/Controls/NotepadControls.xaml"/>
             </ResourceDictionary.MergedDictionaries>

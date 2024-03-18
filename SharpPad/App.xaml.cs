@@ -8,6 +8,7 @@ using SharpPad.CommandSystem;
 using SharpPad.Logger;
 using SharpPad.Notepads;
 using SharpPad.Notepads.Views;
+using SharpPad.Properties;
 using SharpPad.Services.Messages;
 using SharpPad.Shortcuts.Managing;
 using SharpPad.Shortcuts.WPF;
@@ -61,7 +62,18 @@ namespace SharpPad {
             // Notepad init
             Notepad notepad = new Notepad();
 
-            NotepadWindow window = new NotepadWindow();
+            int prefWidth = Settings.Default.NotepadWindowWidth;
+            if (prefWidth < 20)
+                prefWidth = 600;
+
+            int prefHeight = Settings.Default.NotepadWindowHeight;
+            if (prefHeight < 20)
+                prefHeight = 600;
+
+            NotepadWindow window = new NotepadWindow() {
+                Width = prefWidth, Height = prefHeight
+            };
+
             window.Show();
             window.Notepad = notepad;
             this.MainWindow = window;

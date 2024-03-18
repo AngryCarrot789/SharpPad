@@ -10,7 +10,7 @@
 //
 // SharpPad is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
@@ -76,12 +76,13 @@ namespace SharpPad.Notepads.Controls {
         // use RDA to prevent lag if the active document changes very quickly, e.g. opening files
         // but the active document is set during each file opened for some reason
         private readonly RapidDispatchAction<NotepadEditor> updateActiveEditorRda;
-        private ColorizeSearchResultsBackgroundRenderer searchColorizor;
-        // private FindResultOutline findResultOutliner;
+        private readonly SearchResultBackgroundRenderer searchColorizor;
+        // private SearchResultColorizingTransformer findResultOutliner;
 
         public NotepadEditorControl() {
             this.contextData = new ContextData().Set(DataKeys.UINotepadEditorKey, this);
             this.updateActiveEditorRda = new RapidDispatchAction<NotepadEditor>(this.SetActiveEditor, DispatcherPriority.Render);
+            this.searchColorizor = new SearchResultBackgroundRenderer();
         }
 
         public override void OnApplyTemplate() {
@@ -91,10 +92,9 @@ namespace SharpPad.Notepads.Controls {
             TemplateUtils.GetTemplateChild(this, nameof(this.PART_FindAndReplacePanel), out this.PART_FindAndReplacePanel);
             TemplateUtils.GetTemplateChild(this, nameof(this.PART_FindAndReplaceControl), out this.PART_FindAndReplaceControl);
 
-            this.searchColorizor = new ColorizeSearchResultsBackgroundRenderer();
             this.PART_TextEditor.TextArea.TextView.BackgroundRenderers.Add(this.searchColorizor);
 
-            // this.PART_TextEditor.TextArea.TextView.LineTransformers.Add(this.findResultOutliner = new FindResultOutline(this));
+            // this.PART_TextEditor.TextArea.TextView.LineTransformers.Add(this.findResultOutliner = new SearchResultColorizingTransformer(this));
             this.PART_FindAndReplacePanel.Visibility = Visibility.Collapsed;
             if (this.activeEditor != null)
                 this.activeEditor.TextEditor = this.PART_TextEditor;
@@ -264,7 +264,7 @@ namespace SharpPad.Notepads.Controls {
         private void UpdateSearchResultRender() {
             if (this.searchColorizor != null) {
                 this.searchColorizor.OnSearchUpdated(this.activeFindModel?.Results);
-                // this.PART_TextEditor.TextArea.TextView.InvalidateLayer(KnownLayer.Selection);
+                this.PART_TextEditor.TextArea.TextView.InvalidateLayer(KnownLayer.Selection);
             }
         }
 
@@ -340,105 +340,5 @@ namespace SharpPad.Notepads.Controls {
         #endregion
 
         public void FocusFindSearchBox() => this.PART_FindAndReplaceControl?.FocusSearchText();
-
-        #region Search Result Outlines
-
-        // A modified implementation from: https://stackoverflow.com/a/47955290/11034928
-        public class ColorizeSearchResultsBackgroundRenderer : IBackgroundRenderer {
-            private static readonly Brush BgBrush;
-            private static readonly Pen BdPen;
-            private readonly TextSegmentCollection<TextSegment> myResults = new TextSegmentCollection<TextSegment>();
-
-            public KnownLayer Layer => KnownLayer.Selection; // draw behind selection
-
-            public ColorizeSearchResultsBackgroundRenderer() {
-            }
-
-            static ColorizeSearchResultsBackgroundRenderer() {
-                Color bgc = Colors.Orange;
-                Color brc = Colors.White;
-                BgBrush = new SolidColorBrush(new Color() {R = bgc.R, G = bgc.G, B = bgc.B, A = 175});
-                BdPen = new Pen(new SolidColorBrush(new Color() {R = brc.R, G = brc.G, B = brc.B, A = 255}), 1.0);
-
-                // big performance helper
-                if (BgBrush.CanFreeze)
-                    BgBrush.Freeze();
-                if (BdPen.CanFreeze)
-                    BdPen.Freeze();
-            }
-
-            public void OnSearchUpdated(IEnumerable<TextRange> ranges) {
-                this.myResults.Clear();
-                if (ranges != null)
-                    this.myResults.AddCollectionRange(ranges.Select(x => new TextSegment() {StartOffset = x.Index, Length = x.Length}));
-            }
-
-            /// <summary>Causes the background renderer to draw.</summary>
-            public void Draw(TextView textView, DrawingContext drawingContext) {
-                if (this.myResults == null || !textView.VisualLinesValid) {
-                    return;
-                }
-
-                ReadOnlyCollection<VisualLine> visualLines = textView.VisualLines;
-                if (visualLines.Count == 0) {
-                    return;
-                }
-
-                int viewStart = visualLines.First().FirstDocumentLine.Offset;
-                int viewEnd = visualLines.Last().LastDocumentLine.EndOffset;
-
-                foreach (TextSegment result in this.myResults.FindOverlappingSegments(viewStart, viewEnd - viewStart)) {
-                    BackgroundGeometryBuilder geoBuilder = new BackgroundGeometryBuilder {
-                        AlignToWholePixels = true, BorderThickness = 1, CornerRadius = 0
-                    };
-
-                    geoBuilder.AddSegment(textView, result);
-                    Geometry geometry = geoBuilder.CreateGeometry();
-                    if (geometry != null) {
-                        drawingContext.DrawGeometry(BgBrush, BdPen, geometry);
-                    }
-                }
-            }
-        }
-
-        // Old version. Works, but getting the white outline doesn't work that well
-        private class FindResultOutline : ColorizingTransformer {
-            private static readonly Brush BgBrush = new SolidColorBrush(new Color() {R = Colors.Orange.R, G = Colors.Orange.G, B = Colors.Orange.B, A = 150});
-
-            private readonly NotepadEditorControl control;
-
-            public FindResultOutline(NotepadEditorControl control) {
-                this.control = control;
-            }
-
-            static FindResultOutline() {
-                // big performance helper
-                if (BgBrush.CanFreeze)
-                    BgBrush.Freeze();
-            }
-
-            protected override void Colorize(ITextRunConstructionContext context) {
-                IReadOnlyList<TextRange> results = this.control.activeFindModel?.Results;
-                if (results == null || results.Count < 1) {
-                    return;
-                }
-
-                int lineStartOffset = context.VisualLine.FirstDocumentLine.Offset;
-                foreach (TextRange range in results) {
-                    if (range.Index < lineStartOffset) {
-                        continue;
-                    }
-
-                    int startColumn = context.VisualLine.GetVisualColumn(range.Index - lineStartOffset);
-                    int endColumn = context.VisualLine.GetVisualColumn(range.EndIndex - lineStartOffset);
-
-                    this.ChangeVisualElements(startColumn, endColumn, element => {
-                        element.TextRunProperties.SetBackgroundBrush(BgBrush);
-                    });
-                }
-            }
-        }
-
-        #endregion
     }
 }

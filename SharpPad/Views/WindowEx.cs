@@ -158,8 +158,9 @@ namespace SharpPad.Views {
                 // closeEventResult is only set if the async state of OnClosingInternal does not require
                 // dispatching back to the main thread (no usage of Task.Delay(), no awaiting real async things, etc.).
                 // However when it does, cancel the close and let the async code handle the window's closing state (isHandlingAsyncClose becomes true)
-                bool? result = Helper.Exchange(ref this.closeEventResult, null);
+                bool? result = this.closeEventResult;
                 if (result.HasValue) {
+                    this.closeEventResult = null;
                     e.Cancel = !result.Value; // true = close, false = do not close
                 }
                 else {

@@ -69,11 +69,6 @@
     <Reference Include="PresentationFramework.Aero2" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -83,8 +78,6 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="UIAutomationProvider" />
-    <Reference Include="UIAutomationTypes" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -117,29 +110,6 @@
     <Compile Include="Controls\Bindings\IBinder.cs" />
     <Compile Include="Controls\Bindings\UpdaterAutoEventPropertyBinder.cs" />
     <Compile Include="Controls\Bindings\UpdaterPropertyBinder.cs" />
-    <Compile Include="Controls\Dragger\EditCompletedEventArgs.cs" />
-    <Compile Include="Controls\Dragger\EditCompletedEventHandler.cs" />
-    <Compile Include="Controls\Dragger\EditStartEventArgs.cs" />
-    <Compile Include="Controls\Dragger\EditStartEventHandler.cs" />
-    <Compile Include="Controls\Dragger\HorizontalIncrement.cs" />
-    <Compile Include="Controls\Dragger\IChangeMapper.cs" />
-    <Compile Include="Controls\Dragger\IValueFormatter.cs" />
-    <Compile Include="Controls\Dragger\IValuePreProcessor.cs" />
-    <Compile Include="Controls\Dragger\NumberDragger.cs" />
-    <Compile Include="Controls\Dragger\UnitToPercentFormatter.cs" />
-    <Compile Include="Controls\Dragger\ValueStringFormatter.cs" />
-    <Compile Include="Controls\Dragger\VerticalIncrement.cs" />
-    <Compile Include="Controls\TreeViews\Automation\Peers\MultiSelectTreeViewAutomationPeer.cs" />
-    <Compile Include="Controls\TreeViews\Automation\Peers\MultiSelectTreeViewItemAutomationPeer.cs" />
-    <Compile Include="Controls\TreeViews\Automation\Peers\MultiSelectTreeViewItemDataAutomationPeer.cs" />
-    <Compile Include="Controls\TreeViews\Controls\BorderSelectionLogic.cs" />
-    <Compile Include="Controls\TreeViews\Controls\EditTextBox.cs" />
-    <Compile Include="Controls\TreeViews\Controls\FocusHelper.cs" />
-    <Compile Include="Controls\TreeViews\Controls\ISelectionStrategy.cs" />
-    <Compile Include="Controls\TreeViews\Controls\ListUtils.cs" />
-    <Compile Include="Controls\TreeViews\Controls\MultiSelectTreeView.cs" />
-    <Compile Include="Controls\TreeViews\Controls\MultiSelectTreeViewItem.cs" />
-    <Compile Include="Controls\TreeViews\Controls\SelectionMultiple.cs" />
     <Compile Include="DispatcherDelegate.cs" />
     <Compile Include="IApplicationStartupProgress.cs" />
     <Compile Include="IDispatcher.cs" />
@@ -150,8 +120,11 @@
     <Compile Include="Notepads\Commands\EditorCommand.cs" />
     <Compile Include="Notepads\Commands\FindModelCommand.cs" />
     <Compile Include="Notepads\Commands\FindModelCommandUsage.cs" />
+    <Compile Include="Notepads\Commands\NewFileCommand.cs" />
     <Compile Include="Notepads\Commands\NotepadCommand.cs" />
     <Compile Include="Notepads\Commands\CloseDocumentCommand.cs" />
+    <Compile Include="Notepads\Commands\OpenFilesCommand.cs" />
+    <Compile Include="Notepads\Commands\SaveAllDocumentsCommand.cs" />
     <Compile Include="Notepads\Contexts\EditMenuContextGenerator.cs" />
     <Compile Include="Notepads\Contexts\NotepadTabContextGenerator.cs" />
     <Compile Include="Notepads\Controls\FindAndReplaceControl.cs" />
@@ -160,23 +133,13 @@
     <Compile Include="Notepads\Controls\NotepadEditorControl.cs" />
     <Compile Include="Notepads\Controls\NotepadTabControl.cs" />
     <Compile Include="Notepads\Controls\NotepadTabItem.cs" />
+    <Compile Include="Notepads\Controls\SearchResultBackgroundRenderer.cs" />
+    <Compile Include="Notepads\Controls\SearchResultColorizingTransformer.cs" />
     <Compile Include="Notepads\FindAndReplaceModel.cs" />
     <Compile Include="Notepads\NotepadEditor.cs" />
     <Compile Include="Notepads\Notepad.cs" />
     <Compile Include="Notepads\NotepadDocument.cs" />
     <Compile Include="Notepads\NotepadDropRegistry.cs" />
-    <Compile Include="RBC\BinaryUtils.cs" />
-    <Compile Include="RBC\Events\ReadFromRBEEventHandler.cs" />
-    <Compile Include="RBC\Events\WriteToRBEEventHandler.cs" />
-    <Compile Include="RBC\RBEArray.cs" />
-    <Compile Include="RBC\RBEBase.cs" />
-    <Compile Include="RBC\RBEDictionary.cs" />
-    <Compile Include="RBC\RBEGuid.cs" />
-    <Compile Include="RBC\RBEList.cs" />
-    <Compile Include="RBC\RBEPrimitive.cs" />
-    <Compile Include="RBC\RBEStruct.cs" />
-    <Compile Include="RBC\RBEType.cs" />
-    <Compile Include="RBC\RBEUtils.cs" />
     <Compile Include="ServiceManager.cs" />
     <Compile Include="Services\Files\IFilePickDialogService.cs" />
     <Compile Include="Services\Messages\IMessageDialogService.cs" />
@@ -235,6 +198,8 @@
     <Compile Include="Shortcuts\WPF\Converters\ShortcutIdToToolTipConverter.cs" />
     <Compile Include="Shortcuts\WPF\Converters\ShortcutPathToInputGestureTextConverter.cs" />
     <Compile Include="Shortcuts\WPF\ShortcutActivateHandler.cs" />
+    <Compile Include="Shortcuts\WPF\ShortcutToolTip.cs" />
+    <Compile Include="Shortcuts\WPF\ShortcutTooltipService.cs" />
     <Compile Include="Shortcuts\WPF\ShortcutUtils.cs" />
     <Compile Include="Shortcuts\WPF\UIInputManager.cs" />
     <Compile Include="Shortcuts\WPF\WPFKeyMapSerialiser.cs" />
@@ -267,14 +232,10 @@
     <Compile Include="Utils\Accessing\ValueAccessor.cs" />
     <Compile Include="Utils\Accessing\ValueAccessors.cs" />
     <Compile Include="Utils\Arrays.cs" />
-    <Compile Include="Utils\AsyncLock.cs" />
-    <Compile Include="Utils\AudioUtils.cs" />
     <Compile Include="Utils\BinarySearch.cs" />
     <Compile Include="Utils\Bits.cs" />
     <Compile Include="Utils\BoolBox.cs" />
-    <Compile Include="Utils\CASLock.cs" />
     <Compile Include="Utils\CastingList.cs" />
-    <Compile Include="Utils\Collections\AdvancedReadOnlyObservableCollection.cs" />
     <Compile Include="Utils\Collections\DictionaryList.cs" />
     <Compile Include="Utils\Collections\InheritanceDictionary.cs" />
     <Compile Include="Utils\Collections\InheritanceMultiMap.cs" />
@@ -286,78 +247,39 @@
     <Compile Include="Utils\Collections\TypeMultiTable.cs" />
     <Compile Include="Utils\Collections\WeakReferenceDictionary.cs" />
     <Compile Include="Utils\CollectionUtils.cs" />
-    <Compile Include="Utils\Colour.cs" />
     <Compile Include="Utils\Commands\AsyncRelayCommand.cs" />
     <Compile Include="Utils\Commands\BaseAsyncRelayCommand.cs" />
     <Compile Include="Utils\Commands\BaseRelayCommand.cs" />
     <Compile Include="Utils\Commands\IAsyncRelayCommand.cs" />
     <Compile Include="Utils\Commands\IRelayCommand.cs" />
     <Compile Include="Utils\Commands\RelayCommand.cs" />
-    <Compile Include="Utils\CursorUtils.cs" />
-    <Compile Include="Utils\DispatcherCallback.cs" />
     <Compile Include="Utils\DispatcherUtils.cs" />
-    <Compile Include="Utils\Disposable\DisposableRef.cs" />
     <Compile Include="Utils\DoubleUtils.cs" />
-    <Compile Include="Utils\DynamicCodeConverter.cs" />
     <Compile Include="Utils\ErrorList.cs" />
-    <Compile Include="Utils\EventArgsCache.cs" />
     <Compile Include="Utils\EventUtils.cs" />
     <Compile Include="Utils\ExceptionEventHandler.cs" />
     <Compile Include="Utils\ExceptionUtils.cs" />
-    <Compile Include="Utils\Expressions\BasicNumericExpression.cs" />
-    <Compile Include="Utils\Expressions\ComplexNumericExpression.cs" />
     <Compile Include="Utils\FastStringBuf.cs" />
-    <Compile Include="Utils\FFmpegError.cs" />
-    <Compile Include="Utils\FileUtils.cs" />
     <Compile Include="Utils\Filter.cs" />
     <Compile Include="Utils\Filters.cs" />
-    <Compile Include="Utils\HandlerList.cs" />
-    <Compile Include="Utils\Helper.cs" />
-    <Compile Include="Utils\IDisplayName.cs" />
-    <Compile Include="Utils\InheritedProperty.cs" />
-    <Compile Include="Utils\IntRect.cs" />
-    <Compile Include="Utils\IRenameTarget.cs" />
-    <Compile Include="Utils\ItemCacheStack.cs" />
-    <Compile Include="Utils\KBUtils.cs" />
     <Compile Include="Utils\KeyboardUtils.cs" />
     <Compile Include="Utils\KeyUtils.cs" />
-    <Compile Include="Utils\Lang.cs" />
     <Compile Include="Utils\Maths.cs" />
-    <Compile Include="Utils\NumberAverager.cs" />
-    <Compile Include="Utils\Numerics\SizeI.cs" />
-    <Compile Include="Utils\Numerics\Vector2i.cs" />
-    <Compile Include="Utils\Periodic.cs" />
-    <Compile Include="Utils\PrecisionTimer.cs" />
-    <Compile Include="Utils\RandomUtils.cs" />
     <Compile Include="Utils\RDA\IDispatchAction.cs" />
     <Compile Include="Utils\RDA\RateLimitedDispatchAction.cs" />
     <Compile Include="Utils\RDA\RapidDispatchAction.cs" />
     <Compile Include="Utils\RDA\RapidDispatchActionEx.cs" />
-    <Compile Include="Utils\Rect2d.cs" />
-    <Compile Include="Utils\Rect2i.cs" />
-    <Compile Include="Utils\Reference.cs" />
-    <Compile Include="Utils\ReferenceEqualityComparer.cs" />
-    <Compile Include="Utils\ResourceDictionaryDataTemplateSelector.cs" />
     <Compile Include="Utils\RoundingMode.cs" />
-    <Compile Include="Utils\ScrollerUtils.cs" />
-    <Compile Include="Utils\SelectionType.cs" />
-    <Compile Include="Utils\ShellIconSize.cs" />
-    <Compile Include="Utils\ShellUtils.cs" />
     <Compile Include="Utils\SingletonEnumerator.cs" />
     <Compile Include="Utils\SingletonList.cs" />
     <Compile Include="Utils\StringJoiner.cs" />
     <Compile Include="Utils\StringUtils.cs" />
     <Compile Include="Utils\TemplateUtils.cs" />
-    <Compile Include="Utils\TextIncrement.cs" />
-    <Compile Include="Utils\TextPointerUtils.cs" />
     <Compile Include="Utils\TextRange.cs" />
-    <Compile Include="Utils\TextUtils.cs" />
     <Compile Include="Utils\ThreadTimer.cs" />
     <Compile Include="Utils\Time.cs" />
     <Compile Include="Utils\TypeUtils.cs" />
-    <Compile Include="Utils\UIUtils.cs" />
     <Compile Include="Utils\Validate.cs" />
-    <Compile Include="Utils\Vec2i.cs" />
     <Compile Include="Utils\Visuals\VisualAncestorChangedEventInterface.cs" />
     <Compile Include="Utils\Visuals\VisualTreeUtils.cs" />
     <Compile Include="Views\AppSplashScreen.xaml.cs">
@@ -371,18 +293,6 @@
     <Page Include="AdvancedMenuService\ContextService\Controls\ContextStyles.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Controls\Dragger\NumberDraggerStyles.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\TreeViews\Themes\EditTextBox.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\TreeViews\Themes\MultiSelectTreeView.Aero2.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\TreeViews\Themes\MultiSelectTreeViewItem.Aero2.xaml">
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\GeneralControlStyles.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -411,12 +321,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="AttachedProperties\AttachedInteractivity.cs" />
     <Compile Include="AttachedProperties\GridLatchSplitter.cs" />
     <Compile Include="AttachedProperties\HandleRequestBringIntoView.cs" />
     <Compile Include="AttachedProperties\HorizontalScrolling.cs" />
-    <Compile Include="AttachedProperties\MultiSelectorHelper.cs" />
-    <Compile Include="AttachedProperties\ObservableSelectionHelper.cs" />
     <Compile Include="AttachedProperties\ScrollBinder.cs" />
     <Compile Include="AttachedProperties\TextBlockHelper.cs" />
     <Compile Include="AttachedProperties\TextBoxHelper.cs" />
@@ -435,13 +342,10 @@
     <Compile Include="CommandSystem\Usages\CommandUsage.cs" />
     <Compile Include="CommandSystem\Usages\CommandUsageManager.cs" />
     <Compile Include="Converters\BoolConverter.cs" />
-    <Compile Include="Converters\BoolConverterAND.cs" />
-    <Compile Include="Converters\DbToVolumeConverter.cs" />
     <Compile Include="Converters\EmptyStringToVisibilityConverter.cs" />
     <Compile Include="Converters\EnumConverter.cs" />
     <Compile Include="Converters\FloatToDoubleConverter.cs" />
     <Compile Include="Converters\NullConverter.cs" />
-    <Compile Include="Converters\VolumeToDbConverter.cs" />
     <Compile Include="Controls\CancellableThumb.cs" />
     <Compile Include="Controls\GlyphGenerator.cs" />
     <Compile Include="Controls\GridSlotAutoSizer.cs" />
@@ -450,7 +354,6 @@
     <Compile Include="Controls\SpacedUniformGrid.cs" />
     <Compile Include="Notepads\Factories\ObjectFactory.cs" />
     <Compile Include="Notepads\Factories\ReflectiveObjectFactory.cs" />
-    <Compile Include="Notepads\Serialisation\SerialisationRegistry.cs" />
     <Compile Include="Notepads\Views\NotepadWindow.xaml.cs">
       <DependentUpon>NotepadWindow.xaml</DependentUpon>
     </Compile>
@@ -483,6 +386,10 @@
     <Page Include="Services\WPF\Messages\SingleInputDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Shortcuts\WPF\ShortcutStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Tasks\ActivityDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -561,7 +468,6 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <Resource Include="Controls\TreeViews\SOURCECODE.txt" />
     <Resource Include="Resources\Fonts\Oxanium\Oxanium-Bold.ttf" />
     <Resource Include="Resources\Fonts\Oxanium\Oxanium-ExtraBold.ttf" />
     <Resource Include="Resources\Fonts\Oxanium\Oxanium-ExtraLight.ttf" />

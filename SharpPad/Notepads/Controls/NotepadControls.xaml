@@ -36,11 +36,7 @@
                                                Foreground="{DynamicResource ABrush.Foreground.Static}"
                                                ShowLineNumbers="True"
                                                FontSize="14" FontFamily="Consolas"
-                                               ap:HorizontalScrolling.UseHorizontalScrolling="True">
-                                    <ae:TextEditor.Options>
-                                        <ae:TextEditorOptions/>
-                                    </ae:TextEditor.Options>
-                                </ae:TextEditor>
+                                               ap:HorizontalScrolling.UseHorizontalScrolling="True"/>
                             </DockPanel>
                         </Border>
                     </DockPanel>

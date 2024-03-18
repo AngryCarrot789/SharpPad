@@ -10,7 +10,7 @@
 //
 // SharpPad is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
@@ -39,7 +39,13 @@ namespace SharpPad.Notepads {
         private FindAndReplaceModel findModel;
         private NotepadDocument document;
         private TextEditor textEditor;
+        private Notepad owner;
         private bool isFindPanelOpen;
+
+        /// <summary>
+        /// Gets the <see cref="Notepad"/> object that this editor currently exists in
+        /// </summary>
+        public Notepad Owner => this.owner;
 
         /// <summary>
         /// Gets or sets the document that this editor is presenting
@@ -127,5 +133,11 @@ namespace SharpPad.Notepads {
         /// <param name="notepad">The notepad</param>
         /// <returns>A bool</returns>
         public bool IsViewedBy(Notepad notepad) => notepad.ActiveEditor == this;
+
+        public bool IsOwnedBy(Notepad notepad) => notepad == this.owner;
+
+        internal static void SetOwner(NotepadEditor editor, Notepad notepad) {
+            editor.owner = notepad;
+        }
     }
 }

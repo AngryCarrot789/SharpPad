@@ -1023,6 +1023,9 @@
         <Setter Property="Background" Value="{DynamicResource Popup.Static.Background}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource Popup.Static.Border}"/>
         <Setter Property="Foreground" Value="{DynamicResource ABrush.Foreground.Static}"/>
+        <Setter Property="FontFamily" Value="Segoe UI"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="FontWeight" Value="Normal"/>
         <Setter Property="MaxWidth" Value="800"/>
         <Setter Property="OverridesDefaultStyle" Value="true"/>
         <Setter Property="HasDropShadow" Value="True"/>
@@ -1033,17 +1036,14 @@
         <Setter Property="VerticalOffset" Value="15"/>
         <Setter Property="ToolTipService.ShowDuration" Value="30000"/>
         <Setter Property="ToolTipService.InitialShowDelay" Value="500"/>
-        <Setter Property="FontFamily" Value="Segoe UI"/>
-        <Setter Property="FontSize" Value="13"/>
-        <Setter Property="FontWeight" Value="Medium"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ToolTip">
                     <themes:SystemDropShadowChrome Name="Shdw" Color="Transparent" CornerRadius="0" SnapsToDevicePixels="True">
                         <Border Name="Border" SnapsToDevicePixels="True" BorderThickness="1" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
-                            <ContentPresenter Margin="5" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                            <ContentPresenter Margin="10,6" HorizontalAlignment="Stretch" VerticalAlignment="Top">
                                 <ContentPresenter.Resources>
-                                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                    <Style TargetType="{x:Type TextBlock}">
                                         <Setter Property="TextWrapping" Value="Wrap"/>
                                         <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
                                         <Setter Property="TextAlignment" Value="Left"/>
@@ -5070,6 +5070,7 @@
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
+
     <Style x:Key="CustomWindowStyle" TargetType="{x:Type Window}">
         <Setter Property="Background" Value="{DynamicResource Window.Static.Background}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource Window.Static.Border}"/>
@@ -5091,11 +5092,11 @@
                         <DockPanel>
                             <DockPanel Height="30" x:Name="titlebar" Background="{TemplateBinding BorderBrush}" VerticalAlignment="Top" Margin="0" DockPanel.Dock="Top">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Right">
-                                    <Button x:Name="btnMinimize" Focusable="False" Background="Transparent" BorderBrush="Transparent" Width="40" VerticalContentAlignment="Bottom" WindowChrome.IsHitTestVisibleInChrome="True" Click="Minimize_Event">
+                                    <Button x:Name="btnMinimize" Focusable="False" Background="Transparent" BorderThickness="0" Width="40" VerticalContentAlignment="Bottom" WindowChrome.IsHitTestVisibleInChrome="True" Click="Minimize_Event">
                                         <Rectangle Width="10" VerticalAlignment="Center" Margin="1 -24 0 0" Stroke="{DynamicResource ABrush.Glyph.Static}" StrokeThickness="2"/>
                                     </Button>
                                     <Grid x:Name="ThingButtons">
-                                        <Button x:Name="btnRestore" Focusable="False" Background="Transparent" BorderBrush="Transparent" Width="40"
+                                        <Button x:Name="btnRestore" Focusable="False" Background="Transparent" BorderThickness="0" Width="40"
                                                 WindowChrome.IsHitTestVisibleInChrome="True" Click="AutoMinimize_Event">
                                             <Grid Width="12" Height="12">
                                                 <Rectangle StrokeThickness="2" Stroke="{DynamicResource ABrush.Glyph.Static}" Margin="3,0,0,3"/>
@@ -5103,15 +5104,15 @@
                                             </Grid>
                                         </Button>
 
-                                        <Button x:Name="btnMaximize" Focusable="False" Background="Transparent" BorderBrush="Transparent" Width="40"
+                                        <Button x:Name="btnMaximize" Focusable="False" Background="Transparent" BorderThickness="0" Width="40"
                                                 WindowChrome.IsHitTestVisibleInChrome="True" Click="AutoMinimize_Event">
                                             <Grid Width="12" Height="12">
                                                 <Rectangle StrokeThickness="2" Stroke="{DynamicResource ABrush.Glyph.Static}" Margin="0"/>
                                             </Grid>
                                         </Button>
-                                        <Button x:Name="btnWtfEvenLolol" Focusable="False" Background="Transparent" BorderBrush="Transparent" Width="40" WindowChrome.IsHitTestVisibleInChrome="True" Click="AutoMinimize_Event" Content="^"/>
+                                        <Button x:Name="btnWtfEvenLolol" Focusable="False" Background="Transparent" BorderThickness="0" Width="40" WindowChrome.IsHitTestVisibleInChrome="True" Click="AutoMinimize_Event" Content="^"/>
                                     </Grid>
-                                    <Button x:Name="btnClose" Focusable="False" Background="Transparent" BorderBrush="Transparent" Template="{DynamicResource CloseWindowButtonTemplate}" Width="40" WindowChrome.IsHitTestVisibleInChrome="True" Click="CloseWindow_Event">
+                                    <Button x:Name="btnClose" Focusable="False" Background="Transparent" BorderThickness="0" Template="{DynamicResource CloseWindowButtonTemplate}" Width="40" WindowChrome.IsHitTestVisibleInChrome="True" Click="CloseWindow_Event">
                                         <Grid Margin="0 1 0 0">
                                             <Line X1="0" Y1="0" X2="11" Y2="11" Stroke="{DynamicResource ABrush.Glyph.Static}" StrokeThickness="2"/>
                                             <Line X1="0" Y2="0" Y1="11" X2="11" Stroke="{DynamicResource ABrush.Glyph.Static}" StrokeThickness="2"/>
@@ -5203,11 +5204,11 @@
                         <DockPanel>
                             <DockPanel Height="30" x:Name="titlebar" Background="{TemplateBinding TitlebarBrush}" VerticalAlignment="Top" Margin="0" DockPanel.Dock="Top">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Right">
-                                    <Button x:Name="btnMinimize" Focusable="False" Background="Transparent" BorderBrush="Transparent" Width="40" VerticalContentAlignment="Bottom" WindowChrome.IsHitTestVisibleInChrome="True" Click="Minimize_Event">
+                                    <Button x:Name="btnMinimize" Focusable="False" Background="Transparent" BorderThickness="0" Width="40" VerticalContentAlignment="Bottom" WindowChrome.IsHitTestVisibleInChrome="True" Click="Minimize_Event">
                                         <Rectangle Width="10" VerticalAlignment="Center" Margin="1 -24 0 0" Stroke="{DynamicResource ABrush.Glyph.Static}" StrokeThickness="2"/>
                                     </Button>
                                     <Grid x:Name="ThingButtons">
-                                        <Button x:Name="btnRestore" Focusable="False" Background="Transparent" BorderBrush="Transparent" Width="40"
+                                        <Button x:Name="btnRestore" Focusable="False" Background="Transparent" BorderThickness="0" Width="40"
                                                 WindowChrome.IsHitTestVisibleInChrome="True" Click="AutoMinimize_Event">
                                             <Grid Width="12" Height="12">
                                                 <Rectangle StrokeThickness="2" Stroke="{DynamicResource ABrush.Glyph.Static}" Margin="3,0,0,3"/>
@@ -5215,15 +5216,15 @@
                                             </Grid>
                                         </Button>
 
-                                        <Button x:Name="btnMaximize" Focusable="False" Background="Transparent" BorderBrush="Transparent" Width="40"
+                                        <Button x:Name="btnMaximize" Focusable="False" Background="Transparent" BorderThickness="0" Width="40"
                                                 WindowChrome.IsHitTestVisibleInChrome="True" Click="AutoMinimize_Event">
                                             <Grid Width="12" Height="12">
                                                 <Rectangle StrokeThickness="2" Stroke="{DynamicResource ABrush.Glyph.Static}" Margin="0"/>
                                             </Grid>
                                         </Button>
-                                        <Button x:Name="btnWtfEvenLolol" Focusable="False" Background="Transparent" BorderBrush="Transparent" Width="40" WindowChrome.IsHitTestVisibleInChrome="True" Click="AutoMinimize_Event" Content="^"/>
+                                        <Button x:Name="btnWtfEvenLolol" Focusable="False" Background="Transparent" BorderThickness="0" Width="40" WindowChrome.IsHitTestVisibleInChrome="True" Click="AutoMinimize_Event" Content="^"/>
                                     </Grid>
-                                    <Button x:Name="btnClose" Focusable="False" Background="Transparent" BorderBrush="Transparent" Template="{DynamicResource CloseWindowButtonTemplate}" Width="40" WindowChrome.IsHitTestVisibleInChrome="True" Click="CloseWindow_Event">
+                                    <Button x:Name="btnClose" Focusable="False" Background="Transparent" BorderThickness="0" Template="{DynamicResource CloseWindowButtonTemplate}" Width="40" WindowChrome.IsHitTestVisibleInChrome="True" Click="CloseWindow_Event">
                                         <Grid Margin="0 1 0 0">
                                             <Line X1="0" Y1="0" X2="11" Y2="11" Stroke="{DynamicResource ABrush.Glyph.Static}" StrokeThickness="2"/>
                                             <Line X1="0" Y2="0" Y1="11" X2="11" Stroke="{DynamicResource ABrush.Glyph.Static}" StrokeThickness="2"/>

@@ -57,6 +57,14 @@
                     <KeyStroke Mods="CTRL" Key="F"/>
                 </Shortcut>
 
+                <Shortcut Name="GoToPrevResultShortcut" CommandId="PrevFindResult">
+                    <KeyStroke Key="F3"/>
+                </Shortcut>
+
+                <Shortcut Name="GoToNextResultShortcut" CommandId="NextFindResult">
+                    <KeyStroke Key="F4"/>
+                </Shortcut>
+
                 <Group Name="FindPanel">
                     <Shortcut Name="ToggleFindMatchCaseShortcut" CommandId="ToggleFindMatchCase">
                         <KeyStroke Mods="ALT" Key="C"/>

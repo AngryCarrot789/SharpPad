@@ -10,7 +10,7 @@
 //
 // SharpPad is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
@@ -34,17 +34,16 @@ namespace SharpPad.Notepads.Commands {
                 return;
 
             int index = notepad.Editors.IndexOf(editor);
-            if (index == -1)
+            if (index < 0) {
+                IoC.MessageService.ShowMessage("Error", "This is weird... the editor was not stored inside the notepad...");
                 return;
+            }
 
             bool isActiveDocument = notepad.ActiveEditor == editor;
             notepad.RemoveEditorAt(index);
-            if (isActiveDocument) {
-                if (index > 0)
-                    index--;
 
-                if (index < notepad.Editors.Count)
-                    notepad.ActiveEditor = notepad.Editors[index];
+            if (isActiveDocument && index < notepad.Editors.Count) {
+                notepad.ActiveEditor = notepad.Editors[index];
             }
         }
     }

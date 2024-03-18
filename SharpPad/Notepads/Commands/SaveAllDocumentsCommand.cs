@@ -1,40 +1,35 @@
-//
+// 
 // Copyright (c) 2023-2024 REghZy
-//
+// 
 // This file is part of SharpPad.
-//
+// 
 // SharpPad is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either
 // version 3.0 of the License, or (at your option) any later version.
-//
+// 
 // SharpPad is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // Lesser General Public License for more details.
-//
+// 
 // You should have received a copy of the GNU General Public License
 // along with SharpPad. If not, see <https://www.gnu.org/licenses/>.
-//
+// 
 
-using System.Windows.Documents;
+using System.Linq;
+using SharpPad.CommandSystem;
 
-namespace SharpPad.Utils {
-    public static class TextPointerUtils {
-        public static TextPointer GetLineBegin(TextPointer caret) => caret.GetLineStartPosition(0) ?? caret.DocumentStart;
+namespace SharpPad.Notepads.Commands {
+    public class SaveAllDocumentsCommand : NotepadCommand {
+        public override Executability CanExecute(Notepad notepad, CommandEventArgs e) {
+            return notepad.Editors.Count > 0 ? Executability.Valid : Executability.ValidButCannotExecute;
+        }
 
-        public static TextPointer GetLineEnd(TextPointer caret) {
-            TextPointer nextLine = caret.GetLineStartPosition(1);
-            if (nextLine == null) {
-                return caret.DocumentEnd;
+        public override void Execute(Notepad notepad, CommandEventArgs e) {
+            foreach (NotepadEditor editor in notepad.Editors.Where(x => x.Document != null)) {
+                SaveDocumentCommand.SaveOrSaveAs(editor.Document);
             }
-
-            TextPointer lineEnd = nextLine.GetNextContextPosition(LogicalDirection.Backward) ?? caret.DocumentEnd;
-            if (lineEnd.CompareTo(nextLine) >= 0) {
-                return lineEnd;
-            }
-
-            return nextLine;
         }
     }
 }

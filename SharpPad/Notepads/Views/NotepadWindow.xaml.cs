@@ -26,6 +26,7 @@ using System.Windows.Input;
 using System.Windows.Threading;
 using ICSharpCode.AvalonEdit.Editing;
 using SharpPad.Interactivity.Contexts;
+using SharpPad.Properties;
 using SharpPad.Tasks;
 using SharpPad.Themes;
 using SharpPad.Utils.RDA;
@@ -65,9 +66,18 @@ namespace SharpPad.Notepads.Views {
                     if (sel.IsEmpty) {
                         this.PART_CaretText.Text = $"{caret.Line}:{caret.Column} ({caret.Offset} offset)";
                     }
+                    else if (sel is RectangleSelection rect) {
+                        ICSharpCode.AvalonEdit.TextViewPosition end = rect.EndPosition;
+                        int offsetA = area.Document.GetOffset(rect.StartPosition.Location);
+                        int offsetB = area.Document.GetOffset(end.Location);
+                        this.PART_CaretText.Text = $"{caret.Line}:{caret.Column} ({offsetA} -> {offsetB - end.Column + end.VisualColumn + 1})";
+                    }
                     else {
-                        int len = sel.Length;
-                        this.PART_CaretText.Text = $"{caret.Line}:{caret.Column} ({caret.Offset - len} offset, {len} chars)";
+                        int offsetA = area.Document.GetOffset(sel.StartPosition.Location);
+                        int offsetB = area.Document.GetOffset(sel.EndPosition.Location);
+                        if (offsetA > offsetB)
+                            Utils.Maths.Swap(ref offsetA, ref offsetB);
+                        this.PART_CaretText.Text = $"{caret.Line}:{caret.Column} ({offsetA} offset, {(offsetB - offsetA)} chars)";
                     }
                 }
             }, TimeSpan.FromSeconds(0.2));
@@ -76,6 +86,12 @@ namespace SharpPad.Notepads.Views {
             TaskManager taskManager = IoC.TaskManager;
             taskManager.TaskStarted += this.OnTaskStarted;
             taskManager.TaskCompleted += this.OnTaskCompleted;
+        }
+
+        protected override void OnClosed(EventArgs e) {
+            base.OnClosed(e);
+            Settings.Default.NotepadWindowWidth = (int) this.Width;
+            Settings.Default.NotepadWindowHeight = (int) this.Height;
         }
 
         private void OnTaskStarted(TaskManager taskmanager, ActivityTask task, int index) {
