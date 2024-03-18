@@ -31,6 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading;
 using System.Windows;
 using Expression = System.Linq.Expressions.Expression;
 
@@ -86,6 +87,22 @@ namespace SharpPad.Utils.Accessing {
             }
         }
 
+        /// <summary>
+        /// Creates an accessor that uses reflection for the first few get or set operations, and then switches to a Linq expression
+        /// </summary>
+        /// <param name="owner">The class that contains the property or field</param>
+        /// <param name="propertyOrField">The name of the property or field</param>
+        /// <typeparam name="TValue"></typeparam>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public static ValueAccessor<TValue> FastStartupAccessor<TValue>(Type owner, string propertyOrField) {
+            // Using Time.GetSystemTicks(), this constructor takes 1ms~ compared to 7ms~ for LinqExpression() (both first calls before JIT).
+            // JIT constructor is roughly 2x to 4x as fast compared to JIT LinqExpression(), but the JIT fast startup
+            // was like 0.2 ms so it's not exactly saving much time
+            // The numbers probably change based on the owner type but in general this class does help with startup time, slightly
+            return new FastStartupValueAccessor<TValue>(owner, propertyOrField);
+        }
+
         private static ValueAccessor<TValue> GetOrCreateCachedLinqAccessor<TValue>(Type memberOwnerType, string propertyOrField, MemberInfo targetMember) {
             PropOrFieldKey key = new PropOrFieldKey(propertyOrField, targetMember);
             Dictionary<PropOrFieldKey, object> memberToAccessor;
@@ -122,7 +139,7 @@ namespace SharpPad.Utils.Accessing {
             BinaryExpression assignValue = Expression.Assign(dataMember, paramValue);
             AccessSetter<TValue> setter = Expression.Lambda<AccessSetter<TValue>>(assignValue, paramInstance, paramValue).Compile();
 
-            return new DelegateValueAccessor<TValue>(getter, setter);
+            return new GetSetValueAccessor<TValue>(getter, setter);
         }
 
         /// <summary>
@@ -133,7 +150,7 @@ namespace SharpPad.Utils.Accessing {
         /// <typeparam name="TValue">The value type</typeparam>
         /// <returns>A value accessor</returns>
         public static ValueAccessor<TValue> GetSet<TValue>(AccessGetter<TValue> getter, AccessSetter<TValue> setter) {
-            return new DelegateValueAccessor<TValue>(getter, setter);
+            return new GetSetValueAccessor<TValue>(getter, setter);
         }
 
         public static ValueAccessor<TValue> DependencyProperty<TValue>(DependencyProperty property) {
@@ -197,11 +214,11 @@ namespace SharpPad.Utils.Accessing {
             }
         }
 
-        private class DelegateValueAccessor<TValue> : ValueAccessor<TValue> {
+        private class GetSetValueAccessor<TValue> : ValueAccessor<TValue> {
             private readonly AccessGetter<TValue> get;
             private readonly AccessSetter<TValue> set;
 
-            public DelegateValueAccessor(AccessGetter<TValue> get, AccessSetter<TValue> set) {
+            public GetSetValueAccessor(AccessGetter<TValue> get, AccessSetter<TValue> set) {
                 this.get = get ?? throw new ArgumentNullException(nameof(get));
                 this.set = set ?? throw new ArgumentNullException(nameof(set));
             }
@@ -220,6 +237,53 @@ namespace SharpPad.Utils.Accessing {
 
             public override void SetObjectValue(object owner, object value) {
                 this.set(owner, (TValue) value);
+            }
+        }
+
+        private class FastStartupValueAccessor<TValue> : ValueAccessor<TValue> {
+            private readonly object locker = new object();
+            private int isExpression;
+            private int count;
+            private ValueAccessor<TValue> accessor;
+
+            private readonly Type ownerType;
+            private readonly string propertyOrFieldName;
+
+            public FastStartupValueAccessor(Type ownerType, string propertyOrFieldName) {
+                this.accessor = Reflective<TValue>(ownerType, propertyOrFieldName);
+                this.ownerType = ownerType;
+                this.propertyOrFieldName = propertyOrFieldName;
+            }
+
+            private void CheckUpgrade() {
+                if (this.isExpression == 0) {
+                    lock (this.locker) {
+                        if (this.isExpression == 0 && ++this.count > 10) {
+                            Interlocked.Exchange(ref this.isExpression, 1);
+                            this.accessor = LinqExpression<TValue>(this.ownerType, this.propertyOrFieldName);
+                        }
+                    }
+                }
+            }
+
+            public override TValue GetValue(object owner) {
+                this.CheckUpgrade();
+                return this.accessor.GetValue(owner);
+            }
+
+            public override object GetObjectValue(object owner) {
+                this.CheckUpgrade();
+                return this.accessor.GetObjectValue(owner);
+            }
+
+            public override void SetValue(object owner, TValue value) {
+                this.CheckUpgrade();
+                this.accessor.SetValue(owner, value);
+            }
+
+            public override void SetObjectValue(object owner, object value) {
+                this.CheckUpgrade();
+                this.accessor.SetObjectValue(owner, value);
             }
         }
 

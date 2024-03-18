@@ -99,6 +99,12 @@ namespace SharpPad.Notepads.Commands {
     public class ToggleFindInSelectionCommand : FindModelCommand {
         protected override void ExecuteCore(FindAndReplaceModel model, CommandEventArgs e) {
             model.IsFindInSelection = !model.IsFindInSelection;
+            if (model.IsFindInSelection) {
+                model.SearchText = null;
+                if (DataKeys.UINotepadEditorKey.TryGetContext(e.ContextData, out INotepadEditorUI ui)) {
+                    ui.FocusFindSearchBox();
+                }
+            }
         }
     }
 

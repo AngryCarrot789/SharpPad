@@ -9,7 +9,8 @@
                     xmlns:b="clr-namespace:SharpPad.Behaviours"
                     xmlns:usage="clr-namespace:SharpPad.Notepads.Commands"
                     xmlns:converters="clr-namespace:SharpPad.Converters"
-                    xmlns:themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2">
+                    xmlns:themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2"
+                    xmlns:c="clr-namespace:SharpPad.Controls">
     <SolidColorBrush x:Key="DropBrush" Color="OrangeRed" Opacity="0.3"/>
 
     <Style TargetType="{x:Type local:NotepadEditorControl}">
@@ -185,25 +186,28 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <Border Background="{DynamicResource ABrush.Tone6.Background.Static}"
+                                    BorderBrush="{DynamicResource PanelBorderBrush}"
+                                    BorderThickness="0,0,1,0"
                                     Grid.Column="0">
                                 <DockPanel>
-                                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
-                                        <Separator Style="{StaticResource VerticalSeparator}" Background="{DynamicResource ABrush.Tone2.Border.Static}" Margin="0,4"/>
-                                        <ToggleButton Width="28" Content="Cc" Background="Transparent" BorderThickness="0"
+                                    <c:SpacedStackPanel Orientation="Horizontal" DockPanel.Dock="Right" InterElementGap="2" Margin="2">
+                                        <Separator Style="{StaticResource VerticalSeparator}" Background="{DynamicResource ABrush.Tone2.Border.Static}" Margin="0,2"/>
+                                        <ToggleButton Width="24" Content="Cc" Background="Transparent" BorderThickness="0"
                                                       u:CommandUsageManager.UsageClassType="{x:Type usage:ToggleMatchCaseCommandUsage}"
                                                       ToolTip="Toggle case sensitivity"/>
-                                        <ToggleButton Width="28" Content="W" Background="Transparent" BorderThickness="0"
+                                        <ToggleButton Width="24" Content="W" Background="Transparent" BorderThickness="0"
                                                       u:CommandUsageManager.UsageClassType="{x:Type usage:ToggleWordSearchCommandUsage}"
                                                       ToolTip="Toggle searching for words"/>
-                                        <ToggleButton Width="28" Content=".*" Background="Transparent" BorderThickness="0"
+                                        <ToggleButton Width="24" Content=".*" Background="Transparent" BorderThickness="0"
                                                       u:CommandUsageManager.UsageClassType="{x:Type usage:ToggleRegexSearchCommandUsage}"
                                                       ToolTip="Toggle regex search"/>
-                                    </StackPanel>
+                                    </c:SpacedStackPanel>
                                     <TextBox x:Name="PART_SearchTextBox" BorderThickness="0" Padding="2,0"
                                              Background="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=IsRegexFaulted, Converter={StaticResource RegexFaultBrushConverter}}"
                                              VerticalContentAlignment="Center"
                                              wpf:UIInputManager.CanProcessTextBoxKeyStroke="True"
-                                             wpf:UIInputManager.CanProcessTextBoxKeyStrokeWithModifiers="True">
+                                             wpf:UIInputManager.CanProcessTextBoxKeyStrokeWithModifiers="True"
+                                             Style="{StaticResource HintedTextBox}" Tag="Search document">
                                         <b:BehaviourCollection.Behaviours>
                                             <stdb:KeyStrokeCommandBehaviour Key="Enter" CommandId="NextFindResult"/>
                                             <stdb:KeyStrokeCommandBehaviour Key="Escape" CommandId="HideFindPanel"/>
@@ -211,16 +215,15 @@
                                     </TextBox>
                                 </DockPanel>
                             </Border>
-                            <Separator Style="{StaticResource VerticalSeparator}" Background="{DynamicResource PanelBorderBrush}" HorizontalAlignment="Right" Margin="0"/>
-                            <StackPanel Orientation="Horizontal" Grid.Column="1">
-                                <Button Width="28" Content="←" FontSize="18" Background="Transparent" BorderThickness="0"
+                            <c:SpacedStackPanel Orientation="Horizontal" Grid.Column="1" InterElementGap="2" Margin="2,0">
+                                <Button Width="24" Margin="0,2" Content="←" FontSize="18" Background="Transparent" BorderThickness="0"
                                         ToolTip="Go to last result" u:CommandUsageManager.UsageClassType="{x:Type usage:PrevFindResultCommandUsage}"/>
-                                <Button Width="28" Content="→" FontSize="18" Background="Transparent" BorderThickness="0"
+                                <Button Width="24" Margin="0,2" Content="→" FontSize="18" Background="Transparent" BorderThickness="0"
                                         ToolTip="Go to next result" u:CommandUsageManager.UsageClassType="{x:Type usage:NextFindResultCommandUsage}"/>
                                 <TextBlock x:Name="PART_ResultCountTextBlock" VerticalAlignment="Center" Padding="3,0"/>
-                                <ToggleButton Width="28" Content="S" FontSize="18" Background="Transparent" BorderThickness="0"
+                                <ToggleButton Width="24" Margin="0,2" Content="S" FontSize="18" Background="Transparent" BorderThickness="0"
                                               ToolTip="Toggle search in selection" u:CommandUsageManager.UsageClassType="{x:Type usage:ToggleFindInSelectionCommandUsage}"/>
-                            </StackPanel>
+                            </c:SpacedStackPanel>
                             <!-- {DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}} -->
                             <Popup x:Name="PART_RegexFaultPopup" AllowsTransparency="True" Margin="1" MaxWidth="800" StaysOpen="True"
                                    IsOpen="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=IsRegexFaulted, Mode=OneWay}"

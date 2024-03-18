@@ -14,7 +14,7 @@
             Background="{DynamicResource PanelBackground0}"
             BorderBrush="{DynamicResource PanelBorderBrush}"
             TitlebarBrush="{DynamicResource ABrush.Tone7.Background.Static}"
-            Height="600" Width="600"
+            MinWidth="350" MinHeight="250"
             FontFamily="{StaticResource FontOxanium}" FontWeight="Medium"
             wpf:UIInputManager.FocusPath="Application/Notepad"
             WindowStartupLocation="CenterScreen">

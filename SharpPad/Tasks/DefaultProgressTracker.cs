@@ -26,6 +26,7 @@ using SharpPad.Utils.RDA;
 
 namespace SharpPad.Tasks {
     public class DefaultProgressTracker : IActivityProgress {
+        private readonly object dataLock = new object(); // only really used as a memory barrier
         private bool isIndeterminate;
         private double completionValue;
         private string headerText;
@@ -34,9 +35,12 @@ namespace SharpPad.Tasks {
         public bool IsIndeterminate {
             get => this.isIndeterminate;
             set {
-                if (this.isIndeterminate == value)
-                    return;
-                this.isIndeterminate = value;
+                lock (this.dataLock) {
+                    if (this.isIndeterminate == value)
+                        return;
+                    this.isIndeterminate = value;
+                }
+
                 this.updateIsIndeterminate.InvokeAsync();
             }
         }
@@ -44,9 +48,12 @@ namespace SharpPad.Tasks {
         public double TotalCompletion {
             get => this.completionValue;
             set {
-                if (DoubleUtils.AreClose(this.completionValue, value))
-                    return;
-                this.completionValue = value;
+                lock (this.dataLock) {
+                    if (DoubleUtils.AreClose(this.completionValue, value))
+                        return;
+                    this.completionValue = value;
+                }
+
                 this.updateCompletionValue.InvokeAsync();
             }
         }
@@ -54,9 +61,12 @@ namespace SharpPad.Tasks {
         public string HeaderText {
             get => this.headerText;
             set {
-                if (this.headerText == value)
-                    return;
-                this.headerText = value;
+                lock (this.dataLock) {
+                    if (this.headerText == value)
+                        return;
+                    this.headerText = value;
+                }
+
                 this.updateHeaderText.InvokeAsync();
             }
         }
@@ -64,9 +74,12 @@ namespace SharpPad.Tasks {
         public string Text {
             get => this.descriptionText;
             set {
-                if (this.descriptionText == value)
-                    return;
-                this.descriptionText = value;
+                lock (this.dataLock) {
+                    if (this.descriptionText == value)
+                        return;
+                    this.descriptionText = value;
+                }
+
                 this.updateText.InvokeAsync();
             }
         }

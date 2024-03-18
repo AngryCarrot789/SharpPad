@@ -55,9 +55,9 @@ namespace SharpPad.Notepads.Controls {
 
         public NotepadEditorControl Owner { get; set; }
 
-        private readonly IBinder<FindAndReplaceModel> searchTextBinder = Binders.AccessorAEDP<FindAndReplaceModel, string>(TextBox.TextProperty, nameof(FindAndReplaceModel.SearchTextChanged), nameof(FindAndReplaceModel.SearchText));
-        private readonly IBinder<FindAndReplaceModel> regexFaultStateBinder = Binders.AccessorAEDP<FindAndReplaceModel, bool>(IsRegexFaultedProperty, nameof(FindAndReplaceModel.IsRegexFaultedChanged), nameof(FindAndReplaceModel.IsRegexFaulted));
-        private readonly IBinder<FindAndReplaceModel> regexFaultTextBinder = Binders.AccessorAEDP<FindAndReplaceModel, string>(RegexFaultMessageProperty, nameof(FindAndReplaceModel.IsRegexFaultedChanged), nameof(FindAndReplaceModel.RegexFaultMessage));
+        private readonly IBinder<FindAndReplaceModel> searchTextBinder = Binders.AccessorAEDPFastStartup<FindAndReplaceModel, string>(TextBox.TextProperty, nameof(FindAndReplaceModel.SearchTextChanged), nameof(FindAndReplaceModel.SearchText));
+        private readonly IBinder<FindAndReplaceModel> regexFaultStateBinder = Binders.AccessorAEDPFastStartup<FindAndReplaceModel, bool>(IsRegexFaultedProperty, nameof(FindAndReplaceModel.IsRegexFaultedChanged), nameof(FindAndReplaceModel.IsRegexFaulted));
+        private readonly IBinder<FindAndReplaceModel> regexFaultTextBinder = Binders.AccessorAEDPFastStartup<FindAndReplaceModel, string>(RegexFaultMessageProperty, nameof(FindAndReplaceModel.IsRegexFaultedChanged), nameof(FindAndReplaceModel.SearchRegexFaultMessage));
         private TextBox PART_SearchTextBox;
         private TextBlock PART_ResultCountTextBlock;
 
@@ -87,6 +87,8 @@ namespace SharpPad.Notepads.Controls {
             TemplateUtils.GetTemplateChild(this, nameof(this.PART_ResultCountTextBlock), out this.PART_ResultCountTextBlock);
             this.searchTextBinder.AttachControl(this.PART_SearchTextBox);
 
+            this.PART_SearchTextBox.Tag = "Search document";
+
             this.UpdateSearchResultText();
         }
 
@@ -97,6 +99,7 @@ namespace SharpPad.Notepads.Controls {
                 this.regexFaultTextBinder.DetachModel();
                 oldValue.SearchResultsChanged -= this.UpdateForSearchThingsChanged;
                 oldValue.CurrentResultIndexChanged -= this.UpdateForSearchThingsChanged;
+                oldValue.IsFindInSelectionChanged -= this.OnIsFindInSelectionChanged;
             }
 
             if (newValue != null) {
@@ -105,10 +108,16 @@ namespace SharpPad.Notepads.Controls {
                 this.regexFaultTextBinder.AttachModel(newValue);
                 newValue.SearchResultsChanged += this.UpdateForSearchThingsChanged;
                 newValue.CurrentResultIndexChanged += this.UpdateForSearchThingsChanged;
+                newValue.IsFindInSelectionChanged += this.OnIsFindInSelectionChanged;
             }
 
             this.IsEnabled = newValue != null;
             this.UpdateSearchResultText();
+        }
+
+        private void OnIsFindInSelectionChanged(FindAndReplaceModel model) {
+            // Updates text box hint via the HintedTextBox style
+            this.PART_SearchTextBox.Tag = model.IsFindInSelection ? "Search in selection" : "Search document";
         }
 
         private void UpdateForSearchThingsChanged(FindAndReplaceModel model) => this.UpdateSearchResultText();

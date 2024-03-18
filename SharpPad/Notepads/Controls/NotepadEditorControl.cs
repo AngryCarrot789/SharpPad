@@ -222,7 +222,7 @@ namespace SharpPad.Notepads.Controls {
         }
 
         private void OnCurrentResultIndexChanged(FindAndReplaceModel model) {
-            if (this.PART_TextEditor.IsFocused || this.PART_TextEditor.TextArea.IsFocused) {
+            if (this.PART_TextEditor.TextArea.IsFocused || model.IsFindInSelection) {
                 return;
             }
 
@@ -251,7 +251,7 @@ namespace SharpPad.Notepads.Controls {
         }
 
         private void OnSearchResultsChanged(FindAndReplaceModel model) {
-            if (!this.PART_TextEditor.IsFocused && !this.PART_TextEditor.TextArea.IsFocused) {
+            if (!this.PART_TextEditor.TextArea.IsFocused && !model.IsFindInSelection) {
                 int caret = this.PART_TextEditor.CaretOffset;
                 int selection = this.PART_TextEditor.SelectionLength;
                 int currentOffset = caret - selection;

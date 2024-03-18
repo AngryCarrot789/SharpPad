@@ -63,16 +63,9 @@ namespace SharpPad.Notepads {
         }
 
         /// <summary>
-        /// Gets the find model associated with the current document. Returns null when the document is null. This object is lazily created
+        /// Gets the find model associated with the current document
         /// </summary>
-        public FindAndReplaceModel FindModel {
-            get {
-                if (this.findModel != null)
-                    return this.findModel;
-
-                return this.document == null ? null : this.findModel = new FindAndReplaceModel(this.document);
-            }
-        }
+        public FindAndReplaceModel FindModel { get; }
 
         /// <summary>
         /// Gets or sets the current text editor that is presenting this notepad editor object
@@ -116,6 +109,7 @@ namespace SharpPad.Notepads {
         /// Creates a notepad editor instance
         /// </summary>
         public NotepadEditor() {
+            this.FindModel = new FindAndReplaceModel(this);
         }
 
         /// <summary>

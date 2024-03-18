@@ -109,7 +109,7 @@ namespace SharpPad.Utils.RDA {
 
         private void ScheduleExecute() => this.dispatcher.InvokeAsync(this.doExecuteCallback, this.Priority);
 
-        protected bool BeginInvoke(Action actionInLock = null) {
+        protected bool BeginInvoke() {
             lock (this.stateLock) {
                 switch (this.myState) {
                     // Default state of the object: not scheduled
@@ -126,10 +126,10 @@ namespace SharpPad.Utils.RDA {
                         return true;
                     default: return false;
                 }
-
-                actionInLock?.Invoke();
             }
 
+            // Not scheduling while lock is acquired since it's not necessary
+            // and could MAYBE possibly result in a race condition deadlock
             this.ScheduleExecute();
             return true;
         }

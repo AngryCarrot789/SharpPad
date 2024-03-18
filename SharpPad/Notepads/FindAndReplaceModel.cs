@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Document;
 using SharpPad.Tasks;
 using SharpPad.Utils;
@@ -40,7 +41,7 @@ namespace SharpPad.Notepads {
         private volatile bool isMatchCases;
         private volatile bool isWordSearch;
         private volatile bool isRegexSearch;
-        private bool isFindInSelection;
+        private volatile bool isFindInSelection;
         private int currentResultIndex;
         private bool isRegexFaulted;
 
@@ -123,13 +124,14 @@ namespace SharpPad.Notepads {
                     return;
                 this.isFindInSelection = value;
                 this.IsFindInSelectionChanged?.Invoke(this);
+                this.InvalidateSearchState();
             }
         }
 
         /// <summary>
-        /// Gets the last regex fault message. This is updated before <see cref="IsRegexFaultedChanged"/> is fired
+        /// Gets the last regex fault message associated with <see cref="SearchText"/>. This is updated before <see cref="IsRegexFaultedChanged"/> is fired
         /// </summary>
-        public string RegexFaultMessage { get; private set; }
+        public string SearchRegexFaultMessage { get; private set; }
 
         /// <summary>
         /// Gets if the regex query is invalid
@@ -139,6 +141,8 @@ namespace SharpPad.Notepads {
             private set {
                 if (this.isRegexFaulted == value)
                     return;
+                if (!value)
+                    this.SearchRegexFaultMessage = null;
 
                 this.isRegexFaulted = value;
                 this.IsRegexFaultedChanged?.Invoke(this);
@@ -173,9 +177,9 @@ namespace SharpPad.Notepads {
         public IReadOnlyList<TextRange> Results => this.results;
 
         /// <summary>
-        /// Gets the document associated with this model
+        /// Gets the editor associated with this model
         /// </summary>
-        public NotepadDocument Document { get; }
+        public NotepadEditor Editor { get; }
 
         /// <summary>
         /// An event fired when the <see cref="SearchText"/> property changes
@@ -186,7 +190,6 @@ namespace SharpPad.Notepads {
         /// An event fired when the <see cref="ReplaceText"/> property changes
         /// </summary>
         public event FindAndReplaceEventHandler ReplaceTextChanged;
-
 
         /// <summary>
         /// An event fired when the <see cref="IsMatchCases"/> property changes
@@ -223,24 +226,48 @@ namespace SharpPad.Notepads {
         /// </summary>
         public event FindAndReplaceEventHandler SearchResultsChanged;
 
-        public FindAndReplaceModel(NotepadDocument document) {
+        private NotepadDocument myDocument; // updated automatically
+
+        public FindAndReplaceModel(NotepadEditor editor) {
             this.currentResultIndex = -1;
-            this.Document = document ?? throw new ArgumentNullException(nameof(document));
+            this.Editor = editor ?? throw new ArgumentNullException(nameof(editor));
             this.invalidateSearchStateRlda = RateLimitedDispatchAction.ForDispatcherAsync(this.OnSearchStateInvalidated, TimeSpan.FromSeconds(0.1));
             this.results = new List<TextRange>();
             this.criticalLock = new object();
-            document.Document.Changed += this.OnDocumentModified;
+
+            if (editor.Document != null) {
+                this.SetDocument(editor.Document);
+            }
+
+            // TODO: add a way to unregister this event handler.
+            // It is assumed that FindAndReplaceModel is not created outside of the NotepadEditor class
+            editor.DocumentChanged += this.OnEditorDocumentChanged;
+        }
+
+        private void OnEditorDocumentChanged(NotepadEditor editor, NotepadDocument olddoc, NotepadDocument newdoc) {
+            this.SetDocument(newdoc);
+            this.InvalidateSearchStateForPossibleRegexChange();
+        }
+
+        private void SetDocument(NotepadDocument document) {
+            if (this.myDocument != null) {
+                this.myDocument.Document.Changed += this.OnDocumentModified;
+            }
+
+            if ((this.myDocument = document) != null) {
+                document.Document.Changed += this.OnDocumentModified;
+            }
         }
 
         private void InvalidateSearchState() {
             lock (this.criticalLock) {
+                this.isActiveSearchInvalid = true;
                 this.UpdateSearch();
             }
         }
 
         private void InvalidateSearchStateForPossibleRegexChange() {
             lock (this.criticalLock) {
-                this.isActiveSearchInvalid = true;
                 if (this.isRegexSearch && !string.IsNullOrWhiteSpace(this.searchText)) {
                     // Check that the regex expression is valid
                     try {
@@ -249,7 +276,7 @@ namespace SharpPad.Notepads {
                     }
                     catch (ArgumentException e) {
                         this.searchRegex = null;
-                        this.RegexFaultMessage = e.Message;
+                        this.SearchRegexFaultMessage = e.Message;
                         this.IsRegexFaulted = true;
                     }
                 }
@@ -319,11 +346,12 @@ namespace SharpPad.Notepads {
         }
 
         /// <summary>
-        /// Schedules the search data to be refreshes, meaning the document gets re-searched at some point in the near future
+        /// Schedules the search data to be refreshes, meaning the document gets re-searched at some
+        /// point in the near future once control is returned back to the dispatcher
         /// </summary>
         public void UpdateSearch() {
             string find = this.searchText;
-            if (string.IsNullOrEmpty(find)) {
+            if (this.myDocument == null || string.IsNullOrEmpty(find)) {
                 this.ClearResults();
                 return;
             }
@@ -333,11 +361,10 @@ namespace SharpPad.Notepads {
 
         private async Task OnSearchStateInvalidated() {
             this.ClearResults();
-            if (string.IsNullOrEmpty(this.searchText)) {
+            if (string.IsNullOrEmpty(this.searchText) || this.myDocument == null) {
                 return;
             }
 
-            TextDocument document = this.Document.Document;
             bool isFaultedRegex = false;
             List<TextRange> ranges = new List<TextRange>();
             this.activeTask = TaskManager.Instance.RunTask(async () => {
@@ -355,7 +382,7 @@ namespace SharpPad.Notepads {
                 // Keep searching in a loop. SearchImpl returns false when the document is modified externally,
                 // meaning previous search results would be invalid, so just forget about them and search again.
                 // This could be optimised a lot based on what changed in the document... but it works for now :D
-                while (!await (this.isRegexSearch ? this.SearchImpl_Regex(task, document, ranges) : this.SearchImpl_NonRegex(task, document, ranges))) {
+                while (!await (this.isRegexSearch ? this.SearchImpl_Regex(task, ranges) : this.SearchImpl_NonRegex(task, ranges))) {
                     ranges.Clear();
 
                     task.Progress.Text = "Restarting search...";
@@ -402,28 +429,45 @@ namespace SharpPad.Notepads {
             }
         }
 
+        private readonly struct SearchTextRange {
+            public readonly string text;
+            public readonly int offsetFromDocumentStart;
+
+            public SearchTextRange(string text, int offsetFromDocumentStart) {
+                this.text = text;
+                this.offsetFromDocumentStart = offsetFromDocumentStart;
+            }
+        }
+
         // Returns:
         //   FALSE: document or search query/settings changed during operation
         //   TRUE: Operation was successful
-        private async Task<bool> SearchImpl_NonRegex(ActivityTask task, TextDocument document, List<TextRange> results) {
+        private async Task<bool> SearchImpl_NonRegex(ActivityTask task, List<TextRange> results) {
             SearchOptions options = new SearchOptions(this.searchText, this.isMatchCases, this.isWordSearch);
             int textLen = options.textToFind.Length;
             if (textLen < 1) {
                 return true;
             }
 
-            if (this.isActiveSearchInvalid) {
-                return false;
-            }
+            lock (this.criticalLock)
+                if (this.isActiveSearchInvalid)
+                    return false;
 
             // Get text on main thread
-            string text = await IoC.Dispatcher.InvokeAsync(() => document.Text);
-            if (this.isActiveSearchInvalid) {
-                return false;
+            SearchTextRange segment = await this.GetTextRange();
+            if (segment.text == null) {
+                return true;
             }
 
+            lock (this.criticalLock)
+                if (this.isActiveSearchInvalid)
+                    return false;
+
+            // Just in case the document is huge and a match is at the bottom
+            // of the document. The index-of scan would take some time
+            task.Progress.IsIndeterminate = true;
             int idx, nextIndex = 0, checkCancel = 0, progUpdateCounter = 0;
-            while ((idx = DoNonRegexIndexOf(text, nextIndex, ref options)) != -1) {
+            while ((idx = DoNonRegexIndexOf(segment.text, nextIndex, ref options)) != -1) {
                 if (++checkCancel == 5) {
                     if (this.isActiveSearchInvalid)
                         return false;
@@ -434,32 +478,37 @@ namespace SharpPad.Notepads {
                 // so only start doing it for big operations (with 10000+ results)
                 if (++progUpdateCounter == 1000) {
                     progUpdateCounter = 0;
-                    task.Progress.TotalCompletion = (double) idx / text.Length;
+                    task.Progress.IsIndeterminate = false;
+                    task.Progress.TotalCompletion = (double) idx / segment.text.Length;
                 }
 
-                results.Add(new TextRange(idx, textLen));
+                results.Add(new TextRange(idx + segment.offsetFromDocumentStart, textLen));
                 nextIndex = idx + textLen;
             }
 
             return !this.isActiveSearchInvalid;
         }
 
-        private async Task<bool> SearchImpl_Regex(ActivityTask task, TextDocument document, List<TextRange> results) {
+        private async Task<bool> SearchImpl_Regex(ActivityTask task, List<TextRange> results) {
             if (string.IsNullOrWhiteSpace(this.searchText) || this.searchRegex == null) {
                 return true;
             }
 
-            if (this.isActiveSearchInvalid) {
-                return false;
-            }
+            lock (this.criticalLock)
+                if (this.isActiveSearchInvalid)
+                    return false;
 
             // Get text on main thread
-            string text = await IoC.Dispatcher.InvokeAsync(() => document.Text);
-            if (this.isActiveSearchInvalid) {
-                return false;
+            SearchTextRange segment = await this.GetTextRange();
+            if (segment.text == null) {
+                return true;
             }
 
-            MatchCollection matches = this.searchRegex.Matches(text);
+            lock (this.criticalLock)
+                if (this.isActiveSearchInvalid)
+                    return false;
+
+            MatchCollection matches = this.searchRegex.Matches(segment.text);
             task.Progress.Text = "Searching regex...";
             task.Progress.IsIndeterminate = true;
 
@@ -471,10 +520,33 @@ namespace SharpPad.Notepads {
                     checkCancel = 0;
                 }
 
-                results.Add(new TextRange(match.Index, match.Length));
+                results.Add(new TextRange(match.Index + segment.offsetFromDocumentStart, match.Length));
             }
 
             return !this.isActiveSearchInvalid;
+        }
+
+        private Task<SearchTextRange> GetTextRange() {
+            return IoC.Dispatcher.InvokeAsync(() => {
+                NotepadDocument document = this.myDocument;
+                if (document == null) {
+                    return default;
+                }
+
+                // In the off chance that the editor is null, just use the document text
+                TextEditor editor = this.Editor.TextEditor;
+                if (this.isFindInSelection && editor != null) {
+                    ISegment segment = editor.TextArea.Selection.SurroundingSegment;
+                    string selection = document.Document.GetText(segment);
+                    if (string.IsNullOrEmpty(selection)) {
+                        return new SearchTextRange(document.Document.Text, 0);
+                    }
+
+                    return new SearchTextRange(selection, segment.Offset);
+                }
+
+                return new SearchTextRange(document.Document.Text, 0);
+            });
         }
 
         private static int DoNonRegexIndexOf(string src, int beginIndex, ref SearchOptions options) {

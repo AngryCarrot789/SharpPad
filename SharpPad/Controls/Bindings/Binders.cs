@@ -22,9 +22,14 @@ using SharpPad.Utils.Accessing;
 
 namespace SharpPad.Controls.Bindings {
     public static class Binders {
-        public static AccessorAutoEventPropertyBinder<TModel, TValue> AccessorAEDP<TModel, TValue>(DependencyProperty property, string eventName, string propertyOrFieldName) where TModel : class {
+        public static AccessorAutoEventPropertyBinder<TModel, TValue> AccessorAEDPLinq<TModel, TValue>(DependencyProperty property, string eventName, string propertyOrFieldName) where TModel : class {
             // Uses cached accessor
             return AccessorAEDP<TModel, TValue>(property, eventName, ValueAccessors.LinqExpression<TValue>(typeof(TModel), propertyOrFieldName, true));
+        }
+
+        public static AccessorAutoEventPropertyBinder<TModel, TValue> AccessorAEDPFastStartup<TModel, TValue>(DependencyProperty property, string eventName, string propertyOrFieldName) where TModel : class {
+            // Uses cached accessor
+            return AccessorAEDP<TModel, TValue>(property, eventName, ValueAccessors.FastStartupAccessor<TValue>(typeof(TModel), propertyOrFieldName));
         }
 
         public static AccessorAutoEventPropertyBinder<TModel, TValue> AccessorAEDP<TModel, TValue>(DependencyProperty property, string eventName, ValueAccessor<TValue> accessor) where TModel : class {
