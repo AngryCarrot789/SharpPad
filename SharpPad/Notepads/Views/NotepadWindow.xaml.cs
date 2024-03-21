@@ -24,6 +24,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
+using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Editing;
 using SharpPad.Interactivity.Contexts;
 using SharpPad.Properties;
@@ -44,7 +45,7 @@ namespace SharpPad.Notepads.Views {
             set => this.SetValue(NotepadProperty, value);
         }
 
-        private readonly ContextData contextData;
+        // private readonly ContextData contextData;
         private ActivityTask primaryActivity;
 
         // used to delay the caret text update, just in case an intensive document update happens;
@@ -53,7 +54,20 @@ namespace SharpPad.Notepads.Views {
         private NotepadDocument activeDocument;
 
         public NotepadWindow() {
-            DataManager.SetContextData(this, this.contextData = new ContextData().Set(DataKeys.HostWindowKey, this).Clone());
+            // In order for context-based MenuItems to work on this window's menu, they need to be able
+            // to access this data. Even though this isn't really 'context data' per se (as in, when you
+            // right click to open the context menu, all the context is at the click point, but then this
+            // is kind of just picking that data from thin air), commands like CloseDocumentCommand in the
+            // File menu won't work if an editor does not have keyboard focus :/
+            // So this is sort of like the middle between context and global data access
+            ProviderContextData context = new ProviderContextData();
+            context.SetProvider(DataKeys.HostWindowKey, () => this);
+            context.SetProvider(DataKeys.NotepadKey, () => this.Notepad);
+            context.SetProvider(DataKeys.NotepadEditorKey, () => this.Notepad?.ActiveEditor);
+            context.SetProvider(DataKeys.DocumentKey, () => this.Notepad?.ActiveEditor?.Document);
+            context.SetProvider(DataKeys.FindModelKey, () => this.Notepad?.ActiveEditor?.FindModel);
+
+            DataManager.SetContextData(this, context);
             this.InitializeComponent();
             this.updateCaretTextRDA = RateLimitedDispatchAction.ForDispatcherSync(() => {
                 TextArea area = this.PART_NotepadPanel.Editor?.TextArea;
@@ -67,7 +81,7 @@ namespace SharpPad.Notepads.Views {
                         this.PART_CaretText.Text = $"{caret.Line}:{caret.Column} ({caret.Offset} offset)";
                     }
                     else if (sel is RectangleSelection rect) {
-                        ICSharpCode.AvalonEdit.TextViewPosition end = rect.EndPosition;
+                        TextViewPosition end = rect.EndPosition;
                         int offsetA = area.Document.GetOffset(rect.StartPosition.Location);
                         int offsetB = area.Document.GetOffset(end.Location);
                         this.PART_CaretText.Text = $"{caret.Line}:{caret.Column} ({offsetA} -> {offsetB - end.Column + end.VisualColumn + 1})";
@@ -169,7 +183,8 @@ namespace SharpPad.Notepads.Views {
 
         private void OnNotepadChanged(Notepad oldNotepad, Notepad newNotepad) {
             this.PART_NotepadPanel.Notepad = newNotepad;
-            DataManager.SetContextData(this, this.contextData.Set(DataKeys.NotepadKey, newNotepad).Clone());
+            // DataManager.SetContextData(this, this.contextData.Set(DataKeys.NotepadKey, newNotepad).Clone());
+            DataManager.RaiseInheritedContextChanged(this);
             this.UpdateTitle();
             if (oldNotepad != null)
                 oldNotepad.ActiveEditorChanged -= this.OnActiveEditorChanged;
@@ -179,6 +194,16 @@ namespace SharpPad.Notepads.Views {
 
         private void OnActiveEditorChanged(Notepad notepad, NotepadEditor oldEditor, NotepadEditor newEditor) {
             this.OnActiveDocumentChanged(newEditor?.Document);
+            if (oldEditor != null)
+                oldEditor.DocumentChanged -= this.OnActiveEditorDocumentChanged;
+            if (newEditor != null)
+                newEditor.DocumentChanged += this.OnActiveEditorDocumentChanged;
+
+            DataManager.RaiseInheritedContextChanged(this);
+        }
+
+        private void OnActiveEditorDocumentChanged(NotepadEditor editor, NotepadDocument olddoc, NotepadDocument newdoc) {
+            DataManager.RaiseInheritedContextChanged(this);
         }
 
         private void OnActiveDocumentChanged(NotepadDocument newDocument) {
@@ -225,24 +250,12 @@ namespace SharpPad.Notepads.Views {
         private void SetThemeClick(object sender, RoutedEventArgs e) {
             ThemeType type;
             switch (((MenuItem) sender).Uid) {
-                case "0":
-                    type = ThemeType.DeepDark;
-                    break;
-                case "1":
-                    type = ThemeType.SoftDark;
-                    break;
-                case "2":
-                    type = ThemeType.DarkGreyTheme;
-                    break;
-                case "3":
-                    type = ThemeType.GreyTheme;
-                    break;
-                case "4":
-                    type = ThemeType.RedBlackTheme;
-                    break;
-                case "5":
-                    type = ThemeType.LightTheme;
-                    break;
+                case "0": type = ThemeType.DeepDark; break;
+                case "1": type = ThemeType.SoftDark; break;
+                case "2": type = ThemeType.DarkGreyTheme; break;
+                case "3": type = ThemeType.GreyTheme; break;
+                case "4": type = ThemeType.RedBlackTheme; break;
+                case "5": type = ThemeType.LightTheme; break;
                 default: return;
             }
 

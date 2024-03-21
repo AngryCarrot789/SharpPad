@@ -26,7 +26,6 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Shell;
-using SharpPad.Interactivity.Contexts;
 using SharpPad.Utils;
 
 namespace SharpPad.Views {
@@ -78,7 +77,7 @@ namespace SharpPad.Views {
 
             this.ContentRendered += this.SingleContentRenderHandler;
             this.Loaded += this.SingleLoadedHandler;
-            DataManager.MergeContextData(this, new ContextData().Set(DataKeys.HostWindowKey, this));
+            // DataManager.MergeContextData(this, new ContextData().Set(DataKeys.HostWindowKey, this));
         }
 
         protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo) {
@@ -105,7 +104,12 @@ namespace SharpPad.Views {
         public void CalculateOwnerAndSetCentered() {
             Window owner = GetCurrentActiveWindow();
             if (owner != this && owner.Owner != this) {
-                this.Owner = owner;
+                try {
+                    this.Owner = owner;
+                }
+                catch (Exception e) {
+                    // TODO: owner has not been shown yet
+                }
             }
 
             this.WindowStartupLocation = WindowStartupLocation.CenterOwner;

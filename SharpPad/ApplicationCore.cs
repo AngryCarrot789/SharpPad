@@ -93,7 +93,7 @@ namespace SharpPad {
                     TimeSpan delayTime = TimeSpan.FromSeconds(interval);
 
                     for (int i = 0; i < updates; i++) {
-                        await Task.Delay(delayTime);
+                        await System.Threading.Tasks.Task.Delay(delayTime);
                         prog.OnProgress(progressPerUpdate);
                     }
                 });

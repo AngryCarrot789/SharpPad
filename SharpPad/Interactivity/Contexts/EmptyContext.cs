@@ -32,7 +32,7 @@ namespace SharpPad.Interactivity.Contexts {
         /// </summary>
         public static IContextData Instance { get; } = new EmptyContext();
 
-        IReadOnlyDictionary<string, object> IContextData.Entries => EmptyDictionary;
+        IEnumerable<KeyValuePair<string, object>> IContextData.Entries => EmptyDictionary;
 
         public EmptyContext() { }
 

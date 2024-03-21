@@ -79,10 +79,8 @@ namespace SharpPad.AdvancedMenuService.StandAlone {
 
             Executability state = id != null ? CommandManager.Instance.CanExecute(id, this.loadedContextData) : Executability.Invalid;
             this.CanExecute = state == Executability.Valid;
-            if (this.CanExecute) {
-                if (CommandIdToGestureConverter.CommandIdToGesture(id, null, out string value)) {
-                    this.SetCurrentValue(InputGestureTextProperty, value);
-                }
+            if (CommandIdToGestureConverter.CommandIdToGesture(id, null, out string value)) {
+                this.SetCurrentValue(InputGestureTextProperty, value);
             }
 
             if (this.generateItemsOnLoad) {

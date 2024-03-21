@@ -29,7 +29,7 @@ namespace SharpPad.Interactivity.Contexts {
     /// A class that is used to store and extract contextual information from WPF components.
     /// <para>
     /// This class generates inherited-merged contextual data for the visual tree, that is, all contextual data
-    /// is accumulated and cached in each element, and the <see cref="InheritedContextInvalidatedEvent"/> is fired
+    /// is accumulated and cached in each element, and the <see cref="InheritedContextChangedEvent"/> is fired
     /// on the element and all of its visual children when that parent's <see cref="ContextDataProperty"/> changes,
     /// allowing listeners to do anything they want (e.g. re-query command executability based on available context)
     /// </para>
@@ -52,7 +52,7 @@ namespace SharpPad.Interactivity.Contexts {
                 "ContextData",
                 typeof(IContextData),
                 typeof(DataManager),
-                new PropertyMetadata(OnDataContextChanged));
+                new PropertyMetadata(OnContextDataChanged));
 
         private static readonly DependencyPropertyKey InheritedContextDataPropertyKey =
             DependencyProperty.RegisterAttachedReadOnly(
@@ -77,9 +77,9 @@ namespace SharpPad.Interactivity.Contexts {
         /// becomes invalid (caused by either manual invalidation or when the <see cref="ContextDataProperty"/> changes
         /// for any parent element).
         /// </summary>
-        public static readonly RoutedEvent InheritedContextInvalidatedEvent =
+        public static readonly RoutedEvent InheritedContextChangedEvent =
             EventManager.RegisterRoutedEvent(
-                "InheritedContextInvalidated",
+                "InheritedContextChanged",
                 RoutingStrategy.Direct,
                 typeof(RoutedEventHandler),
                 typeof(DataManager));
@@ -91,45 +91,76 @@ namespace SharpPad.Interactivity.Contexts {
                 typeof(DataManager),
                 new PropertyMetadata(0));
 
+        /// <summary>
+        /// Gets the read-only attached dependency property for the suspension invalidation counter
+        /// </summary>
         public static readonly DependencyProperty SuspendedInvalidationCountProperty = SuspendedInvalidationCountPropertyKey.DependencyProperty;
 
         static DataManager() {
             VisualAncestorChangedEventInterface.CreateInterface(OnAncestorChanged, out AddVisualAncestorChangedHandler, out RemoveVisualAncestorChangedHandler);
         }
 
-        public static void AddInheritedContextInvalidatedHandler(DependencyObject target, RoutedEventHandler handler) {
+        /// <summary>
+        /// Adds a handler for <see cref="InheritedContextChangedEvent"/> to the given target
+        /// </summary>
+        /// <param name="target">The target object</param>
+        /// <param name="handler">The event handler</param>
+        /// <exception cref="ArgumentException">The target is not <see cref="IInputElement"/> and therefore cannot accept event handlers</exception>
+        public static void AddInheritedContextChangedHandler(DependencyObject target, RoutedEventHandler handler) {
             if (!(target is IInputElement input))
                 throw new ArgumentException("Target is not an instance of " + nameof(IInputElement));
-            input.AddHandler(InheritedContextInvalidatedEvent, handler);
+            input.AddHandler(InheritedContextChangedEvent, handler);
         }
 
-        public static void RemoveInheritedContextInvalidatedHandler(DependencyObject target, RoutedEventHandler handler) {
+        /// <summary>
+        /// Removes a handler for <see cref="InheritedContextChangedEvent"/> from the given target
+        /// </summary>
+        /// <param name="target">The target object</param>
+        /// <param name="handler">The event handler</param>
+        /// <exception cref="ArgumentException">The target is not <see cref="IInputElement"/> and therefore cannot accept event handlers</exception>
+        public static void RemoveInheritedContextChangedHandler(DependencyObject target, RoutedEventHandler handler) {
             if (!(target is IInputElement input))
                 throw new ArgumentException("Target is not an instance of " + nameof(IInputElement));
-            input.RemoveHandler(InheritedContextInvalidatedEvent, handler);
+            input.RemoveHandler(InheritedContextChangedEvent, handler);
         }
 
         /// <summary>
         /// Invalidates the inherited-merged contextual data for the element and its entire visual child
-        /// tree, firing the <see cref="InheritedContextInvalidatedEvent"/> for each visual child, allowing
+        /// tree, firing the <see cref="InheritedContextChangedEvent"/> for each visual child, allowing
         /// them to re-query their new valid contextual data.
         /// <para>
         /// This is the same method called when an element is removed from the visual tree or an element's context data changes
         /// </para>
         /// </summary>
-        /// <param name="element">The element to invalidate, along with its visual tree</param>
+        /// <param name="element">The element to invalidate the inherited context data of, along with its visual tree</param>
         public static void InvalidateInheritedContext(DependencyObject element) {
             if (totalSuspensionCount > 0 && GetSuspendedInvalidationCount(element) > 0) {
                 return;
             }
 
+            // long a = Time.GetSystemTicks();
             // WalkVisualTreeForParentContextInvalidated(element, new RoutedEventArgs(InheritedContextInvalidatedEvent, element));
 
-            // This takes something like 2ms when element is EditorWindow and the default project is loaded.
-            // With a blank project, it's between 0.9 and 1.4ms. Oh... in debug mode ;)
-            // Even though we traverse the VT twice, it's still pretty fast.
+            // In release mode, using Time.GetSystemTicks, these 2 methods when element is NotepadWindow with an active editor,
+            // takes about 150 microseconds to invoke... that's pretty fast, especially for a double visual tree traversal
+
             InvalidateInheritedContextAndChildren(element);
-            RaiseContextInvalidatedForVisualTree(element, new RoutedEventArgs(InheritedContextInvalidatedEvent, element));
+            RaiseInheritedContextChanged(element);
+            // long b = Time.GetSystemTicks() - a;
+            // IoC.MessageService.ShowMessage("Time", (b / Time.TICK_PER_MILLIS_D).ToString());
+        }
+
+        /// <summary>
+        /// Raises the <see cref="InheritedContextChangedEvent"/> event for the element's visual tree. This should only really
+        /// be used when using <see cref="ProviderContextData"/> as the context data for an element and the state of the app
+        /// changes such that one of the provider's function will likely return something different prior to the change
+        /// <para>
+        /// This does not affect the return value of <see cref="GetFullContextData"/>. Use <see cref="InvalidateInheritedContext"/> instead
+        /// </para>
+        /// </summary>
+        /// <param name="element">The element to raise the event for, along with its visual tree</param>
+        public static void RaiseInheritedContextChanged(DependencyObject element) {
+            RaiseEventRecursive(element, new RoutedEventArgs(InheritedContextChangedEvent, element));
         }
 
         /// <summary>
@@ -147,24 +178,10 @@ namespace SharpPad.Interactivity.Contexts {
         }
 
         /// <summary>
-        /// Sets or merges (with the current context data) the context data for the specific dependency object
-        /// </summary>
-        /// <param name="element"></param>
-        /// <param name="value"></param>
-        public static void MergeContextData(DependencyObject element, IContextData value) {
-            if (element.GetValue(ContextDataProperty) is ContextData currData) {
-                element.SetValue(ContextDataProperty, ContextData.Merge(currData, value as ContextData ?? new ContextData(value)));
-            }
-            else {
-                SetContextData(element, value);
-            }
-        }
-
-        /// <summary>
         /// Gets the local context data for the specific dependency object. The returned
         /// value is the same as the value passed to <see cref="SetContextData"/>
         /// </summary>
-        public static IContextData GetLocalContextData(DependencyObject element) {
+        public static IContextData GetContextData(DependencyObject element) {
             return (IContextData) element.GetValue(ContextDataProperty);
         }
 
@@ -197,12 +214,12 @@ namespace SharpPad.Interactivity.Contexts {
         /// with each object from top to bottom, ensuring the bottom of the visual tree has the most power over
         /// the final data context key values. <see cref="GetFullContextData"/> should be preferred over this
         /// method, however, that method calls this one anyway (and invalidates the results for every visual child
-        /// when the <see cref="InheritedContextInvalidatedEvent"/> is about to be fired)
+        /// when the <see cref="InheritedContextChangedEvent"/> is about to be fired)
         /// </summary>
         /// <param name="obj">The element to get the full context of</param>
         /// <returns>The context</returns>
         public static IContextData EvaluateContextDataRaw(DependencyObject obj) {
-            ContextData ctx = new ContextData();
+            ProviderContextData ctx = new ProviderContextData();
 
             // I thought about using TreeLevel, then thought reflection was too slow, so then I profiled the code...
             // This entire method (for a clip, 26 visual elements to the root) takes about 20 microseconds
@@ -233,11 +250,15 @@ namespace SharpPad.Interactivity.Contexts {
         }
 
         private static void OnAncestorChanged(object sender, DependencyObject element, DependencyObject oldParent) {
+            // WPF calls the VisualAncestorChanged event for the element whose parent changed,
+            // but for some reason, also calls it for every visual child...
+            // sender will be the element that the event was called on,
+            // element will be the element whose visual parent changed
             if (ReferenceEquals(sender, element))
                 InvalidateInheritedContext(element);
         }
 
-        private static void OnDataContextChanged(DependencyObject element, DependencyPropertyChangedEventArgs e) {
+        private static void OnContextDataChanged(DependencyObject element, DependencyPropertyChangedEventArgs e) {
             if (e.NewValue != null) {
                 if (e.OldValue == null && element is Visual visual) {
                     AddVisualAncestorChangedHandler(visual);
@@ -254,16 +275,21 @@ namespace SharpPad.Interactivity.Contexts {
             // SetValue is around 2x faster than ClearValue, and either way, ClearValue isn't
             // very useful here since WPF inheritance isn't used, and the value will most
             // likely be re-calculated very near in the future possibly via dispatcher on background priority
-            obj.SetValue(InheritedContextDataPropertyKey, null);
-            for (int count = VisualTreeHelper.GetChildrenCount(obj); --count != -1;)
+
+            // Checking there is a value before setting generally improves runtime performance, since SetValue is fairly intensive
+            if (obj.GetValue(InheritedContextDataProperty) != null)
+                obj.SetValue(InheritedContextDataPropertyKey, null);
+
+            for (int count = VisualTreeHelper.GetChildrenCount(obj); --count != -1;) {
                 InvalidateInheritedContextAndChildren(VisualTreeHelper.GetChild(obj, count));
+            }
         }
 
         // Minimize stack usage as much as possible by using 'as' cast
-        private static void RaiseContextInvalidatedForVisualTree(DependencyObject target, RoutedEventArgs args) {
+        private static void RaiseEventRecursive(DependencyObject target, RoutedEventArgs args) {
             (target as IInputElement)?.RaiseEvent(args);
             for (int i = 0, count = VisualTreeHelper.GetChildrenCount(target); i < count; i++) {
-                RaiseContextInvalidatedForVisualTree(VisualTreeHelper.GetChild(target, i), args);
+                RaiseEventRecursive(VisualTreeHelper.GetChild(target, i), args);
             }
         }
 

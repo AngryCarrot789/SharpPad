@@ -33,7 +33,7 @@ namespace SharpPad.Utils {
         private List<Exception> exceptions;
 
         /// <summary>
-        /// Gets (or creates) the internal exception list
+        /// Gets (or creatces) the internal exception list
         /// </summary>
         public List<Exception> Exceptions => this.exceptions ?? (this.exceptions = new List<Exception>());
 

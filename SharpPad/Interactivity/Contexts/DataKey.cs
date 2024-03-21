@@ -99,7 +99,7 @@ namespace SharpPad.Interactivity.Contexts {
         }
 
         public T GetContext(IContextData context, T def = default) {
-            return context.TryGetContext(this.Id, out object obj) ? (T) obj : def;
+            return this.TryGetContext(context, out T value) ? value : def;
         }
     }
 }

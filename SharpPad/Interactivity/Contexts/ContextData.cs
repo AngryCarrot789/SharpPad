@@ -33,7 +33,7 @@ namespace SharpPad.Interactivity.Contexts {
         /// </summary>
         public int Count => this.map?.Count ?? 0;
 
-        public IReadOnlyDictionary<string, object> Entries => this.map ?? EmptyContext.EmptyDictionary;
+        public IEnumerable<KeyValuePair<string, object>> Entries => this.map ?? EmptyContext.EmptyDictionary;
 
         /// <summary>
         /// Creates a new empty instance
@@ -114,6 +114,7 @@ namespace SharpPad.Interactivity.Contexts {
         public bool TryGetContext(string key, out object value) {
             if (this.map != null && this.map.TryGetValue(key, out value))
                 return true;
+
             value = default;
             return false;
         }

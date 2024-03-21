@@ -43,12 +43,25 @@ namespace SharpPad.Shortcuts.WPF.Converters {
             throw new NotImplementedException();
         }
 
-        public static bool CommandIdToGesture(string id, string fallback, out string gesture) {
+        public static bool CommandIdToGesture(string id, string fallback, out string gesture, CmdToShortcutFlags flags = CmdToShortcutFlags.Both) {
             if (CommandManager.Instance.GetCommandById(id) == null) {
                 return (gesture = fallback) != null;
             }
 
-            IEnumerable<GroupedShortcut> shortcuts = ShortcutManager.Instance.GetShortcutsByCommandId(id);
+            IEnumerable<GroupedShortcut> shortcuts = ShortcutManager.Instance.GetShortcutsByCommandId(id, flags);
+            if (shortcuts == null) {
+                return (gesture = fallback) != null;
+            }
+
+            return (gesture = ShortcutIdToGestureConverter.ShortcutsToGesture(shortcuts, fallback)) != null;
+        }
+
+        public static bool CommandIdToGesture(string id, string fallback, out string gesture, string focusPath, bool canInherit = true) {
+            if (CommandManager.Instance.GetCommandById(id) == null) {
+                return (gesture = fallback) != null;
+            }
+
+            IEnumerable<GroupedShortcut> shortcuts = ShortcutManager.Instance.GetShortcutsByCommandId(id, focusPath, canInherit);
             if (shortcuts == null) {
                 return (gesture = fallback) != null;
             }

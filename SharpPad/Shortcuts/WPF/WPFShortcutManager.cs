@@ -149,7 +149,7 @@ namespace SharpPad.Shortcuts.WPF {
 
         private static void BroadcastShortcutActivity(string msg) {
             // lazy. This should be done via event handling
-            if (Application.Current.MainWindow is NotepadWindow window) {
+            if (Application.Current.MainWindow is NotepadWindow window && window.ActivityTextBlock != null) {
                 window.ActivityTextBlock.Text = msg;
             }
         }

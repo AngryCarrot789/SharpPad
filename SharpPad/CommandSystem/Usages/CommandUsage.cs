@@ -64,7 +64,7 @@ namespace SharpPad.CommandSystem.Usages {
         /// <exception cref="ArgumentNullException">Control is null</exception>
         public void Connect(DependencyObject control) {
             this.Control = control ?? throw new ArgumentNullException(nameof(control));
-            DataManager.AddInheritedContextInvalidatedHandler(control, this.OnInheritedContextChanged);
+            DataManager.AddInheritedContextChangedHandler(control, this.OnInheritedContextChanged);
             this.OnConnected();
         }
 
@@ -76,7 +76,7 @@ namespace SharpPad.CommandSystem.Usages {
             if (this.Control == null)
                 throw new InvalidCastException("Not connected");
 
-            DataManager.RemoveInheritedContextInvalidatedHandler(this.Control, this.OnInheritedContextChanged);
+            DataManager.RemoveInheritedContextChangedHandler(this.Control, this.OnInheritedContextChanged);
             this.OnDisconnected();
             this.Control = null;
         }

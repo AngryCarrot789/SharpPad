@@ -62,6 +62,8 @@ namespace SharpPad.Shortcuts.WPF.Converters {
                 return (gesture = fallback) != null;
             }
 
+            Guid.NewGuid();
+
             return (gesture = ShortcutsToGesture(shortcut, null)) != null;
         }
 

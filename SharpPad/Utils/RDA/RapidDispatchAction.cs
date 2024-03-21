@@ -25,16 +25,14 @@ namespace SharpPad.Utils.RDA {
     /// The base class for a regular RDA implementation
     /// </summary>
     public abstract class RapidDispatchActionBase {
-        protected readonly string debugId; // allows debugger breakpoint to match this
+        public readonly string DebugId; // allows debugger breakpoint to match this
         private readonly Action doExecuteCallback;
         private bool isScheduled;
-
-        public string DebugId => this.debugId;
 
         public DispatcherPriority Priority { get; }
 
         protected RapidDispatchActionBase(DispatcherPriority priority = DispatcherPriority.Send, string debugId = null) {
-            this.debugId = debugId;
+            this.DebugId = debugId;
             this.Priority = priority;
             this.doExecuteCallback = this.DoExecute;
         }
@@ -59,14 +57,14 @@ namespace SharpPad.Utils.RDA {
 
         private void DoExecute() {
             try {
-                this.ExecuteCore();
+                this.Execute();
             }
             finally {
                 this.isScheduled = false;
             }
         }
 
-        protected abstract void ExecuteCore();
+        protected abstract void Execute();
     }
 
     /// <summary>
@@ -93,7 +91,7 @@ namespace SharpPad.Utils.RDA {
             this.BeginInvoke();
         }
 
-        protected override void ExecuteCore() => this.callback();
+        protected override void Execute() => this.callback();
     }
 
     /// <summary>
@@ -108,7 +106,7 @@ namespace SharpPad.Utils.RDA {
             this.callback = callback ?? throw new ArgumentNullException(nameof(callback));
         }
 
-        protected override void ExecuteCore() {
+        protected override void Execute() {
             T param = this.parameter;
             this.parameter = default;
             this.callback(param);

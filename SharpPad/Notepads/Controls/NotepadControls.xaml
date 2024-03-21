@@ -140,7 +140,7 @@
                             <Button DockPanel.Dock="Right"
                                     Width="16" Height="16" Margin="0,5,5,5"
                                     Background="Transparent" BorderThickness="0"
-                                    u:CommandUsageManager.BasicButtonCommandId="CloseDocument">
+                                    u:CommandUsageManager.SimpleButtonCommandId="CloseDocument">
                                 <TextBlock Text="X" FontSize="11" Margin="0,0,0,0" Background="Transparent"/>
                             </Button>
                             <TextBlock x:Name="PART_DocNameTextBlock" VerticalAlignment="Center" Padding="7,4" Margin="0"
@@ -178,7 +178,7 @@
                     <DockPanel>
                         <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
                             <Button Width="28" Content="X" Background="Transparent" BorderThickness="0"
-                                    u:CommandUsageManager.BasicButtonCommandId="HideFindPanel"/>
+                                    u:CommandUsageManager.SimpleButtonCommandId="HideFindPanel"/>
                         </StackPanel>
                         <Grid HorizontalAlignment="Stretch">
                             <Grid.ColumnDefinitions>

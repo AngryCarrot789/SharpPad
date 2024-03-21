@@ -27,12 +27,12 @@ namespace SharpPad.CommandSystem.Usages {
     /// </summary>
     public static class CommandUsageManager {
         public static readonly DependencyProperty UsageClassTypeProperty = DependencyProperty.RegisterAttached("UsageClassType", typeof(Type), typeof(CommandUsageManager), new PropertyMetadata(null, OnUsageClassTypeChanged), ValidateUsageType);
-        public static readonly DependencyProperty BasicButtonCommandIdProperty = DependencyProperty.RegisterAttached("BasicButtonCommandId", typeof(string), typeof(CommandUsageManager), new PropertyMetadata(null, OnBasicButtonCommandIdChanged));
+        public static readonly DependencyProperty SimpleButtonCommandIdProperty = DependencyProperty.RegisterAttached("SimpleButtonCommandId", typeof(string), typeof(CommandUsageManager), new PropertyMetadata(null, OnSimpleButtonCommandIdChanged));
         private static readonly DependencyProperty InternalCommandContextProperty = DependencyProperty.RegisterAttached("InternalCommandContext", typeof(CommandUsage), typeof(CommandUsageManager), new PropertyMetadata(null));
 
-        public static void SetBasicButtonCommandId(DependencyObject element, string value) => element.SetValue(BasicButtonCommandIdProperty, value);
+        public static void SetSimpleButtonCommandId(DependencyObject element, string value) => element.SetValue(SimpleButtonCommandIdProperty, value);
 
-        public static string GetBasicButtonCommandId(DependencyObject element) => (string) element.GetValue(BasicButtonCommandIdProperty);
+        public static string GetSimpleButtonCommandId(DependencyObject element) => (string) element.GetValue(SimpleButtonCommandIdProperty);
 
         /// <summary>
         /// Sets the command usage class type for this element
@@ -46,7 +46,7 @@ namespace SharpPad.CommandSystem.Usages {
         /// <returns></returns>
         public static Type GetUsageClassType(DependencyObject element) => (Type) element.GetValue(UsageClassTypeProperty);
 
-        private static void OnBasicButtonCommandIdChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+        private static void OnSimpleButtonCommandIdChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             if (d.GetValue(InternalCommandContextProperty) is CommandUsage oldContext) {
                 oldContext.Disconnect();
             }

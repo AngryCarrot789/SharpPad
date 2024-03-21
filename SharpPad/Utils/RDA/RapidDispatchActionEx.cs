@@ -30,7 +30,7 @@ namespace SharpPad.Utils.RDA {
 
         // allows debugger breakpoint to match this. Field, so the debugger knows
         // there are no possible side effects (hopefully??? Am I thinking too hard?)
-        private readonly string debugId;
+        public readonly string DebugId;
 
         private volatile int myState; // The current state
         private readonly object stateLock; // A guard when reading/writing the state
@@ -56,7 +56,7 @@ namespace SharpPad.Utils.RDA {
         /// <param name="debugId">A debugging ID</param>
         protected RapidDispatchActionExBase(IDispatcher dispatcher, DispatcherPriority priority, string debugId) {
             this.dispatcher = dispatcher;
-            this.debugId = debugId;
+            this.DebugId = debugId;
             this.Priority = priority;
             this.stateLock = new object();
             this.doExecuteCallback = this.DoExecuteAsync;

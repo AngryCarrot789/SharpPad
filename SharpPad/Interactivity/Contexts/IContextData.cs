@@ -27,7 +27,7 @@ namespace SharpPad.Interactivity.Contexts {
         /// <summary>
         /// Returns an enumerable that allows iteration of all entries in this object
         /// </summary>
-        IReadOnlyDictionary<string, object> Entries { get; }
+        IEnumerable<KeyValuePair<string, object>> Entries { get; }
 
         /// <summary>
         /// Tries to get a value from a data key

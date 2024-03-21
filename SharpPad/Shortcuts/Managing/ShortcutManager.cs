@@ -19,10 +19,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SharpPad.CommandSystem;
 using SharpPad.Shortcuts.Events;
 using SharpPad.Shortcuts.Inputs;
 using SharpPad.Shortcuts.Usage;
+using SharpPad.Shortcuts.WPF.Converters;
 
 namespace SharpPad.Shortcuts.Managing {
     public delegate void ShortcutActivityEventHandler(ShortcutInputManager manager);
@@ -109,9 +111,37 @@ namespace SharpPad.Shortcuts.Managing {
             return this.cachedAllShortcuts;
         }
 
-        public IEnumerable<GroupedShortcut> GetShortcutsByCommandId(string cmdId) {
+        public IEnumerable<GroupedShortcut> GetShortcutsByCommandId(string cmdId, CmdToShortcutFlags flags = CmdToShortcutFlags.Both) {
             this.EnsureCacheBuilt();
-            return this.cachedCmdToShortcut.TryGetValue(cmdId, out LinkedList<GroupedShortcut> value) ? value : null;
+            if (flags == CmdToShortcutFlags.None || !this.cachedCmdToShortcut.TryGetValue(cmdId, out LinkedList<GroupedShortcut> value)) {
+                return null;
+            }
+
+            switch (flags) {
+                case CmdToShortcutFlags.Keyboard:
+                    return value.Where(x => x.Shortcut is KeyboardShortcut);
+                case CmdToShortcutFlags.Mouse:
+                    return value.Where(x => x.Shortcut is MouseShortcut);
+                case CmdToShortcutFlags.Both:
+                    return value;
+                default: throw new ArgumentOutOfRangeException(nameof(flags), flags, null);
+            }
+        }
+
+        public IEnumerable<GroupedShortcut> GetShortcutsByCommandId(string cmdId, string focusPath, bool canInherit = true) {
+            if (string.IsNullOrWhiteSpace(focusPath)) {
+                return this.GetShortcutsByCommandId(cmdId);
+            }
+
+            this.EnsureCacheBuilt();
+            List<GroupedShortcut> shortcuts = new List<GroupedShortcut>();
+            foreach (GroupedShortcut shortcut in this.cachedAllShortcuts) {
+                if (shortcut.CommandId == cmdId && (canInherit ? focusPath.StartsWith(shortcut.FullPath) : focusPath.Equals(shortcut.FullPath))) {
+                    shortcuts.Add(shortcut);
+                }
+            }
+
+            return shortcuts;
         }
 
         public static void GetAllShortcuts(ShortcutGroup rootGroup, ICollection<GroupedShortcut> accumulator) {

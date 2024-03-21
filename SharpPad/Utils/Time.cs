@@ -142,5 +142,7 @@ namespace SharpPad.Utils {
                 // do nothing but loop for the rest of the duration, for precise timing
             }
         }
+
+        public static double TicksToMillis(double ticks) => ticks / TICK_PER_MILLIS_D;
     }
 }
