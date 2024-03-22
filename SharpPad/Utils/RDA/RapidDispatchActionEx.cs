@@ -100,9 +100,9 @@ namespace SharpPad.Utils.RDA {
             if (exception != null)
                 this.ExecutionException?.Invoke(this, new ExceptionEventArgs(exception));
 
-            // Schedule outside of the lock, because BeginInvoke is slightly expensive,
-            // and we don't want to keep the lock acquired for a long time (clogging up
-            // and thread that calls InvokeAsync)
+            // Schedule outside of the lock, because ScheduleExecute is slightly expensive,
+            // and we don't want to keep the lock acquired for a long time (and clogg up
+            // any thread that calls InvokeAsync)
             if (state == S_RESCHEDULED)
                 this.ScheduleExecute();
         }

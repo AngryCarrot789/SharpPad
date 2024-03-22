@@ -46,7 +46,13 @@ namespace SharpPad.Utils.RDA {
         /// </summary>
         public TimeSpan MinimumInterval {
             get => new TimeSpan(Interlocked.Read(ref this.minIntervalTicks));
-            set => Interlocked.Exchange(ref this.minIntervalTicks, value.Ticks);
+            set {
+                long ticks = value.Ticks;
+                if (ticks <= 0)
+                    throw new ArgumentOutOfRangeException(nameof(value), ticks, "Value must represent more than zero time");
+
+                Interlocked.Exchange(ref this.minIntervalTicks, ticks);
+            }
         }
 
         public RateLimitedDispatchAction(Func<Task> callback) : this(callback, TimeSpan.FromMilliseconds(250)) { }
@@ -92,7 +98,7 @@ namespace SharpPad.Utils.RDA {
         }
 
         /// <summary>
-        /// Triggers this executor, possibly starting a new <see cref="Task"/>, or notifying the existing internal task that there's new input
+        /// Triggers this RLDA, possibly starting a new <see cref="Task"/>, or notifying the existing internal task that there's new input
         /// </summary>
         public void InvokeAsync() {
             lock (this.stateLock) {
@@ -109,13 +115,18 @@ namespace SharpPad.Utils.RDA {
                 if ((myState & S_RUNNING) == 0) {
                     // We are not running, so start a new task and append RUNNING
                     this.state = myState | S_RUNNING;
-                    Task.Run(this.TaskMain);
+                    goto StartTask;
                 }
                 else {
                     // Task is already running, so just volatile write the state
                     this.state = myState;
                 }
             }
+
+            return;
+
+            StartTask:
+            Task.Run(this.TaskMain);
         }
 
         private async Task TaskMain() {
@@ -123,12 +134,14 @@ namespace SharpPad.Utils.RDA {
             long interval = Time.GetSystemTicks() - lastExecTime;
 
             do {
-                // We will sleep at least twice, even if InvokeAsync is only called.
+                // We will sleep at least twice, even if InvokeAsync is only called once.
                 // This is so that we don't need to keep creating lots of tasks when
                 // InvokeAsync is called very often
+
                 long minInterval = Interlocked.Read(ref this.minIntervalTicks);
-                if (interval < minInterval)
+                if (interval < minInterval) {
                     await Task.Delay(new TimeSpan(minInterval - interval));
+                }
 
                 int myState;
                 lock (this.stateLock) {

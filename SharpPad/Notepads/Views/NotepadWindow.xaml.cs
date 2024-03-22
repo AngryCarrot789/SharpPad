@@ -61,11 +61,13 @@ namespace SharpPad.Notepads.Views {
             // File menu won't work if an editor does not have keyboard focus :/
             // So this is sort of like the middle between context and global data access
             ProviderContextData context = new ProviderContextData();
-            context.SetProvider(DataKeys.HostWindowKey, () => this);
-            context.SetProvider(DataKeys.NotepadKey, () => this.Notepad);
-            context.SetProvider(DataKeys.NotepadEditorKey, () => this.Notepad?.ActiveEditor);
-            context.SetProvider(DataKeys.DocumentKey, () => this.Notepad?.ActiveEditor?.Document);
-            context.SetProvider(DataKeys.FindModelKey, () => this.Notepad?.ActiveEditor?.FindModel);
+            context.SetValue(DataKeys.HostWindowKey, this);
+
+            // raw versions are faster as they don't require a wrapper for Func<T> to Func<object>.
+            context.SetProviderRaw(DataKeys.NotepadKey, () => this.Notepad);
+            context.SetProviderRaw(DataKeys.NotepadEditorKey, () => this.Notepad?.ActiveEditor);
+            context.SetProviderRaw(DataKeys.DocumentKey, () => this.Notepad?.ActiveEditor?.Document);
+            context.SetProviderRaw(DataKeys.FindModelKey, () => this.Notepad?.ActiveEditor?.FindModel);
 
             DataManager.SetContextData(this, context);
             this.InitializeComponent();
