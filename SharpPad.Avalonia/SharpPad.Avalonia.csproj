@@ -1,0 +1,121 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="11.0.10"/>
+        <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.6"/>
+        <PackageReference Include="Avalonia.Desktop" Version="11.0.10"/>
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.10"/>
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.10"/>
+        <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.10"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="Shortcuts\WPF\ShortcutStyles.xaml">
+            <Generator>MSBuild:Compile</Generator>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <AvaloniaXaml Remove="Themes\JetTheme.axaml"/>
+        <AvaloniaXaml Remove="Themes\Controls\Button.axaml"/>
+        <AvaloniaXaml Remove="Themes\ControlResources.axaml"/>
+        <AvaloniaXaml Remove="Themes\ThemeResources.axaml"/>
+        <None Remove="Themes\Controls\AdornerLayer.xaml"/>
+        <None Remove="Themes\Controls\AutoCompleteBox.xaml"/>
+        <None Remove="Themes\Controls\Button.xaml"/>
+        <None Remove="Themes\Controls\ButtonSpinner.xaml"/>
+        <None Remove="Themes\Controls\Calendar.xaml"/>
+        <None Remove="Themes\Controls\CalendarButton.xaml"/>
+        <None Remove="Themes\Controls\CalendarDatePicker.xaml"/>
+        <None Remove="Themes\Controls\CalendarDayButton.xaml"/>
+        <None Remove="Themes\Controls\CalendarItem.xaml"/>
+        <None Remove="Themes\Controls\CaptionButtons.xaml"/>
+        <None Remove="Themes\Controls\Carousel.xaml"/>
+        <None Remove="Themes\Controls\CheckBox.xaml"/>
+        <None Remove="Themes\Controls\ComboBox.xaml"/>
+        <None Remove="Themes\Controls\ComboBoxItem.xaml"/>
+        <None Remove="Themes\Controls\ContextMenu.xaml"/>
+        <None Remove="Themes\Controls\DataValidationErrors.xaml"/>
+        <None Remove="Themes\Controls\DatePicker.xaml"/>
+        <None Remove="Themes\Controls\DateTimePickerShared.xaml"/>
+        <None Remove="Themes\Controls\DropDownButton.xaml"/>
+        <None Remove="Themes\Controls\EmbeddableControlRoot.xaml"/>
+        <None Remove="Themes\Controls\Expander.xaml"/>
+        <None Remove="Themes\Controls\FlyoutPresenter.xaml"/>
+        <None Remove="Themes\Controls\GridSplitter.xaml"/>
+        <None Remove="Themes\Controls\HeaderedContentControl.xaml"/>
+        <None Remove="Themes\Controls\HyperlinkButton.xaml"/>
+        <None Remove="Themes\Controls\ItemsControl.xaml"/>
+        <None Remove="Themes\Controls\Label.xaml"/>
+        <None Remove="Themes\Controls\ListBox.xaml"/>
+        <None Remove="Themes\Controls\ListBoxItem.xaml"/>
+        <None Remove="Themes\Controls\ManagedFileChooser.xaml"/>
+        <None Remove="Themes\Controls\Menu.xaml"/>
+        <None Remove="Themes\Controls\MenuFlyoutPresenter.xaml"/>
+        <None Remove="Themes\Controls\MenuItem.xaml"/>
+        <None Remove="Themes\Controls\NotificationCard.xaml"/>
+        <None Remove="Themes\Controls\NumericUpDown.xaml"/>
+        <None Remove="Themes\Controls\OverlayPopupHost.xaml"/>
+        <None Remove="Themes\Controls\PathIcon.xaml"/>
+        <None Remove="Themes\Controls\PopupRoot.xaml"/>
+        <None Remove="Themes\Controls\ProgressBar.xaml"/>
+        <None Remove="Themes\Controls\RadioButton.xaml"/>
+        <None Remove="Themes\Controls\RefreshContainer.xaml"/>
+        <None Remove="Themes\Controls\RefreshVisualizer.xaml"/>
+        <None Remove="Themes\Controls\RepeatButton.xaml"/>
+        <None Remove="Themes\Controls\ScrollBar.xaml"/>
+        <None Remove="Themes\Controls\ScrollViewer.xaml"/>
+        <None Remove="Themes\Controls\SelectableTextBlock.xaml"/>
+        <None Remove="Themes\Controls\Separator.xaml"/>
+        <None Remove="Themes\Controls\SimpleControls.xaml"/>
+        <None Remove="Themes\Controls\Slider.xaml"/>
+        <None Remove="Themes\Controls\SplitButton.xaml"/>
+        <None Remove="Themes\Controls\SplitView.xaml"/>
+        <None Remove="Themes\Controls\TabControl.xaml"/>
+        <None Remove="Themes\Controls\TabItem.xaml"/>
+        <None Remove="Themes\Controls\TabStrip.xaml"/>
+        <None Remove="Themes\Controls\TabStripItem.xaml"/>
+        <None Remove="Themes\Controls\TextBox.xaml"/>
+        <None Remove="Themes\Controls\TextSelectionHandle.xaml"/>
+        <None Remove="Themes\Controls\ThemeVariantScope.xaml"/>
+        <None Remove="Themes\Controls\TimePicker.xaml"/>
+        <None Remove="Themes\Controls\TitleBar.xaml"/>
+        <None Remove="Themes\Controls\ToggleButton.xaml"/>
+        <None Remove="Themes\Controls\ToggleSwitch.xaml"/>
+        <None Remove="Themes\Controls\ToolTip.xaml"/>
+        <None Remove="Themes\Controls\TransitioningContentControl.xaml"/>
+        <None Remove="Themes\Controls\TreeView.xaml"/>
+        <None Remove="Themes\Controls\TreeViewItem.xaml"/>
+        <None Remove="Themes\Controls\Window.xaml"/>
+        <None Remove="Themes\Controls\WindowNotificationManager.xaml"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="Resources\Fonts\Oxanium\Oxanium-Bold.ttf"/>
+        <AvaloniaResource Include="Resources\Fonts\Oxanium\Oxanium-Bold.ttf"/>
+        <None Remove="Resources\Fonts\Oxanium\Oxanium-ExtraBold.ttf"/>
+        <AvaloniaResource Include="Resources\Fonts\Oxanium\Oxanium-ExtraBold.ttf"/>
+        <None Remove="Resources\Fonts\Oxanium\Oxanium-ExtraLight.ttf"/>
+        <AvaloniaResource Include="Resources\Fonts\Oxanium\Oxanium-ExtraLight.ttf"/>
+        <None Remove="Resources\Fonts\Oxanium\Oxanium-Light.ttf"/>
+        <AvaloniaResource Include="Resources\Fonts\Oxanium\Oxanium-Light.ttf"/>
+        <None Remove="Resources\Fonts\Oxanium\Oxanium-Medium.ttf"/>
+        <AvaloniaResource Include="Resources\Fonts\Oxanium\Oxanium-Medium.ttf"/>
+        <None Remove="Resources\Fonts\Oxanium\Oxanium-Regular.ttf"/>
+        <AvaloniaResource Include="Resources\Fonts\Oxanium\Oxanium-Regular.ttf"/>
+        <None Remove="Resources\Fonts\Oxanium\Oxanium-SemiBold.ttf"/>
+        <AvaloniaResource Include="Resources\Fonts\Oxanium\Oxanium-SemiBold.ttf"/>
+        <None Remove="Resources\Fonts\Oxanium\Oxanium-VariableFont_wght.ttf"/>
+        <AvaloniaResource Include="Resources\Fonts\Oxanium\Oxanium-VariableFont_wght.ttf"/>
+    </ItemGroup>
+</Project>

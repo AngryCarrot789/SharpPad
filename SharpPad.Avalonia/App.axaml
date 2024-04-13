@@ -1,0 +1,24 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="SharpPad.Avalonia.App"
+             RequestedThemeVariant="Light">
+    <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <Application.Styles>
+        <SimpleTheme/>
+        <StyleInclude Source="avares://AvaloniaEdit/Themes/Simple/AvaloniaEdit.xaml"/>
+        <StyleInclude Source="Themes/Controls.axaml"/>
+        <StyleInclude Source="/Controls/GeneralControls.axaml"/>
+    </Application.Styles>
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <FontFamily x:Key="FontOxanium">/Resources/Fonts/Oxanium/#Oxanium</FontFamily>
+            <FontFamily x:Key="DefaultFont">Segoe UI</FontFamily>
+            <ResourceDictionary.MergedDictionaries>
+                <MergeResourceInclude Source="Themes/Colours/SoftDark.axaml"/>
+                <MergeResourceInclude Source="Themes/ControlColours.axaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

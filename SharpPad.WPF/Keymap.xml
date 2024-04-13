@@ -1,0 +1,97 @@
+﻿<?xml version="1.0"?>
+
+<KeyMap Version="1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="Keymap.xsd">
+    <Group Name="Application">
+        <Group Name="Notepad">
+            <Shortcut Name="NewFile" CommandId="NewFile">
+                <KeyStroke Mods="CTRL" Key="N"/>
+            </Shortcut>
+            <Shortcut Name="OpenFile" CommandId="OpenFile">
+                <KeyStroke Mods="CTRL" Key="O"/>
+            </Shortcut>
+            <Shortcut Name="SaveFile" CommandId="SaveDocumentFile">
+                <KeyStroke Mods="CTRL" Key="S"/>
+            </Shortcut>
+            <Shortcut Name="SaveFileAs" CommandId="SaveDocumentFileAs">
+                <KeyStroke Mods="CTRL+SHIFT" Key="S"/>
+            </Shortcut>
+
+            <Group Name="Document">
+                <Shortcut Name="CloseDocument" CommandId="CloseDocument">
+                    <KeyStroke Mods="CTRL" Key="W"/>
+                </Shortcut>
+                <Shortcut Name="CutShortcut" CommandId="CutInEditor">
+                    <KeyStroke Mods="CTRL" Key="X"/>
+                </Shortcut>
+                <Shortcut Name="CopyShortcut" CommandId="CopyInEditor">
+                    <KeyStroke Mods="CTRL" Key="C"/>
+                </Shortcut>
+                <Shortcut Name="CopyFilePathShortcut" CommandId="CopyFilePathInEditor">
+                    <KeyStroke Mods="CTRL+SHIFT" Key="C"/>
+                </Shortcut>
+                <Shortcut Name="PasteShortcut" CommandId="PasteInEditor">
+                    <KeyStroke Mods="CTRL" Key="V"/>
+                </Shortcut>
+                <Shortcut Name="DeleteShortcut" CommandId="DeleteTextOrLineInEditor">
+                    <KeyStroke Mods="CTRL+SHIFT" Key="D"/>
+                </Shortcut>
+                <Shortcut Name="DuplicateTextOrLineShortcut" CommandId="DuplicateTextOrLineInEditor">
+                    <KeyStroke Mods="CTRL" Key="D"/>
+                </Shortcut>
+                <Shortcut Name="UndoShortcut" CommandId="UndoInEditor">
+                    <KeyStroke Mods="CTRL" Key="Z"/>
+                </Shortcut>
+                <Shortcut Name="RedoShortcut1" CommandId="RedoInEditor">
+                    <KeyStroke Mods="CTRL+SHIFT" Key="Z"/>
+                </Shortcut>
+                <Shortcut Name="RedoShortcut2" CommandId="RedoInEditor">
+                    <KeyStroke Mods="CTRL" Key="Y"/>
+                </Shortcut>
+                <Shortcut Name="SelectAllShortcut" CommandId="SelectAllInEditor">
+                    <KeyStroke Mods="CTRL" Key="A"/>
+                </Shortcut>
+                <Shortcut Name="SelectLineShortcut" CommandId="SelectLineInEditor">
+                    <KeyStroke Mods="CTRL+SHIFT" Key="A"/>
+                </Shortcut>
+                <Shortcut Name="ShowFindShortcut" CommandId="ShowFindPanel">
+                    <KeyStroke Mods="CTRL" Key="F"/>
+                </Shortcut>
+
+                <Group Name="FindPanel">
+                    <Shortcut Name="ToggleFindMatchCaseShortcut" CommandId="ToggleFindMatchCase">
+                        <KeyStroke Mods="ALT" Key="C"/>
+                    </Shortcut>
+                    <Shortcut Name="ToggleFindWordSearchShortcut" CommandId="ToggleFindWordSearch">
+                        <KeyStroke Mods="ALT" Key="W"/>
+                    </Shortcut>
+                    <Shortcut Name="ToggleFindRegexSearchShortcut" CommandId="ToggleFindRegexSearch">
+                        <KeyStroke Mods="ALT" Key="R"/>
+                    </Shortcut>
+                    <Shortcut Name="ToggleFindInSelectionShortcut" CommandId="ToggleFindInSelection">
+                        <KeyStroke Mods="ALT" Key="S"/>
+                    </Shortcut>
+
+                    <!-- Not used by the search/replace text boxes. They use the KeyStrokeCommandBehaviour instead -->
+                    <Shortcut Name="ClosePanelShortcut" CommandId="HideFindPanel">
+                        <KeyStroke Key="Escape"/>
+                    </Shortcut>
+                    <Shortcut Name="GoToPrevResultShortcut" CommandId="PrevFindResult">
+                        <KeyStroke Key="F3"/>
+                    </Shortcut>
+                    <Shortcut Name="GoToNextResultShortcut" CommandId="NextFindResult">
+                        <KeyStroke Key="F4"/>
+                    </Shortcut>
+                </Group>
+            </Group>
+
+            <Group Name="DocumentTab">
+                <Shortcut Name="CloseDocument1" CommandId="CloseDocument">
+                    <KeyStroke Mods="CTRL" Key="W"/>
+                </Shortcut>
+                <Shortcut Name="CloseDocument2" CommandId="CloseDocument">
+                    <MouseStroke Button="Middle"/>
+                </Shortcut>
+            </Group>
+        </Group>
+    </Group>
+</KeyMap>

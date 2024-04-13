@@ -1,0 +1,34 @@
+All colours are prefixed with "AColour". The 'A' at the start is just for quick searching.
+All brushes are prefixed with "ABrush", the 'A' used for the same reason as colours.
+
+Foreground has a static, deeper and disabled colour.
+    Static for regular text colour
+    Deeper is just a slightly darker/less visible colour
+    Disabled is a much darker/less visible colour
+
+Glyphs have static, disabled, mouse over/down, selected + inactive selected colours.
+There's also a colourful glyph which has the same keys but with "Colourful" added
+
+
+
+Tones
+
+
+Tones are the different colour phases for different controls. The lower tone number
+means darker (in dark themes) and typically lighter in light themes
+
+Accent tones follow the same rules but they use a colour instead of
+moving towards black or white (for dark/light themes)
+
+Tone 0, 1, 2 and 3 are useful for containers/panels (e.g. Grid or a Border that
+contains a Grid, DockPanels, etc.)
+
+The rest of the tones are used for standard controls (e.g. buttons). Most controls
+use Tone 4 and 5, but some may use higher tones. You can obviously changes this
+if you want and make a button use a higher tone in order to stand out more
+
+All Color keys have a corresponding SolidColourBrush key
+(e.g. "AColour.Glyph.Static" -> "ABrush.Glyph.Static"), which is useful
+if you want to animate a colour which I think requires Colour not Brush
+(that might be gradients though, can't remember)
+

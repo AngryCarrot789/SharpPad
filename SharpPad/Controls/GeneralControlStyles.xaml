@@ -1,5 +1,0 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:controls="clr-namespace:SharpPad.Controls">
-    <Style TargetType="{x:Type controls:CancellableThumb}" BasedOn="{StaticResource {x:Type Thumb}}"/>
-</ResourceDictionary>
