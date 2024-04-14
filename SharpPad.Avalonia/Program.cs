@@ -1,6 +1,5 @@
 ﻿using Avalonia;
 using System;
-using Avalonia.Media.Fonts;
 
 namespace SharpPad.Avalonia;
 

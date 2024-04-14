@@ -17,13 +17,31 @@
 // along with SharpPad. If not, see <https://www.gnu.org/licenses/>.
 //
 
+using System;
 using Avalonia;
+using Avalonia.Collections;
 using Avalonia.Controls.Primitives;
+using Avalonia.Data;
+using Avalonia.VisualTree;
 
 namespace SharpPad.Avalonia.Utils.Visuals;
 
 public static class VisualTreeUtils
 {
+    public static AvaloniaObject? FindNearestInheritedPropertyDefinition<T>(AvaloniaProperty<T> property, AvaloniaObject target)
+    {
+        for (AvaloniaObject? next = target; next != null; next = GetParent(next))
+        {
+            Optional<T> localValue = next.GetBaseValue(property);
+            if (!localValue.HasValue)
+                continue;
+
+            return next;
+        }
+
+        return null;
+    }
+    
     /// <summary>
     /// Gets the parent of the given source object
     /// </summary>
@@ -73,20 +91,31 @@ public static class VisualTreeUtils
 
     public static T? GetLastParent<T>(AvaloniaObject? obj, bool visualOnly = false) where T : class
     {
-        T lastParent = null;
-        for (T parent = GetParent<T>(obj, false, visualOnly); parent != null; parent = GetParent<T>((AvaloniaObject) (object) parent, false, visualOnly))
+        T? lastParent = null;
+        for (T? parent = GetParent<T>(obj, false, visualOnly); parent != null; parent = GetParent<T>((AvaloniaObject) (object) parent, false, visualOnly))
             lastParent = parent;
+
         return lastParent;
     }
 
-    public static AdornerLayer GetRootAdornerLayer(Visual visual)
+    public static AdornerLayer? GetRootAdornerLayer(Visual visual)
     {
-        AdornerLayer layer = AdornerLayer.GetAdornerLayer(visual);
-        for (AdornerLayer parent = layer; parent != null; parent = GetParent(parent) is Visual v ? AdornerLayer.GetAdornerLayer(v) : null)
-        {
+        AdornerLayer? layer = AdornerLayer.GetAdornerLayer(visual);
+        for (AdornerLayer? parent = layer; parent != null; parent = GetParent(parent) is Visual v ? AdornerLayer.GetAdornerLayer(v) : null)
             layer = parent;
-        }
 
         return layer;
     }
+
+    public static IAvaloniaList<Visual> GetVisualChildren(Visual visual) => (IAvaloniaList<Visual>) visual.GetVisualChildren();
+
+    public static int GetChildrenCount(AvaloniaObject obj)
+    {
+        return obj is Visual visual ? GetChildrenCount(visual) : throw new Exception("Object is not a visual object");
+    }
+
+    public static int GetChildrenCount(Visual visual) => ((IAvaloniaList<Visual>) visual.GetVisualChildren()).Count;
+
+    [Obsolete("Use VisualTreeUtils.GetVisualChildren() instead")]
+    public static Visual GetChild(Visual visual, int index) => ((IAvaloniaList<Visual>) visual.GetVisualChildren())[index];
 }

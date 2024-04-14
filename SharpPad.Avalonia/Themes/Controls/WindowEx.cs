@@ -21,4 +21,9 @@ public class WindowEx : Window
     public WindowEx()
     {
     }
+
+    static WindowEx()
+    {
+        // Window.ShowActivatedProperty
+    }
 }

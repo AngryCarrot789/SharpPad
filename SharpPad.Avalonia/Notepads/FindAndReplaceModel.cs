@@ -206,47 +206,47 @@ public class FindAndReplaceModel
     /// <summary>
     /// An event fired when the <see cref="SearchText"/> property changes
     /// </summary>
-    public event FindAndReplaceEventHandler SearchTextChanged;
+    public event FindAndReplaceEventHandler? SearchTextChanged;
 
     /// <summary>
     /// An event fired when the <see cref="ReplaceText"/> property changes
     /// </summary>
-    public event FindAndReplaceEventHandler ReplaceTextChanged;
+    public event FindAndReplaceEventHandler? ReplaceTextChanged;
 
     /// <summary>
     /// An event fired when the <see cref="IsMatchCases"/> property changes
     /// </summary>
-    public event FindAndReplaceEventHandler IsMatchCasesChanged;
+    public event FindAndReplaceEventHandler? IsMatchCasesChanged;
 
     /// <summary>
     /// An event fired when the <see cref="IsWordSearch"/> property changes
     /// </summary>
-    public event FindAndReplaceEventHandler IsWordSearchChanged;
+    public event FindAndReplaceEventHandler? IsWordSearchChanged;
 
     /// <summary>
     /// An event fired when the <see cref="IsRegexSearch"/> property changes
     /// </summary>
-    public event FindAndReplaceEventHandler IsRegexSearchChanged;
+    public event FindAndReplaceEventHandler? IsRegexSearchChanged;
 
     /// <summary>
     /// An event fired when the <see cref="IsFindInSelection"/> property changes
     /// </summary>
-    public event FindAndReplaceEventHandler IsFindInSelectionChanged;
+    public event FindAndReplaceEventHandler? IsFindInSelectionChanged;
 
     /// <summary>
     /// An event fired when <see cref="IsRegexSearch"/> is true and our <see cref="SearchText"/> changed but was an invalid regex expression
     /// </summary>
-    public event FindAndReplaceEventHandler IsRegexFaultedChanged;
+    public event FindAndReplaceEventHandler? IsRegexFaultedChanged;
 
     /// <summary>
     /// An event fired when the <see cref="CurrentResultIndex"/> property changes
     /// </summary>
-    public event FindAndReplaceEventHandler CurrentResultIndexChanged;
+    public event FindAndReplaceEventHandler? CurrentResultIndexChanged;
 
     /// <summary>
     /// An event fired when our <see cref="Results"/> has likely changed
     /// </summary>
-    public event FindAndReplaceEventHandler SearchResultsChanged;
+    public event FindAndReplaceEventHandler? SearchResultsChanged;
 
     private NotepadDocument? myDocument; // updated automatically
 

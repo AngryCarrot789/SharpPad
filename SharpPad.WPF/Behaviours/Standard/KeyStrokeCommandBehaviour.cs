@@ -21,7 +21,6 @@ using System.Windows;
 using System.Windows.Input;
 using SharpPad.WPF.Interactivity.Contexts;
 using SharpPad.WPF.Utils;
-using CommandManager = SharpPad.WPF.CommandSystem.CommandManager;
 
 namespace SharpPad.WPF.Behaviours.Standard
 {

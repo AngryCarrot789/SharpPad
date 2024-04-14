@@ -6,13 +6,15 @@
              xmlns:ae="https://github.com/avaloniaui/avaloniaedit"
              xmlns:c="clr-namespace:SharpPad.Avalonia.Controls"
              xmlns:tc="clr-namespace:SharpPad.Avalonia.Themes.Controls"
+             xmlns:av="clr-namespace:SharpPad.Avalonia.Shortcuts.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              Title="SharpPad"
              MinWidth="350" MinHeight="250"
              Width="600" Height="600"
              WindowStartupLocation="CenterScreen"
              Background="{DynamicResource PanelBackground0}"
-             BorderBrush="{DynamicResource PanelBorderBrush}">
+             BorderBrush="{DynamicResource PanelBorderBrush}"
+             av:UIInputManager.FocusPath="Application/Notepad">
     <Grid Margin="0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>

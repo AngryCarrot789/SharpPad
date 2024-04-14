@@ -98,10 +98,10 @@ public class DefaultProgressTracker : IActivityProgress
         }
     }
 
-    public event ActivityProgressEventHandler IsIndeterminateChanged;
-    public event ActivityProgressEventHandler CompletionValueChanged;
-    public event ActivityProgressEventHandler HeaderTextChanged;
-    public event ActivityProgressEventHandler TextChanged;
+    public event ActivityProgressEventHandler? IsIndeterminateChanged;
+    public event ActivityProgressEventHandler? CompletionValueChanged;
+    public event ActivityProgressEventHandler? HeaderTextChanged;
+    public event ActivityProgressEventHandler? TextChanged;
 
     private readonly Stack<CompletionRange> ranges = new Stack<CompletionRange>();
     private double totalMultiplier;

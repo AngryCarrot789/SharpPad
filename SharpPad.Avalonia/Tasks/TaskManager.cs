@@ -38,8 +38,8 @@ public class TaskManager : IDisposable
     private readonly List<ActivityTask> tasks;
     private readonly object locker;
 
-    public event TaskManagerTaskEventHandler TaskStarted;
-    public event TaskManagerTaskEventHandler TaskCompleted;
+    public event TaskManagerTaskEventHandler? TaskStarted;
+    public event TaskManagerTaskEventHandler? TaskCompleted;
 
     public IReadOnlyList<ActivityTask> ActiveTasks => this.tasks;
 

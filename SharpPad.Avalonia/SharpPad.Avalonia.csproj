@@ -7,6 +7,7 @@
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <AvaloniaAccessUnstablePrivateApis>true</AvaloniaAccessUnstablePrivateApis>
     </PropertyGroup>
 
     <ItemGroup>
@@ -117,5 +118,12 @@
         <AvaloniaResource Include="Resources\Fonts\Oxanium\Oxanium-SemiBold.ttf"/>
         <None Remove="Resources\Fonts\Oxanium\Oxanium-VariableFont_wght.ttf"/>
         <AvaloniaResource Include="Resources\Fonts\Oxanium\Oxanium-VariableFont_wght.ttf"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Keymap.xml" />
+      <Content Include="Keymap.xml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 </Project>

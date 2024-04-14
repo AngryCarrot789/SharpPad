@@ -87,8 +87,8 @@ public class NotepadDocument
     /// </summary>
     public TextDocument Document { get; }
 
-    public event DocumentEventHandler FilePathChanged;
-    public event DocumentEventHandler IsModifiedChanged;
+    public event DocumentEventHandler? FilePathChanged;
+    public event DocumentEventHandler? IsModifiedChanged;
 
     public NotepadDocument() : this(new TextDocument())
     {

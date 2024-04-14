@@ -207,7 +207,7 @@
                                     <TextBox x:Name="PART_SearchTextBox" BorderThickness="0" Padding="2,0"
                                              Background="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=IsRegexFaulted, Converter={StaticResource RegexFaultBrushConverter}}"
                                              VerticalContentAlignment="Center"
-                                             wpf:UIInputManager.IsKeyProcessingBlocked="False"
+                                             wpf:UIInputManager.IsKeyShortcutProcessingBlocked="False"
                                              Style="{StaticResource HintedTextBox}" Tag="Search document">
                                         <b:BehaviourCollection.Behaviours>
                                             <stdb:KeyStrokeCommandBehaviour Key="Enter" CommandId="NextFindResult"/>

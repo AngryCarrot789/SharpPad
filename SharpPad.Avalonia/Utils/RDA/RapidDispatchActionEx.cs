@@ -48,7 +48,7 @@ public abstract class RapidDispatchActionExBase
     /// <summary>
     /// An event that gets raised when an unhandled exception is thrown by the callback action
     /// </summary>
-    public event ExceptionEventHandler ExecutionException;
+    public event ExceptionEventHandler? ExecutionException;
 
     /// <summary>
     /// Constructor for a RDA-Ex

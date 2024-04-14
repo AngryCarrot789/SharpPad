@@ -110,10 +110,10 @@ public class NotepadEditor
     /// <summary>
     /// An event that gets raised when <see cref="Document"/> changes
     /// </summary>
-    public event ActiveDocumentChangedEventHandler DocumentChanged;
+    public event ActiveDocumentChangedEventHandler? DocumentChanged;
 
-    public event TextEditorChangedEventHandler TextEditorChanged;
-    public event NotepadEditorEventHandler IsFindPanelOpenChanged;
+    public event TextEditorChangedEventHandler? TextEditorChanged;
+    public event NotepadEditorEventHandler? IsFindPanelOpenChanged;
 
     /// <summary>
     /// Creates a notepad editor instance

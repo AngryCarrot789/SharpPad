@@ -29,7 +29,6 @@ using SharpPad.WPF.AdvancedMenuService;
 using SharpPad.WPF.Interactivity.Contexts;
 using SharpPad.WPF.Utils;
 using SharpPad.WPF.Utils.Visuals;
-using CommandManager = SharpPad.WPF.CommandSystem.CommandManager;
 
 namespace SharpPad.WPF.Shortcuts.WPF
 {
@@ -60,10 +59,10 @@ namespace SharpPad.WPF.Shortcuts.WPF
         /// A dependency property used to check if a control blocks shortcut key processing. This is false by default for most
         /// standard controls, but is true for things like text boxes and rich text boxes (but can be set back to false explicitly)
         /// </summary>
-        public static readonly DependencyProperty IsKeyProcessingBlockedProperty = DependencyProperty.RegisterAttached("IsKeyProcessingBlocked", typeof(bool), typeof(UIInputManager), new PropertyMetadata(BoolBox.False));
+        public static readonly DependencyProperty IsKeyShortcutProcessingBlockedProperty = DependencyProperty.RegisterAttached("IsKeyShortcutProcessingBlocked", typeof(bool), typeof(UIInputManager), new PropertyMetadata(BoolBox.False));
 
         /// <summary>
-        /// A dependency property which is the same as <see cref="IsKeyProcessingBlockedProperty"/> except for mouse strokes
+        /// A dependency property which is the same as <see cref="IsKeyShortcutProcessingBlockedProperty"/> except for mouse strokes
         /// </summary>
         public static readonly DependencyProperty IsMouseProcessingBlockedProperty = DependencyProperty.RegisterAttached("IsMouseProcessingBlocked", typeof(bool), typeof(UIInputManager), new PropertyMetadata(default(bool)));
 
@@ -102,10 +101,10 @@ namespace SharpPad.WPF.Shortcuts.WPF
             InputManager.Current.PreProcessInput += OnPreProcessInput;
             InputManager.Current.PostProcessInput += OnPostProcessInput;
 
-            IsKeyProcessingBlockedProperty.OverrideMetadata(typeof(TextBoxBase), new PropertyMetadata(BoolBox.True));
-            IsKeyProcessingBlockedProperty.OverrideMetadata(typeof(TextBox), new PropertyMetadata(BoolBox.True));
-            IsKeyProcessingBlockedProperty.OverrideMetadata(typeof(RichTextBox), new PropertyMetadata(BoolBox.True));
-            IsKeyProcessingBlockedProperty.OverrideMetadata(typeof(TextEditor), new PropertyMetadata(BoolBox.True));
+            IsKeyShortcutProcessingBlockedProperty.OverrideMetadata(typeof(TextBoxBase), new PropertyMetadata(BoolBox.True));
+            IsKeyShortcutProcessingBlockedProperty.OverrideMetadata(typeof(TextBox), new PropertyMetadata(BoolBox.True));
+            IsKeyShortcutProcessingBlockedProperty.OverrideMetadata(typeof(RichTextBox), new PropertyMetadata(BoolBox.True));
+            IsKeyShortcutProcessingBlockedProperty.OverrideMetadata(typeof(TextEditor), new PropertyMetadata(BoolBox.True));
         }
 
         /// <summary>
@@ -145,9 +144,9 @@ namespace SharpPad.WPF.Shortcuts.WPF
 
         public static bool GetIsInheritedFocusAllowed(DependencyObject element) => (bool) element.GetValue(IsInheritedFocusAllowedProperty);
 
-        public static void SetIsKeyProcessingBlocked(DependencyObject element, bool value) => element.SetValue(IsKeyProcessingBlockedProperty, value.Box());
+        public static void SetIsKeyShortcutProcessingBlocked(DependencyObject element, bool value) => element.SetValue(IsKeyShortcutProcessingBlockedProperty, value.Box());
 
-        public static bool GetIsKeyProcessingBlocked(DependencyObject element) => (bool) element.GetValue(IsKeyProcessingBlockedProperty);
+        public static bool GetIsKeyShortcutProcessingBlocked(DependencyObject element) => (bool) element.GetValue(IsKeyShortcutProcessingBlockedProperty);
 
         public static void SetIsMouseProcessingBlocked(DependencyObject element, bool value) => element.SetValue(IsMouseProcessingBlockedProperty, value);
 

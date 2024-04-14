@@ -1,7 +1,6 @@
 // #define PRINT_DEBUG_KEYSTROKES
 
 using System.Windows;
-using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using SharpPad.WPF.Interactivity.Contexts;
 using SharpPad.WPF.Shortcuts.Inputs;
@@ -41,7 +40,7 @@ namespace SharpPad.WPF.Shortcuts.WPF
 
         public void OnInputSourceKeyEvent(WPFShortcutInputManager processor, DependencyObject focused, KeyEventArgs e, Key key, bool isRelease, bool isPreviewEvent)
         {
-            if (!CanProcessEvent(focused, isPreviewEvent) || UIInputManager.GetIsKeyProcessingBlocked(focused))
+            if (!CanProcessEvent(focused, isPreviewEvent) || UIInputManager.GetIsKeyShortcutProcessingBlocked(focused))
             {
                 return;
             }

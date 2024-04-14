@@ -1,7 +1,8 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:SharpPad.Avalonia.Controls"
-        xmlns:ae="https://github.com/avaloniaui/avaloniaedit">
+        xmlns:ae="https://github.com/avaloniaui/avaloniaedit"
+        xmlns:av="clr-namespace:SharpPad.Avalonia.Shortcuts.Avalonia">
     <Design.PreviewWith>
         <Grid Background="Gray">
             <controls:NotepadTabControl Width="200" Height="100">
@@ -28,7 +29,9 @@
                                                    BorderBrush="Transparent" BorderThickness="0"
                                                    Foreground="{DynamicResource ABrush.Foreground.Static}"
                                                    ShowLineNumbers="True"
-                                                   FontSize="14" FontFamily="Consolas"/>
+                                                   FontSize="14" FontFamily="Consolas"
+                                                   av:UIInputManager.FocusPath="Application/Notepad/Document"
+                                                   av:UIInputManager.IsKeyShortcutProcessingUnblockedWithKeyModifiers="True"/>
                                 </Border>
                             </DockPanel>
                         </ControlTemplate>
@@ -70,6 +73,7 @@
                 <Setter Property="HorizontalContentAlignment" Value="Left"/>
                 <Setter Property="Margin" Value="-1,-1"/>
                 <Setter Property="Padding" Value="10,4,10,4"/>
+                <Setter Property="av:UIInputManager.FocusPath" Value="Application/Notepad/DocumentTab"/>
                 <Setter Property="Template">
                     <ControlTemplate>
                         <Grid x:Name="templateRoot">

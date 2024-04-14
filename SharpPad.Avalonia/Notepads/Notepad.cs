@@ -70,12 +70,12 @@ public class Notepad
     /// will be valid and newIndex will be -1. When moving, oldIndex and newIndex will be valid
     /// </para>
     /// </summary>
-    public event NotepadEditorIndexMovedEventHandler EditorIndexChanged;
+    public event NotepadEditorIndexMovedEventHandler? EditorIndexChanged;
 
     /// <summary>
     /// An event fired when the active editor (aka selected notepad tab) changes
     /// </summary>
-    public event NotepadActiveEditorChangedEventHandler ActiveEditorChanged;
+    public event NotepadActiveEditorChangedEventHandler? ActiveEditorChanged;
 
     public Notepad()
     {

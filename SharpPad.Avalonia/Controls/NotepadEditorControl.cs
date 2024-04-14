@@ -4,6 +4,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Threading;
 using AvaloniaEdit;
 using AvaloniaEdit.Rendering;
+using SharpPad.Avalonia.Interactivity.Contexts;
 using SharpPad.Avalonia.Notepads;
 using SharpPad.Avalonia.Utils;
 using SharpPad.Avalonia.Utils.RDA;
@@ -41,10 +42,13 @@ public class NotepadEditorControl : TemplatedControl
     // but the active document is set during each file opened for some reason
     private readonly RapidDispatchAction<NotepadEditor> updateActiveEditorRda;
     private readonly SearchResultBackgroundRenderer searchColorizor;
+
+    private readonly ContextData contextData;
     // private SearchResultColorizingTransformer findResultOutliner;
 
     public NotepadEditorControl()
     {
+        DataManager.SetContextData(this, this.contextData = new ContextData().Set(DataKeys.UINotepadEditorKey, this).Clone());
         this.updateActiveEditorRda = new RapidDispatchAction<NotepadEditor>(this.SetActiveEditor, DispatcherPriority.Render);
         this.searchColorizor = new SearchResultBackgroundRenderer();
     }
@@ -77,6 +81,7 @@ public class NotepadEditorControl : TemplatedControl
             newNotepad.ActiveEditorChanged += this.OnActiveEditorChanged;
         }
 
+        DataManager.SetContextData(this, this.contextData.Set(DataKeys.NotepadKey, newNotepad).Clone());
         this.PART_TabControl.Notepad = newNotepad;
         this.SetActiveEditor(newNotepad?.ActiveEditor);
     }
@@ -119,6 +124,8 @@ public class NotepadEditorControl : TemplatedControl
             this.PART_TextEditor.Document = null;
             this.PART_TextEditor.IsEnabled = false;
         }
+        
+        DataManager.SetContextData(this, this.contextData.Set(DataKeys.NotepadEditorKey, editor).Clone());
     }
 
     private void OnIsFindPanelOpenChanged(NotepadEditor editor) => this.SetVisibleFindModel(editor.IsFindPanelOpen ? editor.FindModel : null, true);
@@ -148,6 +155,8 @@ public class NotepadEditorControl : TemplatedControl
             this.PART_TextEditor.IsEnabled = false;
             this.PART_TextEditor.Document = null;
         }
+        
+        DataManager.SetContextData(this, this.contextData.Set(DataKeys.DocumentKey, document).Clone());
     }
 
     // Sets the find model that is being present. Null hides the find panel, non-null shows it
@@ -173,6 +182,9 @@ public class NotepadEditorControl : TemplatedControl
             this.PART_TextEditor.Focus();
         }
 
+        if (this.contextData.TryReplace(DataKeys.FindModelKey, model))
+            DataManager.SetContextData(this, this.contextData.Clone());
+        
         this.UpdateSearchResultRender();
     }
 
