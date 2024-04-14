@@ -32,5 +32,14 @@ context data, which can be used by commands to do their work.
 
 You can read more about these systems here: https://github.com/AngryCarrot789/FramePFX/blob/master/README.md#command-system-shortcut-system-and-context-menus
 
+# Buiding
+The WPF project is fully functioning (although missing features such as replace text; only find is implemented).
+
+The avalonia project requires an experimental build which fixes a major text rendering issue.
+In order to let nuget download it, add this nuget feed to your IDE's NuGet Package Manager's Package Sources:
+https://nuget-feed-all.avaloniaui.net/v3/index.json. (source: Avalonia bot's comment on github: https://github.com/AvaloniaUI/Avalonia/pull/15344#issuecomment-2053659524)
+
+Once that is added, you will be able to compile and run the avalonia version (which is still WIP)
+
 # Licence
 All source files in SharpPad are under the GNU General Public License version 3.0 or later (GPL v3.0+)
