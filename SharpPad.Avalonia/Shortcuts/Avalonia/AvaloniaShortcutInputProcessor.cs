@@ -43,7 +43,7 @@ public class AvaloniaShortcutInputProcessor : ShortcutInputProcessor
         KeyModifiers mods = ShortcutUtils.IsModifierKey(key) ? KeyModifiers.None : e.KeyModifiers;
         KeyStroke stroke = new KeyStroke((int) key, (int) mods, isRelease);
         
-        if (UIInputManager.GetIsKeyShortcutProcessingBlockedProperty(focused))
+        if (UIInputManager.GetIsKeyShortcutProcessingBlocked(focused))
             if (stroke.Modifiers == 0 && !UIInputManager.GetIsKeyShortcutProcessingUnblockedWithKeyModifiers(focused))
                 return;
 

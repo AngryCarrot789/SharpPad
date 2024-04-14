@@ -5,7 +5,7 @@ VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpPad.WPF", "SharpPad.WPF\SharpPad.WPF.csproj", "{DCFF60C3-0984-4579-B730-217FB8AAFF78}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpPad.Avalonia", "SharpPad.Avalonia\SharpPad.Avalonia.csproj", "{C355E2DF-F17D-4557-9E68-AC7AF59F6B11}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpPad.Avalonia", "SharpPad.Avalonia\SharpPad.Avalonia.csproj", "{7B9FEBAA-598A-4D97-B247-C4C7A2A63163}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,14 +23,14 @@ Global
 		{DCFF60C3-0984-4579-B730-217FB8AAFF78}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DCFF60C3-0984-4579-B730-217FB8AAFF78}.Release|x64.ActiveCfg = Release|x64
 		{DCFF60C3-0984-4579-B730-217FB8AAFF78}.Release|x64.Build.0 = Release|x64
-		{C355E2DF-F17D-4557-9E68-AC7AF59F6B11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C355E2DF-F17D-4557-9E68-AC7AF59F6B11}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C355E2DF-F17D-4557-9E68-AC7AF59F6B11}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{C355E2DF-F17D-4557-9E68-AC7AF59F6B11}.Debug|x64.Build.0 = Debug|Any CPU
-		{C355E2DF-F17D-4557-9E68-AC7AF59F6B11}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C355E2DF-F17D-4557-9E68-AC7AF59F6B11}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C355E2DF-F17D-4557-9E68-AC7AF59F6B11}.Release|x64.ActiveCfg = Release|Any CPU
-		{C355E2DF-F17D-4557-9E68-AC7AF59F6B11}.Release|x64.Build.0 = Release|Any CPU
+		{7B9FEBAA-598A-4D97-B247-C4C7A2A63163}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B9FEBAA-598A-4D97-B247-C4C7A2A63163}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B9FEBAA-598A-4D97-B247-C4C7A2A63163}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7B9FEBAA-598A-4D97-B247-C4C7A2A63163}.Debug|x64.Build.0 = Debug|Any CPU
+		{7B9FEBAA-598A-4D97-B247-C4C7A2A63163}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B9FEBAA-598A-4D97-B247-C4C7A2A63163}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B9FEBAA-598A-4D97-B247-C4C7A2A63163}.Release|x64.ActiveCfg = Release|Any CPU
+		{7B9FEBAA-598A-4D97-B247-C4C7A2A63163}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

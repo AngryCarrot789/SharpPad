@@ -1,37 +1,50 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:controls="clr-namespace:SharpPad.Avalonia.Controls"
+        xmlns:c="clr-namespace:SharpPad.Avalonia.Controls"
         xmlns:ae="https://github.com/avaloniaui/avaloniaedit"
-        xmlns:av="clr-namespace:SharpPad.Avalonia.Shortcuts.Avalonia">
+        xmlns:av="clr-namespace:SharpPad.Avalonia.Shortcuts.Avalonia"
+        xmlns:u="clr-namespace:SharpPad.Avalonia.CommandSystem.Usages"
+        xmlns:usage="clr-namespace:SharpPad.Avalonia.Notepads.Commands"
+        xmlns:converters="clr-namespace:SharpPad.Avalonia.Converters">
     <Design.PreviewWith>
         <Grid Background="Gray">
-            <controls:NotepadTabControl Width="200" Height="100">
-                <controls:NotepadTabItem Header="Tab A"/>
-                <controls:NotepadTabItem Header="Tab B"/>
-                <controls:NotepadTabItem Header="Tab C"/>
-            </controls:NotepadTabControl>
+            <c:NotepadTabControl Width="200" Height="100">
+                <c:NotepadTabItem Header="Tab A"/>
+                <c:NotepadTabItem Header="Tab B"/>
+                <c:NotepadTabItem Header="Tab C"/>
+            </c:NotepadTabControl>
         </Grid>
     </Design.PreviewWith>
     <Styles.Resources>
         <ResourceDictionary>
-            <ControlTheme x:Key="{x:Type controls:NotepadEditorControl}" TargetType="{x:Type controls:NotepadEditorControl}">
+            <ControlTheme x:Key="{x:Type c:NotepadEditorControl}" TargetType="{x:Type c:NotepadEditorControl}">
                 <Setter Property="Focusable" Value="False"/>
                 <Setter Property="Template">
                     <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type controls:NotepadEditorControl}">
+                        <ControlTemplate TargetType="{x:Type c:NotepadEditorControl}">
                             <DockPanel>
-                                <controls:NotepadTabControl DockPanel.Dock="Top" x:Name="PART_TabControl"/>
+                                <c:NotepadTabControl DockPanel.Dock="Top" x:Name="PART_TabControl"/>
                                 <Border Background="Transparent"
                                         BorderBrush="{DynamicResource PanelBorderBrush}"
                                         BorderThickness="0,1,0,0">
-                                    <ae:TextEditor x:Name="PART_TextEditor"
-                                                   Background="{DynamicResource ABrush.Tone3.Background.Static}"
-                                                   BorderBrush="Transparent" BorderThickness="0"
-                                                   Foreground="{DynamicResource ABrush.Foreground.Static}"
-                                                   ShowLineNumbers="True"
-                                                   FontSize="14" FontFamily="Consolas"
-                                                   av:UIInputManager.FocusPath="Application/Notepad/Document"
-                                                   av:UIInputManager.IsKeyShortcutProcessingUnblockedWithKeyModifiers="True"/>
+                                    
+                                    <DockPanel>
+                                        <Border DockPanel.Dock="Bottom"
+                                                Background="{DynamicResource ABrush.Tone4.Background.Static}"
+                                                BorderBrush="{DynamicResource PanelBorderBrush}"
+                                                BorderThickness="0,1,0,0"
+                                                x:Name="PART_FindAndReplacePanel" Height="28">
+                                            <c:FindAndReplaceControl x:Name="PART_FindAndReplaceControl"/>
+                                        </Border>
+                                        <ae:TextEditor x:Name="PART_TextEditor"
+                                                       Background="{DynamicResource ABrush.Tone3.Background.Static}"
+                                                       BorderBrush="Transparent" BorderThickness="0"
+                                                       Foreground="{DynamicResource ABrush.Foreground.Static}"
+                                                       ShowLineNumbers="True"
+                                                       FontSize="14" FontFamily="Consolas"
+                                                       av:UIInputManager.FocusPath="Application/Notepad/Document"
+                                                       av:UIInputManager.IsKeyShortcutProcessingUnblockedWithKeyModifiers="True"/>
+                                    </DockPanel>
                                 </Border>
                             </DockPanel>
                         </ControlTemplate>
@@ -39,7 +52,7 @@
                 </Setter>
             </ControlTheme>
 
-            <ControlTheme x:Key="{x:Type controls:NotepadTabControl}" TargetType="{x:Type controls:NotepadTabControl}" BasedOn="{StaticResource {x:Type TabControl}}">
+            <ControlTheme x:Key="{x:Type c:NotepadTabControl}" TargetType="{x:Type c:NotepadTabControl}" BasedOn="{StaticResource {x:Type TabControl}}">
                 <Setter Property="Padding" Value="0"/>
                 <Setter Property="HorizontalContentAlignment" Value="Center"/>
                 <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -65,7 +78,7 @@
                 </Style>
             </ControlTheme>
 
-            <ControlTheme x:Key="{x:Type controls:NotepadTabItem}" TargetType="{x:Type controls:NotepadTabItem}" BasedOn="{StaticResource {x:Type TabItem}}">
+            <ControlTheme x:Key="{x:Type c:NotepadTabItem}" TargetType="{x:Type c:NotepadTabItem}" BasedOn="{StaticResource {x:Type TabItem}}">
                 <Setter Property="Foreground" Value="{DynamicResource ABrush.Foreground.Static}"/>
                 <Setter Property="Background" Value="{DynamicResource TabItem.Static.Background}"/>
                 <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=TabControl}, Path=BorderBrush}"/>
@@ -90,7 +103,8 @@
                             <DockPanel x:Name="contentPresenter" Focusable="False"
                                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                        Margin="0" Background="Transparent">
-                                <Button DockPanel.Dock="Right" Width="16" Height="16" Margin="0,5,5,5" Background="Transparent" BorderThickness="0">
+                                <Button DockPanel.Dock="Right" Width="16" Height="16" Margin="0,5,5,5" Background="Transparent" BorderThickness="0"
+                                        u:CommandUsageManager.SimpleButtonCommandId="CloseDocument">
                                     <TextBlock Text="X" FontSize="9" Margin="0,0,0,0" Background="Transparent"/>
                                 </Button>
                                 <TextBlock x:Name="PART_DocNameTextBlock" VerticalAlignment="Center" Padding="7,4" Margin="0" Background="Transparent"/>
@@ -109,6 +123,85 @@
                     <Setter Property="Background" Value="{DynamicResource TabItem.Disabled.Background}"/>
                 </Style>
             </ControlTheme>
+            
+            <converters:BoolToBrushConverter x:Key="RegexFaultBrushConverter" TrueValue="DarkRed" FalseValue="Transparent"/>
+            
+            <ControlTheme x:Key="{x:Type c:FindAndReplaceControl}" TargetType="{x:Type c:FindAndReplaceControl}">
+                <Setter Property="Foreground" Value="{DynamicResource ABrush.Foreground.Static}"/>
+                <Setter Property="av:UIInputManager.FocusPath" Value="Application/Notepad/Document/FindPanel"/>
+                <Setter Property="Template">
+                    <ControlTemplate>
+                        <DockPanel>
+                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                            <Button Width="28" Content="X" Background="Transparent" BorderThickness="0"
+                                    u:CommandUsageManager.SimpleButtonCommandId="HideFindPanel"/>
+                        </StackPanel>
+                        <Grid HorizontalAlignment="Stretch">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" MaxWidth="400"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Background="{DynamicResource ABrush.Tone6.Background.Static}"
+                                    BorderBrush="{DynamicResource PanelBorderBrush}"
+                                    BorderThickness="0,0,1,0"
+                                    Grid.Column="0">
+                                <DockPanel>
+                                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" Margin="2" Spacing="2">
+                                        <Separator Theme="{StaticResource VerticalSeparatorTheme}" Background="{DynamicResource ABrush.Tone2.Border.Static}" Margin="0,2"/>
+                                        <ToggleButton Width="24" Content="Cc" Background="Transparent" BorderThickness="0"
+                                                      u:CommandUsageManager.UsageClassType="{x:Type usage:ToggleMatchCaseCommandUsage}"/>
+                                        <ToggleButton Width="24" Content="W" Background="Transparent" BorderThickness="0"
+                                                      u:CommandUsageManager.UsageClassType="{x:Type usage:ToggleWordSearchCommandUsage}"/>
+                                        <ToggleButton Width="24" Content=".*" Background="Transparent" BorderThickness="0"
+                                                      u:CommandUsageManager.UsageClassType="{x:Type usage:ToggleRegexSearchCommandUsage}"/>
+                                    </StackPanel>
+
+                                    <!-- This TextBox can trigger shortcuts via any key stroke -->
+                                    <TextBox x:Name="PART_SearchTextBox" BorderThickness="0" Padding="2,0"
+                                             Background="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=IsRegexFaulted, Converter={StaticResource RegexFaultBrushConverter}}"
+                                             VerticalContentAlignment="Center"
+                                             av:UIInputManager.IsKeyShortcutProcessingBlocked="False"
+                                             Tag="Search document">
+                                        <!--
+                                        <b:BehaviourCollection.Behaviours>
+                                            <stdb:KeyStrokeCommandBehaviour Key="Enter" CommandId="NextFindResult"/>
+                                            <stdb:KeyStrokeCommandBehaviour Key="Escape" CommandId="HideFindPanel"/>
+                                        </b:BehaviourCollection.Behaviours>
+                                        -->
+                                    </TextBox>
+                                </DockPanel>
+                            </Border>
+                            <StackPanel Orientation="Horizontal" Grid.Column="1" Spacing="2" Margin="2,0">
+                                <Button Width="24" Margin="0,2" Content="←" FontSize="18" Background="Transparent" BorderThickness="0"
+                                        u:CommandUsageManager.UsageClassType="{x:Type usage:PrevFindResultCommandUsage}"/>
+                                <Button Width="24" Margin="0,2" Content="→" FontSize="18" Background="Transparent" BorderThickness="0"
+                                        u:CommandUsageManager.UsageClassType="{x:Type usage:NextFindResultCommandUsage}"/>
+                                <TextBlock x:Name="PART_ResultCountTextBlock" VerticalAlignment="Center" Padding="3,0"/>
+                                <ToggleButton Width="24" Margin="0,2" Content="S" FontSize="18" Background="Transparent" BorderThickness="0"
+                                              u:CommandUsageManager.UsageClassType="{x:Type usage:ToggleFindInSelectionCommandUsage}"/>
+                            </StackPanel>
+                            <!-- {DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}} -->
+                            <Popup Grid.Column="0" x:Name="PART_RegexFaultPopup" Margin="1" MaxWidth="800"
+                                   IsOpen="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=IsRegexFaulted, Mode=OneWay}"
+                                   PlacementTarget="{Binding ElementName=PART_SearchTextBox}"
+                                   IsLightDismissEnabled="False">
+                                <Border Background="{DynamicResource Popup.Static.Background}"
+                                        BorderBrush="{DynamicResource Popup.Static.Border}"
+                                        BorderThickness="1" UseLayoutRounding="True"
+                                        MaxHeight="60" 
+                                        MinWidth="{Binding Path=Bounds.Width, ElementName=PART_SearchTextBox}">
+                                    <TextBlock Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=RegexFaultMessage, Mode=OneWay}" Padding="10,4"
+                                               Foreground="{DynamicResource ABrush.Foreground.Static}"
+                                               FontFamily="Segoe UI"
+                                               FontSize="13"
+                                               FontWeight="Normal"/>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                    </DockPanel>
+                    </ControlTemplate>
+                </Setter>
+            </ControlTheme>
         </ResourceDictionary>
-    </Styles.Resources>
+    </Styles.Resources> 
 </Styles>

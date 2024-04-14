@@ -67,34 +67,15 @@ public class DataManager
 
     static DataManager()
     {
-        ContextDataProperty.Changed.AddClassHandler<AvaloniaObject, IContextData?>((element, args) =>
-        {
-            if (element is Visual visual)
-            {
-                if (args.NewValue.GetValueOrDefault() != null)
-                {
-                    if (args.OldValue.GetValueOrDefault() == null)
-                    {
-                        visual.PropertyChanged += OnVisualPropertyChanged;
-                    }
-                }
-                else if (args.OldValue.GetValueOrDefault() != null)
-                {
-                    visual.PropertyChanged -= OnVisualPropertyChanged;
-                }
-            }
-
-            InvalidateInheritedContext(element);
-        });
+        ContextDataProperty.Changed.AddClassHandler<AvaloniaObject, IContextData?>(OnContextDataChanged);
+        
+        // May cause performance issues... xaml seems to be loaded bottom-to-top when a control template is loaded
+        Visual.VisualParentProperty.Changed.AddClassHandler<Visual, Visual?>(OnVisualParentChanged);
     }
 
-    private static void OnVisualPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
-    {
-        if (e.Property == Visual.VisualParentProperty && sender is AvaloniaObject obj)
-        {
-            InvalidateInheritedContext(obj);
-        }
-    }
+    private static void OnContextDataChanged(AvaloniaObject d, AvaloniaPropertyChangedEventArgs<IContextData?> e) => InvalidateInheritedContext(d);
+
+    private static void OnVisualParentChanged(Visual sender, AvaloniaPropertyChangedEventArgs<Visual?> e) => InvalidateInheritedContext(sender);
 
     /// <summary>
     /// Adds a handler for <see cref="InheritedContextChangedEvent"/> to the given target

@@ -14,6 +14,8 @@
              WindowStartupLocation="CenterScreen"
              Background="{DynamicResource PanelBackground0}"
              BorderBrush="{DynamicResource PanelBorderBrush}"
+             FontFamily="{StaticResource FontOxanium}"
+             FontWeight="Medium"
              av:UIInputManager.FocusPath="Application/Notepad">
     <Grid Margin="0">
         <Grid.RowDefinitions>

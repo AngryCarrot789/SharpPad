@@ -62,11 +62,10 @@ public class ShowFindCommand : Command
                 editor.FindModel.SearchText = selection;
             }
 
-            // TOOD: implement
-            // if (DataKeys.UINotepadEditorKey.TryGetContext(e.ContextData, out INotepadEditorUI ui))
-            // {
-            //     ui.FocusFindSearchBox();
-            // }
+            if (DataKeys.UINotepadEditorKey.TryGetContext(e.ContextData, out INotepadEditorUI ui))
+            {
+                ui.FocusFindSearchBox();
+            }
         }
     }
 }
@@ -125,11 +124,8 @@ public class ToggleFindInSelectionCommand : FindModelCommand
         if (model.IsFindInSelection)
         {
             model.SearchText = null;
-            // TODO: Implement
-            // if (DataKeys.UINotepadEditorKey.TryGetContext(e.ContextData, out INotepadEditorUI ui))
-            // {
-            //     ui.FocusFindSearchBox();
-            // }
+            if (DataKeys.UINotepadEditorKey.TryGetContext(e.ContextData, out INotepadEditorUI ui))
+                ui.FocusFindSearchBox();
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Threading;
 using AvaloniaEdit;
@@ -11,7 +12,7 @@ using SharpPad.Avalonia.Utils.RDA;
 
 namespace SharpPad.Avalonia.Controls;
 
-public class NotepadEditorControl : TemplatedControl
+public class NotepadEditorControl : TemplatedControl, INotepadEditorUI
 {
     public static readonly StyledProperty<Notepad?> NotepadProperty = AvaloniaProperty.Register<NotepadEditorControl, Notepad?>("Notepad");
 
@@ -30,11 +31,10 @@ public class NotepadEditorControl : TemplatedControl
     private NotepadTabControl PART_TabControl;
 
     private TextEditor PART_TextEditor;
-    // private Border PART_FindAndReplacePanel;
-    // private FindAndReplaceControl PART_FindAndReplaceControl;
+    private Border PART_FindAndReplacePanel;
+    private FindAndReplaceControl PART_FindAndReplaceControl;
 
-    // shit
-    private NotepadEditor activeEditor;
+    public NotepadEditor? ActiveEditor { get; private set; }
     private FindAndReplaceModel activeFindModel; // a ref to activeEditor.FindModel
     private NotepadDocument activeDocument;
 
@@ -60,13 +60,19 @@ public class NotepadEditorControl : TemplatedControl
         base.OnApplyTemplate(e);
         e.NameScope.GetTemplateChild(nameof(this.PART_TabControl), out this.PART_TabControl);
         e.NameScope.GetTemplateChild(nameof(this.PART_TextEditor), out this.PART_TextEditor);
-        // e.NameScope.GetTemplateChild(nameof(this.PART_FindAndReplacePanel), out this.PART_FindAndReplacePanel);
+        e.NameScope.GetTemplateChild(nameof(this.PART_FindAndReplacePanel), out this.PART_FindAndReplacePanel);
+        e.NameScope.GetTemplateChild(nameof(this.PART_FindAndReplaceControl), out this.PART_FindAndReplaceControl);
 
-
+        this.PART_FindAndReplaceControl.Owner = this;
+        this.PART_TextEditor.TextArea.TextView.BackgroundRenderers.Add(this.searchColorizor);
         this.PART_TextEditor.TextArea.SelectionCornerRadius = 0;
         this.PART_TextEditor.TextArea.SelectionBorder = null;
-        if (this.activeEditor != null)
-            this.activeEditor.TextEditor = this.PART_TextEditor;
+        if (this.ActiveEditor != null)
+            this.ActiveEditor.TextEditor = this.PART_TextEditor;
+        
+        this.PART_FindAndReplacePanel.IsVisible = false;
+        if (this.ActiveEditor != null)
+            this.ActiveEditor.TextEditor = this.PART_TextEditor;
     }
 
     private void OnNotepadChanged(AvaloniaPropertyChangedEventArgs<Notepad> e)
@@ -93,13 +99,13 @@ public class NotepadEditorControl : TemplatedControl
 
     public void SetActiveEditor(NotepadEditor? editor)
     {
-        if (this.activeEditor != null)
+        if (this.ActiveEditor != null)
         {
-            this.activeEditor.DocumentChanged -= this.OnActiveEditorDocumentChanged;
-            this.activeEditor.IsFindPanelOpenChanged -= this.OnIsFindPanelOpenChanged;
+            this.ActiveEditor.DocumentChanged -= this.OnActiveEditorDocumentChanged;
+            this.ActiveEditor.IsFindPanelOpenChanged -= this.OnIsFindPanelOpenChanged;
             this.SetVisibleFindModel(null, false);
-            this.activeEditor.TextEditor = null;
-            this.activeEditor = null;
+            this.ActiveEditor.TextEditor = null;
+            this.ActiveEditor = null;
         }
 
         if (editor != null)
@@ -107,7 +113,7 @@ public class NotepadEditorControl : TemplatedControl
             if (editor.TextEditor != null)
                 throw new InvalidOperationException("Editor is already associated with another control");
 
-            this.activeEditor = editor;
+            this.ActiveEditor = editor;
             if (this.PART_TextEditor != null)
                 editor.TextEditor = this.PART_TextEditor;
             editor.DocumentChanged += this.OnActiveEditorDocumentChanged;
@@ -126,6 +132,8 @@ public class NotepadEditorControl : TemplatedControl
         }
         
         DataManager.SetContextData(this, this.contextData.Set(DataKeys.NotepadEditorKey, editor).Clone());
+        
+        this.PART_FindAndReplaceControl.CoerceValue(FindAndReplaceControl.IsRegexFaultedProperty);
     }
 
     private void OnIsFindPanelOpenChanged(NotepadEditor editor) => this.SetVisibleFindModel(editor.IsFindPanelOpen ? editor.FindModel : null, true);
@@ -172,6 +180,8 @@ public class NotepadEditorControl : TemplatedControl
         {
             model.SearchResultsChanged += this.OnSearchResultsChanged;
             model.CurrentResultIndexChanged += this.OnCurrentResultIndexChanged;
+            this.PART_FindAndReplacePanel.IsVisible = true;
+            this.PART_FindAndReplaceControl.FindModel = model;
             if (focusTextBox)
             {
                 this.FocusFindSearchBox();
@@ -179,6 +189,8 @@ public class NotepadEditorControl : TemplatedControl
         }
         else
         {
+            this.PART_FindAndReplaceControl.FindModel = null;
+            this.PART_FindAndReplacePanel.IsVisible = false;
             this.PART_TextEditor.Focus();
         }
 
@@ -269,7 +281,5 @@ public class NotepadEditorControl : TemplatedControl
         this.PART_TabControl.IsVisible = visibility;
     }
 
-    public void FocusFindSearchBox()
-    {
-    }
+    public void FocusFindSearchBox() => this.PART_FindAndReplaceControl?.FocusSearchText();
 }

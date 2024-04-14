@@ -20,12 +20,13 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using SharpPad.Avalonia.Controls.Bindings;
+using SharpPad.Avalonia.Interactivity.Contexts;
 using SharpPad.Avalonia.Notepads;
 using SharpPad.Avalonia.Utils;
 
 namespace SharpPad.Avalonia.Controls;
 
-public class NotepadTabItem : TabItem
+public class NotepadTabItem : TabItem, INotepadTabUI
 {
     public NotepadTabControl TabControl { get; private set; }
 
@@ -37,15 +38,19 @@ public class NotepadTabItem : TabItem
 
     private TextBlock PART_DocNameTextBlock;
     private NotepadDocument activeDocument;
+    private readonly ContextData contextData;
 
     public NotepadTabItem()
     {
+        this.contextData = new ContextData().Set(DataKeys.UINotepadTabKey, this);
     }
 
     static NotepadTabItem()
     {
     }
 
+    void INotepadTabUI.BringIntoView() => this.BringIntoView(); // extension method
+    
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
@@ -61,12 +66,14 @@ public class NotepadTabItem : TabItem
 
     public void OnConnected()
     {
+        DataManager.SetContextData(this, this.contextData.Set(DataKeys.NotepadEditorKey, this.Editor).Clone());
         this.Editor.DocumentChanged += this.OnActiveDocumentChanged;
         this.OnDocumentChanged(this.Editor.Document);
     }
 
     public void OnDisconnecting()
     {
+        DataManager.SetContextData(this, this.contextData.Set(DataKeys.DocumentKey, null).Clone());
         this.Editor.DocumentChanged -= this.OnActiveDocumentChanged;
         this.OnDocumentChanged(null);
     }

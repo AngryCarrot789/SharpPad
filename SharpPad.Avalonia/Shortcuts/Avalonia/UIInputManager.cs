@@ -60,7 +60,7 @@ public class UIInputManager
     // /// <summary>
     // /// A dependency property which is used to tells the input system that shortcuts key strokes can be processed when the focused element is the base WPF text editor control
     // /// </summary>
-    // public static readonly DependencyProperty IsInheritedFocusAllowedProperty = DependencyProperty.RegisterAttached("IsInheritedFocusAllowed", typeof(bool), typeof(UIInputManager), new PropertyMetadata(BoolBox.True));
+    // public static readonly AvaloniaProperty IsInheritedFocusAllowedProperty = DependencyProperty.RegisterAttached("IsInheritedFocusAllowed", typeof(bool), typeof(UIInputManager), new PropertyMetadata(BoolBox.True));
     //
     // /// <summary>
     // /// A dependency property used to check if a control blocks shortcut key processing. This is false by default for most
@@ -183,8 +183,8 @@ public class UIInputManager
         return processor;
     }
     
-    public static void SetIsKeyShortcutProcessingBlockedProperty(AvaloniaObject obj, bool value) => obj.SetValue(IsKeyShortcutProcessingBlockedProperty, value);
-    public static bool GetIsKeyShortcutProcessingBlockedProperty(AvaloniaObject obj) => obj.GetValue(IsKeyShortcutProcessingBlockedProperty);
+    public static void SetIsKeyShortcutProcessingBlocked(AvaloniaObject obj, bool value) => obj.SetValue(IsKeyShortcutProcessingBlockedProperty, value);
+    public static bool GetIsKeyShortcutProcessingBlocked(AvaloniaObject obj) => obj.GetValue(IsKeyShortcutProcessingBlockedProperty);
     
     public static void SetIsKeyShortcutProcessingUnblockedWithKeyModifiers(AvaloniaObject obj, bool value) => obj.SetValue(IsKeyShortcutProcessingUnblockedWithKeyModifiersProperty, value);
     public static bool GetIsKeyShortcutProcessingUnblockedWithKeyModifiers(AvaloniaObject obj) => obj.GetValue(IsKeyShortcutProcessingUnblockedWithKeyModifiersProperty);
