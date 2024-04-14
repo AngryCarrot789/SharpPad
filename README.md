@@ -35,11 +35,21 @@ You can read more about these systems here: https://github.com/AngryCarrot789/Fr
 # Buiding
 The WPF project is fully functioning (although missing features such as replace text; only find is implemented).
 
-The avalonia project requires an experimental build which fixes a major text rendering issue.
-In order to let nuget download it, add this nuget feed to your IDE's NuGet Package Manager's Package Sources:
-https://nuget-feed-all.avaloniaui.net/v3/index.json. (source: Avalonia bot's comment on github: https://github.com/AvaloniaUI/Avalonia/pull/15344#issuecomment-2053659524)
+---
 
-Once that is added, you will be able to compile and run the avalonia version (which is still WIP)
+The avalonia project requires an experimental build which fixes a major text rendering issue. The PR can be found
+here: https://github.com/AvaloniaUI/Avalonia/pull/15344#issuecomment-2053659524 (it hasn't been merged yet, which is why this
+nuget source step is required). 
+
+In order to let nuget download it, you need to add a nuget feed that the Avalonia Bot (in the above PR) specifies, which is
+https://nuget-feed-all.avaloniaui.net/v3/index.json
+
+You can add a NuGet Package source in Visual Studio's settings, at `NuGet Package Manager > Package Source`.
+In rider, click `Manage NuGet Packages` on the solution, goto the `Sources` tab, on the left click item that represents
+your NuGet.Config file, then on the right in the Feeds tab click the `+` button on the right side, and name it something
+such as Avalonia, and set the URL to the neget-feeds URL above
+
+Once the feed URL is added, you will be able to restore nuget packages, compile and run the Avalonia version
 
 # Licence
 All source files in SharpPad are under the GNU General Public License version 3.0 or later (GPL v3.0+)
