@@ -31,10 +31,7 @@ public class CloseDocumentCommand : Command
 
     protected override void Execute(CommandEventArgs e)
     {
-        if (!DataKeys.NotepadKey.TryGetContext(e.ContextData, out Notepad notepad))
-            return;
-
-        if (!DataKeys.NotepadEditorKey.TryGetContext(e.ContextData, out NotepadEditor editor))
+        if (!e.ContextData.TryGetAll(DataKeys.NotepadKey, DataKeys.NotepadEditorKey, out Notepad? notepad, out NotepadEditor? editor))
             return;
 
         int index = notepad.Editors.IndexOf(editor);

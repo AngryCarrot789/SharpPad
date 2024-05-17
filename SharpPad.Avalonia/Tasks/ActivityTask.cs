@@ -84,13 +84,17 @@ public class ActivityTask
     }
 
     /// <summary>
-    /// Gets this activity's awaiter that can be used to await the activity
+    /// Gets this activity's awaiter that can be used to await the activity. This calls <see cref="System.Threading.Tasks.Task.GetAwaiter"/>
+    /// on our internal task, which cannot be cancelled in the standard manner
     /// </summary>
     /// <returns>The awaiter</returns>
     public TaskAwaiter GetAwaiter() => this.Task.GetAwaiter();
 
     private async Task TaskMain()
     {
+        // This Dispatcher usage here was used to have a synchronisation context so that async callbacks
+        // would be fired on the dispatcher thread meaning ThreadLocal would work. However, AsyncLocal works nicely
+
         // this.OwningThreadId = Thread.CurrentThread.ManagedThreadId;
         // Dispatcher.CurrentDispatcher.InvokeAsync(async () => {
         try
@@ -126,7 +130,7 @@ public class ActivityTask
         await TaskManager.InternalOnActivityCompleted(this.taskManager, this, 2);
     }
 
-    internal static ActivityTask InternalStartActivity(TaskManager taskManager, Func<Task> action, IActivityProgress progress, CancellationToken token)
+    internal static ActivityTask InternalStartActivity(TaskManager taskManager, Func<Task> action, IActivityProgress? progress, CancellationToken token)
     {
         return new ActivityTask(taskManager, action, progress ?? new DefaultProgressTracker(), token);
     }

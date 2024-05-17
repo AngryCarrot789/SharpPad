@@ -18,11 +18,18 @@
 //
 
 using System.Collections.Generic;
+using SharpPad.Avalonia.Utils;
 
 namespace SharpPad.Avalonia.Interactivity.Contexts;
 
 public static class ContextDataHelper
 {
+    public static bool ContainsKey(this IContextData data, DataKey key)
+    {
+        Validate.NotNull(key, nameof(key));
+        return data.ContainsKey(key.Id);
+    }
+
     public static bool ContainsAll(this IContextData data, params DataKey[] keys)
     {
         foreach (DataKey key in keys)
@@ -142,5 +149,22 @@ public static class ContextDataHelper
 
             return false;
         }
+    }
+
+    public static bool TryGetAll<T1, T2>(this IContextData data, DataKey<T1> keyA, DataKey<T2> keyB, out T1 a, out T2 b)
+    {
+        if (keyA.TryGetContext(data, out a) && keyB.TryGetContext(data, out b))
+            return true;
+        b = default;
+        return false;
+    }
+
+    public static bool TryGetAll<T1, T2, T3>(this IContextData data, DataKey<T1> keyA, DataKey<T2> keyB, DataKey<T3> keyC, out T1 a, out T2 b, out T3 c)
+    {
+        if (keyA.TryGetContext(data, out a) && keyB.TryGetContext(data, out b) && keyC.TryGetContext(data, out c))
+            return true;
+        b = default;
+        c = default;
+        return false;
     }
 }

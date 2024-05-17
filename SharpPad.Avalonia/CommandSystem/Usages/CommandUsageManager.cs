@@ -29,7 +29,7 @@ namespace SharpPad.Avalonia.CommandSystem.Usages;
 public class CommandUsageManager
 {
     public static readonly AttachedProperty<string?> SimpleButtonCommandIdProperty = AvaloniaProperty.RegisterAttached<CommandUsageManager, AvaloniaObject, string?>("SimpleButtonCommandId");
-    public static readonly AttachedProperty<Type?> UsageClassTypeProperty = AvaloniaProperty.RegisterAttached<CommandUsageManager, AvaloniaObject, Type?>("UsageClassType", validate:Validate);
+    public static readonly AttachedProperty<Type?> UsageClassTypeProperty = AvaloniaProperty.RegisterAttached<CommandUsageManager, AvaloniaObject, Type?>("UsageClassType", validate: Validate);
     public static readonly AttachedProperty<CommandUsage?> InternalCommandContextProperty = AvaloniaProperty.RegisterAttached<CommandUsageManager, AvaloniaObject, CommandUsage?>("InternalCommandContext");
 
     private static bool Validate(Type? value) => value == null || (value is Type type && typeof(CommandUsage).IsAssignableFrom(type));

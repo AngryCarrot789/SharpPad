@@ -22,7 +22,7 @@ using System.Text;
 
 namespace SharpPad.Avalonia.Shortcuts.Inputs;
 
-public readonly struct MouseStroke : IInputStroke
+public readonly struct MouseStroke : IInputStroke, IEquatable<MouseStroke>
 {
     /// <summary>
     /// A non-null function for converting a mouse button into a string representation
@@ -156,4 +156,8 @@ public readonly struct MouseStroke : IInputStroke
 
         return sb.ToString();
     }
+
+    public static bool operator ==(MouseStroke left, MouseStroke right) => left.Equals(right);
+
+    public static bool operator !=(MouseStroke left, MouseStroke right) => !(left == right);
 }

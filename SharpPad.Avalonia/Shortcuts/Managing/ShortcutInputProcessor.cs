@@ -54,7 +54,7 @@ public abstract class ShortcutInputProcessor
     public Dictionary<IShortcutUsage, GroupedShortcut> ActiveUsages { get; }
 
     // We pass this to the CommandManager so that we don't generate the context data when it's unnecessary
-    internal readonly Func<IContextData> ProvideCurrentContextInternal;
+    internal readonly Func<IContextData?> ProvideCurrentContextInternal;
 
     public ShortcutInputProcessor(ShortcutManager manager)
     {

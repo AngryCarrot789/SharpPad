@@ -15,9 +15,9 @@ namespace SharpPad.Avalonia;
 
 public partial class MainWindow : WindowEx
 {
-    public static readonly StyledProperty<Notepad> NotepadProperty = AvaloniaProperty.Register<MainWindow, Notepad>("Notepad");
+    public static readonly StyledProperty<Notepad?> NotepadProperty = AvaloniaProperty.Register<MainWindow, Notepad?>("Notepad");
 
-    public Notepad Notepad
+    public Notepad? Notepad
     {
         get => this.GetValue(NotepadProperty);
         set => this.SetValue(NotepadProperty, value);
@@ -25,7 +25,7 @@ public partial class MainWindow : WindowEx
 
     static MainWindow()
     {
-        NotepadProperty.Changed.AddClassHandler<MainWindow, Notepad>((s, e) => s.OnNotepadChanged(e.OldValue.GetValueOrDefault(), e.NewValue.GetValueOrDefault()));
+        NotepadProperty.Changed.AddClassHandler<MainWindow, Notepad?>((s, e) => s.OnNotepadChanged(e.OldValue.GetValueOrDefault(), e.NewValue.GetValueOrDefault()));
     }
 
     // private readonly ContextData contextData;
@@ -41,7 +41,7 @@ public partial class MainWindow : WindowEx
         this.InitializeComponent();
         this.updateCaretTextRDA = RateLimitedDispatchAction.ForDispatcherSync(() =>
         {
-            TextArea area = this.PART_NotepadPanel.Editor?.TextArea;
+            TextArea? area = this.PART_NotepadPanel.Editor?.TextArea;
             if (area == null)
             {
                 this.PART_CaretText.Text = $"-:-";

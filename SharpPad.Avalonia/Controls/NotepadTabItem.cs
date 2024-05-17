@@ -50,7 +50,7 @@ public class NotepadTabItem : TabItem, INotepadTabUI
     }
 
     void INotepadTabUI.BringIntoView() => this.BringIntoView(); // extension method
-    
+
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);

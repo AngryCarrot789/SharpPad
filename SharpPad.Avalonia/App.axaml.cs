@@ -23,7 +23,7 @@ public partial class App : Application
     {
         AvCore.OnFrameworkInitialised();
         UIInputManager.Init();
-        
+
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             MainWindow window = new MainWindow();
@@ -38,7 +38,7 @@ public partial class App : Application
                 notepad.AddNewEditorForDocument(new NotepadDocument(new TextDocument("Doc 33333!!")) { DocumentName = "My doc 3" });
             }, DispatcherPriority.Background);
         }
-        
+
         string keymapFilePath = Path.GetFullPath(@"Keymap.xml");
         if (File.Exists(keymapFilePath))
         {

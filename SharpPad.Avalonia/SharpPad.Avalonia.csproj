@@ -10,13 +10,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="11.2.999-cibuild0047264-alpha" />
+        <PackageReference Include="Avalonia" Version="11.2.999-cibuild0048348-alpha"/>
+        <PackageReference Include="Avalonia.Desktop" Version="11.2.999-cibuild0048348-alpha"/>
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.999-cibuild0048348-alpha"/>
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.999-cibuild0048348-alpha"/>
         <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.6"/>
-        <PackageReference Include="Avalonia.Desktop" Version="11.2.999-cibuild0047264-alpha" />
-        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.999-cibuild0047264-alpha" />
-        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.999-cibuild0047264-alpha" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.999-cibuild0047264-alpha" />
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.999-cibuild0048348-alpha"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -101,62 +101,62 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="Resources\Fonts\Oxanium\Oxanium-Bold.ttf" />
-      <None Remove="Resources\Fonts\Oxanium\Oxanium-ExtraBold.ttf" />
-      <None Remove="Resources\Fonts\Oxanium\Oxanium-ExtraLight.ttf" />
-      <None Remove="Resources\Fonts\Oxanium\Oxanium-Light.ttf" />
-      <None Remove="Resources\Fonts\Oxanium\Oxanium-Medium.ttf" />
-      <None Remove="Resources\Fonts\Oxanium\Oxanium-Regular.ttf" />
-      <None Remove="Resources\Fonts\Oxanium\Oxanium-SemiBold.ttf" />
-      <None Remove="Resources\Fonts\Oxanium\Oxanium-VariableFont_wght.ttf" />
+        <None Remove="Resources\Fonts\Oxanium\Oxanium-Bold.ttf"/>
+        <None Remove="Resources\Fonts\Oxanium\Oxanium-ExtraBold.ttf"/>
+        <None Remove="Resources\Fonts\Oxanium\Oxanium-ExtraLight.ttf"/>
+        <None Remove="Resources\Fonts\Oxanium\Oxanium-Light.ttf"/>
+        <None Remove="Resources\Fonts\Oxanium\Oxanium-Medium.ttf"/>
+        <None Remove="Resources\Fonts\Oxanium\Oxanium-Regular.ttf"/>
+        <None Remove="Resources\Fonts\Oxanium\Oxanium-SemiBold.ttf"/>
+        <None Remove="Resources\Fonts\Oxanium\Oxanium-VariableFont_wght.ttf"/>
     </ItemGroup>
 
     <ItemGroup>
-      <UpToDateCheckInput Remove="Controls\GeneralControls.axaml" />
-      <UpToDateCheckInput Remove="Themes\Colours\SoftDark.axaml" />
-      <UpToDateCheckInput Remove="Themes\ControlColours.axaml" />
-      <UpToDateCheckInput Remove="Themes\Controls.axaml" />
-      <UpToDateCheckInput Remove="Themes\ControlStyles\Button.axaml" />
-      <UpToDateCheckInput Remove="Themes\ControlStyles\ButtonSpinner.axaml" />
-      <UpToDateCheckInput Remove="Themes\ControlStyles\CheckBox.axaml" />
-      <UpToDateCheckInput Remove="Themes\ControlStyles\ComboBox.axaml" />
-      <UpToDateCheckInput Remove="Themes\ControlStyles\ComboBoxItem.axaml" />
-      <UpToDateCheckInput Remove="Themes\ControlStyles\GridSplitter.axaml" />
-      <UpToDateCheckInput Remove="Themes\ControlStyles\GroupBox.axaml" />
-      <UpToDateCheckInput Remove="Themes\ControlStyles\ListBox.axaml" />
-      <UpToDateCheckInput Remove="Themes\ControlStyles\ListBoxItem.axaml" />
-      <UpToDateCheckInput Remove="Themes\ControlStyles\Menu.axaml" />
-      <UpToDateCheckInput Remove="Themes\ControlStyles\MenuFlyoutPresenter.axaml" />
-      <UpToDateCheckInput Remove="Themes\ControlStyles\MenuItem.axaml" />
-      <UpToDateCheckInput Remove="Themes\ControlStyles\ProgressBar.axaml" />
-      <UpToDateCheckInput Remove="Themes\ControlStyles\RadioButton.axaml" />
-      <UpToDateCheckInput Remove="Themes\ControlStyles\RepeatButton.axaml" />
-      <UpToDateCheckInput Remove="Themes\ControlStyles\ScrollBar.axaml" />
-      <UpToDateCheckInput Remove="Themes\ControlStyles\ScrollViewer.axaml" />
-      <UpToDateCheckInput Remove="Themes\ControlStyles\Separator.axaml" />
-      <UpToDateCheckInput Remove="Themes\ControlStyles\Slider.axaml" />
-      <UpToDateCheckInput Remove="Themes\ControlStyles\TabControl.axaml" />
-      <UpToDateCheckInput Remove="Themes\ControlStyles\TabItem.axaml" />
-      <UpToDateCheckInput Remove="Themes\ControlStyles\TextBlock.axaml" />
-      <UpToDateCheckInput Remove="Themes\ControlStyles\TextBox.axaml" />
-      <UpToDateCheckInput Remove="Themes\ControlStyles\ToggleButton.axaml" />
-      <UpToDateCheckInput Remove="Themes\ControlStyles\TreeView.axaml" />
-      <UpToDateCheckInput Remove="Themes\ControlStyles\TreeViewItem.axaml" />
-      <UpToDateCheckInput Remove="Themes\ControlStyles\Window.axaml" />
+        <UpToDateCheckInput Remove="Controls\GeneralControls.axaml"/>
+        <UpToDateCheckInput Remove="Themes\Colours\SoftDark.axaml"/>
+        <UpToDateCheckInput Remove="Themes\ControlColours.axaml"/>
+        <UpToDateCheckInput Remove="Themes\Controls.axaml"/>
+        <UpToDateCheckInput Remove="Themes\ControlStyles\Button.axaml"/>
+        <UpToDateCheckInput Remove="Themes\ControlStyles\ButtonSpinner.axaml"/>
+        <UpToDateCheckInput Remove="Themes\ControlStyles\CheckBox.axaml"/>
+        <UpToDateCheckInput Remove="Themes\ControlStyles\ComboBox.axaml"/>
+        <UpToDateCheckInput Remove="Themes\ControlStyles\ComboBoxItem.axaml"/>
+        <UpToDateCheckInput Remove="Themes\ControlStyles\GridSplitter.axaml"/>
+        <UpToDateCheckInput Remove="Themes\ControlStyles\GroupBox.axaml"/>
+        <UpToDateCheckInput Remove="Themes\ControlStyles\ListBox.axaml"/>
+        <UpToDateCheckInput Remove="Themes\ControlStyles\ListBoxItem.axaml"/>
+        <UpToDateCheckInput Remove="Themes\ControlStyles\Menu.axaml"/>
+        <UpToDateCheckInput Remove="Themes\ControlStyles\MenuFlyoutPresenter.axaml"/>
+        <UpToDateCheckInput Remove="Themes\ControlStyles\MenuItem.axaml"/>
+        <UpToDateCheckInput Remove="Themes\ControlStyles\ProgressBar.axaml"/>
+        <UpToDateCheckInput Remove="Themes\ControlStyles\RadioButton.axaml"/>
+        <UpToDateCheckInput Remove="Themes\ControlStyles\RepeatButton.axaml"/>
+        <UpToDateCheckInput Remove="Themes\ControlStyles\ScrollBar.axaml"/>
+        <UpToDateCheckInput Remove="Themes\ControlStyles\ScrollViewer.axaml"/>
+        <UpToDateCheckInput Remove="Themes\ControlStyles\Separator.axaml"/>
+        <UpToDateCheckInput Remove="Themes\ControlStyles\Slider.axaml"/>
+        <UpToDateCheckInput Remove="Themes\ControlStyles\TabControl.axaml"/>
+        <UpToDateCheckInput Remove="Themes\ControlStyles\TabItem.axaml"/>
+        <UpToDateCheckInput Remove="Themes\ControlStyles\TextBlock.axaml"/>
+        <UpToDateCheckInput Remove="Themes\ControlStyles\TextBox.axaml"/>
+        <UpToDateCheckInput Remove="Themes\ControlStyles\ToggleButton.axaml"/>
+        <UpToDateCheckInput Remove="Themes\ControlStyles\TreeView.axaml"/>
+        <UpToDateCheckInput Remove="Themes\ControlStyles\TreeViewItem.axaml"/>
+        <UpToDateCheckInput Remove="Themes\ControlStyles\Window.axaml"/>
     </ItemGroup>
 
     <ItemGroup>
-      <AvaloniaResource Include="Resources\Fonts\Oxanium\Oxanium-Bold.ttf" />
-      <AvaloniaResource Include="Resources\Fonts\Oxanium\Oxanium-ExtraBold.ttf" />
-      <AvaloniaResource Include="Resources\Fonts\Oxanium\Oxanium-ExtraLight.ttf" />
-      <AvaloniaResource Include="Resources\Fonts\Oxanium\Oxanium-Light.ttf" />
-      <AvaloniaResource Include="Resources\Fonts\Oxanium\Oxanium-Medium.ttf" />
-      <AvaloniaResource Include="Resources\Fonts\Oxanium\Oxanium-Regular.ttf" />
-      <AvaloniaResource Include="Resources\Fonts\Oxanium\Oxanium-SemiBold.ttf" />
-      <AvaloniaResource Include="Resources\Fonts\Oxanium\Oxanium-VariableFont_wght.ttf" />
-      <None Remove="Keymap.xml" />
-      <Content Include="Keymap.xml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
+        <AvaloniaResource Include="Resources\Fonts\Oxanium\Oxanium-Bold.ttf"/>
+        <AvaloniaResource Include="Resources\Fonts\Oxanium\Oxanium-ExtraBold.ttf"/>
+        <AvaloniaResource Include="Resources\Fonts\Oxanium\Oxanium-ExtraLight.ttf"/>
+        <AvaloniaResource Include="Resources\Fonts\Oxanium\Oxanium-Light.ttf"/>
+        <AvaloniaResource Include="Resources\Fonts\Oxanium\Oxanium-Medium.ttf"/>
+        <AvaloniaResource Include="Resources\Fonts\Oxanium\Oxanium-Regular.ttf"/>
+        <AvaloniaResource Include="Resources\Fonts\Oxanium\Oxanium-SemiBold.ttf"/>
+        <AvaloniaResource Include="Resources\Fonts\Oxanium\Oxanium-VariableFont_wght.ttf"/>
+        <None Remove="Keymap.xml"/>
+        <Content Include="Keymap.xml">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 </Project>

@@ -68,7 +68,7 @@ public class DataManager
     static DataManager()
     {
         ContextDataProperty.Changed.AddClassHandler<AvaloniaObject, IContextData?>(OnContextDataChanged);
-        
+
         // May cause performance issues... xaml seems to be loaded bottom-to-top when a control template is loaded
         Visual.VisualParentProperty.Changed.AddClassHandler<Visual, Visual?>(OnVisualParentChanged);
     }

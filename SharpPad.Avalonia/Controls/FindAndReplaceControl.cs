@@ -29,7 +29,7 @@ public class FindAndReplaceControl : TemplatedControl
 {
     public static readonly StyledProperty<FindAndReplaceModel?> FindModelProperty = AvaloniaProperty.Register<FindAndReplaceControl, FindAndReplaceModel?>("FindModel");
     public static readonly StyledProperty<bool> IsActiveProperty = AvaloniaProperty.Register<FindAndReplaceControl, bool>("IsActive");
-    public static readonly StyledProperty<bool> IsRegexFaultedProperty = AvaloniaProperty.Register<FindAndReplaceControl, bool>("IsRegexFaulted", coerce:CoerceIsRegexFaulted);
+    public static readonly StyledProperty<bool> IsRegexFaultedProperty = AvaloniaProperty.Register<FindAndReplaceControl, bool>("IsRegexFaulted", coerce: CoerceIsRegexFaulted);
     public static readonly StyledProperty<string?> RegexFaultMessageProperty = AvaloniaProperty.Register<FindAndReplaceControl, string?>("RegexFaultMessage");
 
     public FindAndReplaceModel? FindModel
@@ -55,7 +55,7 @@ public class FindAndReplaceControl : TemplatedControl
         get => this.GetValue(RegexFaultMessageProperty);
         set => this.SetValue(RegexFaultMessageProperty, value);
     }
-    
+
     public NotepadEditorControl? Owner { get; set; }
 
     private readonly IBinder<FindAndReplaceModel> searchTextBinder = Binders.AccessorAEDPFastStartup<FindAndReplaceModel, string?>(TextBox.TextProperty, nameof(FindAndReplaceModel.SearchTextChanged), nameof(FindAndReplaceModel.SearchText));

@@ -56,7 +56,7 @@ public class UIInputManager
     public static readonly AttachedProperty<bool> IsKeyShortcutProcessingBlockedProperty = AvaloniaProperty.RegisterAttached<UIInputManager, AvaloniaObject, bool>("IsKeyShortcutProcessingBlocked");
 
     public static readonly AttachedProperty<bool> IsKeyShortcutProcessingUnblockedWithKeyModifiersProperty = AvaloniaProperty.RegisterAttached<UIInputManager, AvaloniaObject, bool>("IsKeyShortcutProcessingUnBlockedWithKeyModifiers");
-    
+
     // /// <summary>
     // /// A dependency property which is used to tells the input system that shortcuts key strokes can be processed when the focused element is the base WPF text editor control
     // /// </summary>
@@ -109,7 +109,7 @@ public class UIInputManager
         IsKeyShortcutProcessingBlockedProperty.OverrideMetadata(typeof(TextEditor), new StyledPropertyMetadata<bool>(true));
         IsKeyShortcutProcessingBlockedProperty.OverrideMetadata(typeof(TextArea), new StyledPropertyMetadata<bool>(true));
     }
-    
+
     public static void Init()
     {
         ShortcutManager.Instance = new AvaloniaShortcutManager();
@@ -122,31 +122,31 @@ public class UIInputManager
             return;
         }
     }
-    
+
     // Mouse Events
-    
+
     private static void OnTopLevelPointerPressed(TopLevel sender, PointerPressedEventArgs e)
     {
     }
-    
+
     private static void OnTopLevelPreviewPointerReleased(TopLevel sender, PointerReleasedEventArgs e)
     {
         // Example: A button click will be handled after this method returns
     }
-    
+
     private static void OnTopLevelPointerReleased(TopLevel sender, PointerReleasedEventArgs e)
     {
         // Example: A button click will have been processed before this method
     }
 
     // Key Events
-    
+
     private static void OnTopLevelPreviewKeyDown(TopLevel sender, KeyEventArgs e) => OnTopLevelKeyEvent(sender, e, false, true);
-    
+
     private static void OnTopLevelKeyDown(TopLevel sender, KeyEventArgs e) => OnTopLevelKeyEvent(sender, e, false, false);
-    
+
     private static void OnTopLevelPreviewKeyUp(TopLevel sender, KeyEventArgs e) => OnTopLevelKeyEvent(sender, e, true, true);
-    
+
     private static void OnTopLevelKeyUp(TopLevel sender, KeyEventArgs e) => OnTopLevelKeyEvent(sender, e, true, false);
 
     private static void OnTopLevelKeyEvent(TopLevel sender, KeyEventArgs e, bool isRelease, bool isPreview)
@@ -156,7 +156,7 @@ public class UIInputManager
         // not have been delivered yet
         if (!isPreview)
             return;
-        
+
         Key key = e.Key;
         if (key == Key.DeadCharProcessed || key == Key.System || key == Key.None)
             return;
@@ -167,14 +167,14 @@ public class UIInputManager
 
         if (!(e.Source is InputElement element))
             return;
-        
+
         processor.OnInputSourceKeyEvent(processor, element, e, key, isRelease);
         // If OnInputSourceKeyEvent becomes async for some reason,
         // e.Handled will be set to true in assumption that work is being done
         // if (processor.isProcessingKey)
         //     e.Handled = true;
     }
-    
+
     private static AvaloniaShortcutInputProcessor GetShortcutProcessor(TopLevel topLevel)
     {
         AvaloniaShortcutInputProcessor? processor = topLevel.GetValue(ShortcutProcessorProperty);
@@ -182,10 +182,10 @@ public class UIInputManager
             topLevel.SetValue(ShortcutProcessorProperty, processor = new AvaloniaShortcutInputProcessor(AvaloniaShortcutManager.AvaloniaInstance));
         return processor;
     }
-    
+
     public static void SetIsKeyShortcutProcessingBlocked(AvaloniaObject obj, bool value) => obj.SetValue(IsKeyShortcutProcessingBlockedProperty, value);
     public static bool GetIsKeyShortcutProcessingBlocked(AvaloniaObject obj) => obj.GetValue(IsKeyShortcutProcessingBlockedProperty);
-    
+
     public static void SetIsKeyShortcutProcessingUnblockedWithKeyModifiers(AvaloniaObject obj, bool value) => obj.SetValue(IsKeyShortcutProcessingUnblockedWithKeyModifiersProperty, value);
     public static bool GetIsKeyShortcutProcessingUnblockedWithKeyModifiers(AvaloniaObject obj) => obj.GetValue(IsKeyShortcutProcessingUnblockedWithKeyModifiersProperty);
 
@@ -197,7 +197,7 @@ public class UIInputManager
         {
             return;
         }
-        
+
         string? oldPath = Instance.FocusedPath;
         string? newPath = lost ? null : GetFocusPath(element);
         if (oldPath != newPath)

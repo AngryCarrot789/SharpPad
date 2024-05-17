@@ -41,7 +41,7 @@ public static class VisualTreeUtils
 
         return null;
     }
-    
+
     /// <summary>
     /// Gets the parent of the given source object
     /// </summary>

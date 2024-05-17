@@ -26,14 +26,17 @@ public enum MessageBoxButton
     /// The message box only shows an OK button
     /// </summary>
     OK = 0,
+
     /// <summary>
     /// The message box shows an OK and Cancel button
     /// </summary>
     OKCancel = 1,
+
     /// <summary>
     /// The message box shows a yes, no and cancel button
     /// </summary>
     YesNoCancel = 3,
+
     /// The message box shows a yes and no button
     YesNo = 4,
 }

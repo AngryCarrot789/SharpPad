@@ -28,19 +28,18 @@ public static class AvCore
 {
     private static AvaloniaLocator Locator;
     private static MethodInfo GetServiceMethod;
-    
+
     public static void OnApplicationInitialised()
     {
-        Locator = (AvaloniaLocator) GetProperty<AvaloniaLocator, IAvaloniaDependencyResolver>(null, "Current", true);
+        Locator = (AvaloniaLocator) GetProperty<AvaloniaLocator, IAvaloniaDependencyResolver>(null, "Current", true)!;
         GetServiceMethod = typeof(AvaloniaLocator).GetMethod("GetService", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, [typeof(Type)], null) ?? throw new Exception("Could not find GetService method");
-        
+
         // Test that the above code works
         GetService(typeof(object));
     }
-    
+
     public static void OnFrameworkInitialised()
     {
-        
     }
 
     /// <summary>
@@ -49,7 +48,7 @@ public static class AvCore
     /// <param name="type">The service type</param>
     /// <returns>The service, or null, if no service was found</returns>
     public static object? GetService(Type type) => GetServiceMethod.Invoke(Locator, [type]);
-    
+
     /// <summary>
     /// Tries to get a service of the generic type
     /// </summary>
@@ -58,24 +57,25 @@ public static class AvCore
     /// <returns>Whether or not the service was found</returns>
     public static bool TryGetService<T>(out T value) where T : class => (value = (GetService(typeof(T)) as T)!) != null;
 
-    private static TValue GetProperty<TOwner, TValue>(object? instance, string name, bool isStatic, bool allowNull = false)
+    private static TValue? GetProperty<TOwner, TValue>(object? instance, string name, bool isStatic, bool allowNull = false)
     {
+        Type owner = typeof(TOwner);
         BindingFlags initialFlags = isStatic ? BindingFlags.Static : BindingFlags.Instance;
         PropertyInfo? property;
-        if ((property = typeof(TOwner).GetProperty(name, initialFlags | BindingFlags.Public)) != null)
+        if ((property = owner.GetProperty(name, initialFlags | BindingFlags.Public)) != null)
             goto found;
-        if ((property = typeof(TOwner).GetProperty(name, initialFlags | BindingFlags.NonPublic)) != null)
+        if ((property = owner.GetProperty(name, initialFlags | BindingFlags.NonPublic)) != null)
             goto found;
-        if ((property = typeof(TOwner).GetProperty(name, initialFlags | BindingFlags.Public | BindingFlags.FlattenHierarchy)) != null)
+        if ((property = owner.GetProperty(name, initialFlags | BindingFlags.Public | BindingFlags.FlattenHierarchy)) != null)
             goto found;
-        if ((property = typeof(TOwner).GetProperty(name, initialFlags | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy)) == null)
-            throw new Exception("No such property: " + typeof(TOwner).Name + "." + name);
+        if ((property = owner.GetProperty(name, initialFlags | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy)) == null)
+            throw new Exception("No such property: " + owner.Name + "." + name);
 
         found:
         object? theValue = property.GetValue(instance);
 
         if (allowNull && theValue == null)
-            return default!;
+            return default;
 
         if (theValue is TValue value)
             return value;

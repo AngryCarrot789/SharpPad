@@ -26,9 +26,9 @@ namespace SharpPad.Avalonia.Controls;
 
 public class NotepadTabControl : TabControl
 {
-    public static readonly StyledProperty<Notepad> NotepadProperty = AvaloniaProperty.Register<NotepadTabControl, Notepad>("Notepad");
+    public static readonly StyledProperty<Notepad?> NotepadProperty = AvaloniaProperty.Register<NotepadTabControl, Notepad?>("Notepad");
 
-    public Notepad Notepad
+    public Notepad? Notepad
     {
         get => this.GetValue(NotepadProperty);
         set => this.SetValue(NotepadProperty, value);
@@ -41,7 +41,7 @@ public class NotepadTabControl : TabControl
 
     static NotepadTabControl()
     {
-        NotepadProperty.Changed.AddClassHandler<NotepadTabControl, Notepad>((s, args) => s.OnNotepadChanged(args.OldValue.GetValueOrDefault(), args.NewValue.GetValueOrDefault()));
+        NotepadProperty.Changed.AddClassHandler<NotepadTabControl, Notepad?>((s, args) => s.OnNotepadChanged(args.OldValue.GetValueOrDefault(), args.NewValue.GetValueOrDefault()));
     }
 
     private void OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
@@ -61,7 +61,7 @@ public class NotepadTabControl : TabControl
             oldNotepad.ActiveEditorChanged -= this.OnActiveEditorChanged;
             for (int i = 0; i < this.Items.Count; i++)
             {
-                NotepadTabItem item = (NotepadTabItem) this.Items[i];
+                NotepadTabItem item = (NotepadTabItem) this.Items[i]!;
                 item.OnDisconnecting();
                 this.Items.RemoveAt(i);
                 item.OnDisconnected();
@@ -95,7 +95,7 @@ public class NotepadTabControl : TabControl
         }
         else if (newIndex == -1)
         {
-            NotepadTabItem item = (NotepadTabItem) this.Items[oldIndex];
+            NotepadTabItem item = (NotepadTabItem) this.Items[oldIndex]!;
             item.OnDisconnecting();
             this.Items.RemoveAt(oldIndex);
             item.OnDisconnected();
@@ -106,7 +106,7 @@ public class NotepadTabControl : TabControl
         }
     }
 
-    private void OnActiveEditorChanged(Notepad notepad, NotepadEditor oldEditor, NotepadEditor newEditor)
+    private void OnActiveEditorChanged(Notepad notepad, NotepadEditor? oldEditor, NotepadEditor? newEditor)
     {
         this.SelectedIndex = newEditor == null ? -1 : notepad.Editors.IndexOf(newEditor);
     }

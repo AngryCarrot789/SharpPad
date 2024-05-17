@@ -19,6 +19,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -38,7 +39,7 @@ public class FindAndReplaceModel
     private readonly RateLimitedDispatchAction invalidateSearchStateRlda;
     private readonly List<TextRange> results;
 
-    private volatile Regex searchRegex;
+    private volatile Regex? searchRegex;
     private volatile string searchText;
     private volatile string replaceText;
     private volatile bool isMatchCases;
@@ -268,23 +269,20 @@ public class FindAndReplaceModel
         editor.DocumentChanged += this.OnEditorDocumentChanged;
     }
 
-    private void OnEditorDocumentChanged(NotepadEditor editor, NotepadDocument olddoc, NotepadDocument newdoc)
+    private void OnEditorDocumentChanged(NotepadEditor editor, NotepadDocument? olddoc, NotepadDocument? newdoc)
     {
         this.SetDocument(newdoc);
         this.InvalidateSearchState();
     }
 
-    private void SetDocument(NotepadDocument document)
+    private void SetDocument(NotepadDocument? document)
     {
-        if (this is { myDocument: not null })
-        {
+        if (this.myDocument != null)
             this.myDocument.Document.Changed += this.OnDocumentModified;
-        }
 
-        if ((this.myDocument = document) != null)
-        {
+        this.myDocument = document;
+        if (document != null)
             document.Document.Changed += this.OnDocumentModified;
-        }
     }
 
     private void InvalidateSearchState()
@@ -360,7 +358,7 @@ public class FindAndReplaceModel
         this.CurrentResultIndex = index;
     }
 
-    private void OnDocumentModified(object sender, DocumentChangeEventArgs e)
+    private void OnDocumentModified(object? sender, DocumentChangeEventArgs e)
     {
         this.InvalidateSearchState();
     }

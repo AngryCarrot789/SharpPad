@@ -26,10 +26,10 @@ namespace SharpPad.Avalonia.Shortcuts.Inputs;
 /// Represents a key stroke, as in, a key press or release which may have modifier keys present
 /// <para>
 /// KeyStrokes can represent modifier key strokes too, meaning <see cref="KeyCode"/> could equal the key
-/// code for SHIFT, CTRL, ALT, etc. In this case, <see cref="Modifiers"/> will always be 0
+/// code for SHIFT, CTRL, ALT, etc., and <see cref="Modifiers"/> will always be 0 in this case
 /// </para>
 /// </summary>
-public readonly struct KeyStroke : IInputStroke
+public readonly struct KeyStroke : IInputStroke, IEquatable<KeyStroke>
 {
     /// <summary>
     /// A non-null function for converting a key code into a string representation
@@ -131,4 +131,8 @@ public readonly struct KeyStroke : IInputStroke
 
         return sb.ToString();
     }
+
+    public static bool operator ==(KeyStroke left, KeyStroke right) => left.Equals(right);
+
+    public static bool operator !=(KeyStroke left, KeyStroke right) => !(left == right);
 }

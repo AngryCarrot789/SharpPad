@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Avalonia;
 using Avalonia.Data;
 
@@ -14,7 +15,7 @@ public static class AvalonidaPropertyHelper
         return property;
     }
 
-    public static bool TryGetOldValue<TValue>(this AvaloniaPropertyChangedEventArgs<TValue> args, out TValue value)
+    public static bool TryGetOldValue<TValue>(this AvaloniaPropertyChangedEventArgs<TValue> args, [NotNullWhen(true)] out TValue value)
     {
         Optional<TValue> oldVal = (args).OldValue;
         if (oldVal.HasValue && (value = oldVal.Value) != null)
@@ -24,7 +25,7 @@ public static class AvalonidaPropertyHelper
         return false;
     }
 
-    public static bool TryGetNewValue<TValue>(this AvaloniaPropertyChangedEventArgs<TValue> args, out TValue value)
+    public static bool TryGetNewValue<TValue>(this AvaloniaPropertyChangedEventArgs<TValue> args, [NotNullWhen(true)] out TValue value)
     {
         BindingValue<TValue> newVal = (args).NewValue;
         if (newVal.HasValue && (value = newVal.Value) != null)

@@ -19,6 +19,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SharpPad.Avalonia.Interactivity.Contexts;
 
@@ -43,20 +44,15 @@ public abstract class DataKey
         Registry = new Dictionary<string, DataKey>();
     }
 
-    public static DataKey GetKeyById(string id)
-    {
-        return Registry.TryGetValue(id, out DataKey key) ? key : null;
-    }
+    public static DataKey? GetKeyById(string id) => Registry.GetValueOrDefault(id);
 
     protected static void RegisterInternal(string id, DataKey key)
     {
         if (ReferenceEquals(key, null))
             throw new ArgumentNullException(nameof(key));
-        if (id == null)
-            throw new ArgumentNullException(nameof(id));
-        if (Registry.ContainsKey(id))
+        ArgumentNullException.ThrowIfNull(id);
+        if (!Registry.TryAdd(id, key))
             throw new InvalidOperationException("ID already in use: " + id);
-        Registry[id] = key;
     }
 
     public static bool operator ==(DataKey a, DataKey b)
@@ -74,7 +70,7 @@ public abstract class DataKey
         return this.Id == other.Id;
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (ReferenceEquals(null, obj))
             return false;
@@ -99,22 +95,22 @@ public class DataKey<T> : DataKey
         return key;
     }
 
-    public bool TryGetContext(IContextData context, out T value)
+    public bool TryGetContext(IContextData context, [MaybeNullWhen(false)] out T value)
     {
-        if (context.TryGetContext(this.Id, out object obj))
+        if (context.TryGetContext(this.Id, out object? obj))
         {
-            value = obj is T t ? t : throw new Exception($"Context contained an invalid value for this key: type mismatch ({typeof(T)} != {obj?.GetType()})");
+            value = obj is T t ? t : throw new Exception($"Context contained an invalid value for this key: type mismatch ({typeof(T)} != {obj.GetType()})");
             return true;
         }
         else
         {
-            value = default;
+            value = default!;
             return false;
         }
     }
 
-    public T GetContext(IContextData context, T def = default)
+    public T? GetContext(IContextData context, T? def = default)
     {
-        return this.TryGetContext(context, out T value) ? value : def;
+        return this.TryGetContext(context, out T? value) ? value : def;
     }
 }

@@ -18,6 +18,7 @@
 //
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Avalonia;
 using Avalonia.Controls;
 
@@ -55,7 +56,7 @@ public static class TemplateUtils
     /// <param name="childName">The name of the templated child</param>
     /// <param name="value">The output child</param>
     /// <typeparam name="T">The type of templated child</typeparam>
-    public static void GetTemplateChild<T>(this INameScope scope, string childName, out T value) where T : AvaloniaObject
+    public static void GetTemplateChild<T>(this INameScope scope, string childName, [NotNull] out T value) where T : AvaloniaObject
     {
         value = GetTemplateChild<T>(scope, childName);
     }

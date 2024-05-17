@@ -18,6 +18,7 @@
 // 
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SharpPad.Avalonia.Interactivity.Contexts;
 
@@ -34,22 +35,10 @@ public interface IContextData
     /// <summary>
     /// Tries to get a value from a data key
     /// </summary>
-    bool TryGetContext(string key, out object value);
-
-    /// <summary>
-    /// Checks if the given data key is contained in this context
-    /// </summary>
-    bool ContainsKey(DataKey key);
+    bool TryGetContext(string key, [MaybeNullWhen(false)] out object value);
 
     /// <summary>
     /// Checks if the given data key is contained in this context
     /// </summary>
     bool ContainsKey(string key);
-
-    /// <summary>
-    /// Creates a new cloned instance of this context data, which contains all of the entries
-    /// that the current instance contains. The entries' values are not deep-copied
-    /// </summary>
-    /// <returns></returns>
-    IContextData Clone();
 }

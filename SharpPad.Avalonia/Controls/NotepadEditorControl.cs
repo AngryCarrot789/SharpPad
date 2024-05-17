@@ -25,12 +25,12 @@ public class NotepadEditorControl : TemplatedControl, INotepadEditorUI
     /// <summary>
     /// Gets the raw text editor control
     /// </summary>
-    public TextEditor Editor => this.PART_TextEditor;
+    public TextEditor? Editor => this.PART_TextEditor;
 
     // controls
     private NotepadTabControl PART_TabControl;
 
-    private TextEditor PART_TextEditor;
+    private TextEditor? PART_TextEditor;
     private Border PART_FindAndReplacePanel;
     private FindAndReplaceControl PART_FindAndReplaceControl;
 
@@ -53,7 +53,7 @@ public class NotepadEditorControl : TemplatedControl, INotepadEditorUI
         this.searchColorizor = new SearchResultBackgroundRenderer();
     }
 
-    static NotepadEditorControl() => NotepadProperty.Changed.AddClassHandler<NotepadEditorControl, Notepad>((s, args) => s.OnNotepadChanged(args));
+    static NotepadEditorControl() => NotepadProperty.Changed.AddClassHandler<NotepadEditorControl, Notepad?>((s, args) => s.OnNotepadChanged(args));
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
@@ -69,20 +69,20 @@ public class NotepadEditorControl : TemplatedControl, INotepadEditorUI
         this.PART_TextEditor.TextArea.SelectionBorder = null;
         if (this.ActiveEditor != null)
             this.ActiveEditor.TextEditor = this.PART_TextEditor;
-        
+
         this.PART_FindAndReplacePanel.IsVisible = false;
         if (this.ActiveEditor != null)
             this.ActiveEditor.TextEditor = this.PART_TextEditor;
     }
 
-    private void OnNotepadChanged(AvaloniaPropertyChangedEventArgs<Notepad> e)
+    private void OnNotepadChanged(AvaloniaPropertyChangedEventArgs<Notepad?> e)
     {
-        if (e.TryGetOldValue(out Notepad oldNotepad))
+        if (e.TryGetOldValue(out Notepad? oldNotepad))
         {
             oldNotepad.ActiveEditorChanged -= this.OnActiveEditorChanged;
         }
 
-        if (e.TryGetNewValue(out Notepad newNotepad))
+        if (e.TryGetNewValue(out Notepad? newNotepad))
         {
             newNotepad.ActiveEditorChanged += this.OnActiveEditorChanged;
         }
@@ -130,9 +130,9 @@ public class NotepadEditorControl : TemplatedControl, INotepadEditorUI
             this.PART_TextEditor.Document = null;
             this.PART_TextEditor.IsEnabled = false;
         }
-        
+
         DataManager.SetContextData(this, this.contextData.Set(DataKeys.NotepadEditorKey, editor).Clone());
-        
+
         this.PART_FindAndReplaceControl.CoerceValue(FindAndReplaceControl.IsRegexFaultedProperty);
     }
 
@@ -163,7 +163,7 @@ public class NotepadEditorControl : TemplatedControl, INotepadEditorUI
             this.PART_TextEditor.IsEnabled = false;
             this.PART_TextEditor.Document = null;
         }
-        
+
         DataManager.SetContextData(this, this.contextData.Set(DataKeys.DocumentKey, document).Clone());
     }
 
@@ -196,7 +196,7 @@ public class NotepadEditorControl : TemplatedControl, INotepadEditorUI
 
         if (this.contextData.TryReplace(DataKeys.FindModelKey, model))
             DataManager.SetContextData(this, this.contextData.Clone());
-        
+
         this.UpdateSearchResultRender();
     }
 

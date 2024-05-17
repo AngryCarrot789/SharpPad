@@ -34,7 +34,7 @@ public class TaskManager : IDisposable
     public static TaskManager Instance { get; } = new TaskManager();
 
     // private readonly ThreadLocal<ActivityTask> threadToTask;
-    private readonly AsyncLocal<ActivityTask> threadToTask;
+    private readonly AsyncLocal<ActivityTask?> threadToTask;
     private readonly List<ActivityTask> tasks;
     private readonly object locker;
 
@@ -45,7 +45,7 @@ public class TaskManager : IDisposable
 
     public TaskManager()
     {
-        this.threadToTask = new AsyncLocal<ActivityTask>();
+        this.threadToTask = new AsyncLocal<ActivityTask?>();
         this.tasks = new List<ActivityTask>();
         this.locker = new object();
     }
@@ -66,12 +66,12 @@ public class TaskManager : IDisposable
     /// </summary>
     /// <param name="task">The task associated with the current thread</param>
     /// <returns>True if this thread is running a task</returns>
-    public bool TryGetCurrentTask(out ActivityTask task)
+    public bool TryGetCurrentTask(out ActivityTask? task)
     {
         return (task = this.threadToTask.Value) != null;
     }
 
-    public ActivityTask CurrentTask => this.TryGetCurrentTask(out ActivityTask task) ? task : throw new InvalidOperationException("No task running on this thread");
+    public ActivityTask CurrentTask => this.threadToTask.Value ?? throw new InvalidOperationException("No task running on this thread");
 
     /// <summary>
     /// Gets either the current task's activity progress tracker, or the <see cref="EmptyActivityProgress"/> instance (for convenience over null-checks)
@@ -79,12 +79,7 @@ public class TaskManager : IDisposable
     /// <returns></returns>
     public IActivityProgress GetCurrentProgressOrEmpty()
     {
-        if (this.TryGetCurrentTask(out ActivityTask task))
-        {
-            return task.Progress;
-        }
-
-        return EmptyActivityProgress.Instance;
+        return this.TryGetCurrentTask(out ActivityTask? task) ? task!.Progress : EmptyActivityProgress.Instance;
     }
 
     public void Dispose()

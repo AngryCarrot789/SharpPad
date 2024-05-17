@@ -51,7 +51,7 @@ public class AvaloniaShortcutInputProcessor : ShortcutInputProcessor
         {
             this.isProcessingKey = true;
             this.BeginInputProcessing(focused);
-            
+
             e.Handled = processor.OnKeyStroke(UIInputManager.Instance.FocusedPath, stroke, false);
         }
         finally
@@ -68,7 +68,7 @@ public class AvaloniaShortcutInputProcessor : ShortcutInputProcessor
 
         if (this.CurrentTargetObject == null)
             return null;
-            
+
         return this.lazyCurrentContextData = DataManager.GetFullContextData(this.CurrentTargetObject);
     }
 }

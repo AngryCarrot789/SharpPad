@@ -44,8 +44,5 @@ public sealed class EmptyContext : IContextData
         return false;
     }
 
-    bool IContextData.ContainsKey(DataKey key) => false;
     bool IContextData.ContainsKey(string key) => false;
-
-    IContextData IContextData.Clone() => new EmptyContext();
 }

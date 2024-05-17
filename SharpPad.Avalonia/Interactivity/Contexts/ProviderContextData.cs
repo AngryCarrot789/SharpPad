@@ -27,7 +27,7 @@ namespace SharpPad.Avalonia.Interactivity.Contexts;
 /// </summary>
 public class ProviderContextData : IContextData
 {
-    private Dictionary<string, ObjectProvider> map;
+    private Dictionary<string, ObjectProvider>? map;
 
     public IEnumerable<KeyValuePair<string, object>> Entries
     {
@@ -38,10 +38,9 @@ public class ProviderContextData : IContextData
 
             foreach (KeyValuePair<string, ObjectProvider> entry in this.map)
             {
-                if (entry.Value.ProvideValue() is object value)
-                {
+                object? value = entry.Value.ProvideValue();
+                if (value != null)
                     yield return new KeyValuePair<string, object>(entry.Key, value);
-                }
             }
         }
     }
@@ -50,11 +49,11 @@ public class ProviderContextData : IContextData
     {
     }
 
-    public void SetValue<T>(DataKey<T> key, T value) => this.SetValueRaw(key.Id, value);
+    public void SetValue<T>(DataKey<T> key, T? value) => this.SetValueRaw(key.Id, value);
 
     public void SetValueRaw(DataKey key, object value) => this.SetValueRaw(key.Id, value);
 
-    public void SetValueRaw(string key, object value) => this.SetProviderImpl(key, ObjectProvider.ForValue(value));
+    public void SetValueRaw(string key, object? value) => this.SetProviderImpl(key, ObjectProvider.ForValue(value));
 
     public void SetProvider<T>(DataKey<T> key, Func<T> provider) => this.SetProviderRaw(key.Id, () => provider());
 
@@ -64,7 +63,7 @@ public class ProviderContextData : IContextData
 
     private void SetProviderImpl(string key, ObjectProvider provider)
     {
-        (this.map ?? (this.map = new Dictionary<string, ObjectProvider>()))[key] = provider;
+        (this.map ??= new Dictionary<string, ObjectProvider>())[key] = provider;
     }
 
     public bool TryGetContext(string key, out object value)
@@ -78,15 +77,7 @@ public class ProviderContextData : IContextData
         return false;
     }
 
-    public bool ContainsKey(DataKey key)
-    {
-        return this.ContainsKey(key.Id);
-    }
-
-    public bool ContainsKey(string key)
-    {
-        return this.TryGetContext(key, out _);
-    }
+    public bool ContainsKey(string key) => this.TryGetContext(key, out _);
 
     public IContextData Clone()
     {
@@ -98,7 +89,7 @@ public class ProviderContextData : IContextData
 
     public void Merge(IContextData ctx)
     {
-        Dictionary<string, ObjectProvider> dictionary;
+        Dictionary<string, ObjectProvider>? dictionary;
         if (ctx is ProviderContextData provider)
         {
             if (provider.map != null)
@@ -118,27 +109,25 @@ public class ProviderContextData : IContextData
         }
         else if (!(ctx is EmptyContext))
         {
-            using (IEnumerator<KeyValuePair<string, object>> enumerator = ctx.Entries.GetEnumerator())
-            {
-                if (!enumerator.MoveNext())
-                    return;
+            using IEnumerator<KeyValuePair<string, object>> enumerator = ctx.Entries.GetEnumerator();
+            if (!enumerator.MoveNext())
+                return;
 
-                dictionary = this.map ?? (this.map = new Dictionary<string, ObjectProvider>());
-                do
-                {
-                    KeyValuePair<string, object> entry = enumerator.Current;
-                    dictionary[entry.Key] = ObjectProvider.ForValue(entry.Value);
-                } while (enumerator.MoveNext());
-            }
+            dictionary = this.map ??= new Dictionary<string, ObjectProvider>();
+            do
+            {
+                KeyValuePair<string, object> entry = enumerator.Current;
+                dictionary[entry.Key] = ObjectProvider.ForValue(entry.Value);
+            } while (enumerator.MoveNext());
         }
     }
 
     private struct ObjectProvider
     {
         private int type;
-        private object value;
+        private object? value;
 
-        public static ObjectProvider ForValue(object value) => new ObjectProvider()
+        public static ObjectProvider ForValue(object? value) => new ObjectProvider()
         {
             type = 1, value = value
         };
@@ -148,12 +137,12 @@ public class ProviderContextData : IContextData
             type = 2, value = provider
         };
 
-        public object ProvideValue()
+        public object? ProvideValue()
         {
             switch (this.type)
             {
                 case 1: return this.value;
-                case 2: return ((Func<object>) this.value)();
+                case 2: return ((Func<object>) this.value!)();
                 default: throw new Exception("Invalid object provider");
             }
         }

@@ -52,34 +52,7 @@ public class ContextData : IContextData
             this.map = new Dictionary<string, object>(ctx.map);
     }
 
-    /// <summary>
-    /// Copy constructor, effectively the same as <see cref="Clone"/>
-    /// </summary>
-    /// <param name="ctx">The context to copy, if non-null</param>
-    public ContextData(IContextData context)
-    {
-        if (context is ContextData ctx)
-        {
-            if (ctx.map != null && ctx.map.Count > 0)
-                this.map = new Dictionary<string, object>(ctx.map);
-        }
-        else if (!(context is EmptyContext))
-        {
-            using (IEnumerator<KeyValuePair<string, object>> enumerator = context.Entries.GetEnumerator())
-            {
-                if (!enumerator.MoveNext())
-                    return;
-                this.map = new Dictionary<string, object>();
-                do
-                {
-                    KeyValuePair<string, object> entry = enumerator.Current;
-                    this.map[entry.Key] = entry.Value;
-                } while (enumerator.MoveNext());
-            }
-        }
-    }
-
-    public ContextData Set<T>(DataKey<T> key, T value) => this.SetRaw(key.Id, value);
+    public ContextData Set<T>(DataKey<T> key, T? value) => this.SetRaw(key.Id, value);
 
     public ContextData Set(DataKey<bool> key, bool? value) => this.SetRaw(key.Id, value.BoxNullable());
 
@@ -115,7 +88,7 @@ public class ContextData : IContextData
         {
             return this.map != null && this.map.Remove(key);
         }
-        else if (this.map == null || this.map.TryGetValue(key, out object oldVal) && value.Equals(oldVal))
+        else if (this.map == null || this.map.TryGetValue(key, out object? oldVal) && value.Equals(oldVal))
         {
             return false;
         }
@@ -128,24 +101,13 @@ public class ContextData : IContextData
 
     public bool TryGetContext(string key, out object value)
     {
-        if (this.map != null && this.map.TryGetValue(key, out value))
+        if (this.map != null && this.map.TryGetValue(key, out value!))
             return true;
-
-        value = null;
+        value = null!;
         return false;
     }
 
-    public bool ContainsKey(DataKey key)
-    {
-        return this.map != null && this.map.ContainsKey(key.Id);
-    }
-
-    public bool ContainsKey(string key)
-    {
-        return this.map != null && this.map.ContainsKey(key);
-    }
-
-    IContextData IContextData.Clone() => this.Clone();
+    public bool ContainsKey(string key) => this.map != null && this.map.ContainsKey(key);
 
     /// <summary>
     /// Creates a new instance of <see cref="ContextData"/> containing all entries from this instance

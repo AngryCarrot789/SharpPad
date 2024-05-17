@@ -57,9 +57,10 @@ public class NotepadEditor
         get => this.document;
         set
         {
-            NotepadDocument doc = this.document;
+            NotepadDocument? doc = this.document;
             if (doc == value)
                 return;
+
             this.document = value;
             this.DocumentChanged?.Invoke(this, doc, value);
         }
